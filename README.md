@@ -1,6 +1,6 @@
 # Automated Lecture Summarizer and Note Generator with 3D Tutor
 
-## 📌 Overview
+## 🔹 Overview
 It is an **AI-powered, cognitive load–aware adaptive learning platform** designed to enhance both **classroom teaching** and **post-class student revision**.  
 The system continuously analyzes lecture context, student interaction, and emotional cues to dynamically adapt explanations, quizzes, and visual aids using **AI, RAG pipelines, and a 3D avatar tutor**.
 
@@ -10,7 +10,7 @@ The platform supports **two distinct logins**:
 
 ---
 
-## 🎯 Problem Statement
+## 🔹 Problem Statement
 Traditional classroom teaching faces key challenges:
 - Teachers lack **real-time visibility into student cognitive overload**
 - Students hesitate to ask doubts during live lectures
@@ -22,7 +22,7 @@ These limitations lead to reduced comprehension, disengagement, and inefficient 
 
 ---
 
-## 💡 Proposed Solution
+## 🔹 Proposed Solution
 The platform introduces a **dual-login intelligent learning system** that:
 - Monitors **cognitive load during live lectures**
 - Assists teachers in **pausing, assessing, and clarifying concepts**
@@ -32,9 +32,9 @@ The platform introduces a **dual-login intelligent learning system** that:
 
 ---
 
-## 👥 User Roles & Capabilities
+## 🔹 User Roles & Capabilities
 
-### 👩‍🏫 Teacher Login (Live Classroom)
+### Teacher Login (Live Classroom)
 Teacher Login focuses on **real-time classroom intervention**.
 
 #### Key Capabilities:
@@ -62,7 +62,7 @@ This allows **concept clarification before proceeding further**.
 
 ---
 
-### 👨‍🎓 Student Login (Revision & Practice)
+### Student Login (Revision & Practice)
 Student Login supports **self-paced learning after the lecture**.
 
 #### Key Capabilities:
@@ -77,8 +77,10 @@ Student Login supports **self-paced learning after the lecture**.
 
 ---
 
-## 🧠 Cognitive Load Analysis
+## 🔹 Cognitive Load Analysis
 The system infers **cognitive load** using emotional, behavioral, and interaction cues.
+
+![Cognitive Load Analysis](./assets/cognitive_load_analysis.jpeg)
 
 ### Emotion Importance (Random Forest Model):
 - Surprise
@@ -104,18 +106,15 @@ Pose landmarks and posture indicators are temporally smoothed and fused with emo
 
 ---
 
-## 🔁 Cognitive Load Processing Pipeline
+## 🔹 Cognitive Load Processing Pipeline
 
-<p align="center">
-  <img src="./assets/cognitive_load_pipeline.jpeg" width="1100" />
-</p>
+![Cognitive Load Pipeline](./assets/cognitive_load_pipeline.jpeg)
 
 The pipeline combines **emotion-based** and **body posture–based** cognitive load estimation, followed by weighted fusion and temporal smoothing before adaptive actions are triggered.
 
-
 ---
 
-## 🧩 Core System Features
+## 🔹 Core System Features
 
 ### 1. Dynamic PPT & Slide Understanding
 - Converts static PPT/PDF slides into structured representations
@@ -154,7 +153,7 @@ The pipeline combines **emotion-based** and **body posture–based** cognitive l
 
 ---
 
-## 📝 Automated Notes Generation
+## 🔹 Automated Notes Generation
 After each session (Teacher or Student):
 - The system compiles:
   - Generated explanations
@@ -167,7 +166,7 @@ After each session (Teacher or Student):
 
 ---
 
-## 🏗️ System Architecture
+## 🔹 System Architecture
 
 ### Client Side
 - Progressive Web App (PWA)
@@ -193,7 +192,7 @@ After each session (Teacher or Student):
 
 ---
 
-## 🔄 End-to-End Workflow
+## 🔹 End-to-End Workflow
 
 ### Teacher Login
 1. Lecture content uploaded
@@ -214,7 +213,7 @@ After each session (Teacher or Student):
 
 ---
 
-## 🛠️ Technology Stack
+## 🔹 Technology Stack
 
 ### Frontend
 - Next.js
@@ -239,7 +238,7 @@ After each session (Teacher or Student):
 
 ---
 
-## 🚀 Key Innovations
+## 🔹 Key Innovations
 - Cognitive load–driven classroom intervention
 - Dual-login learning system (Teacher + Student)
 - Emotion & posture–weighted adaptive explanations
@@ -249,7 +248,7 @@ After each session (Teacher or Student):
 
 ---
 
-## 📈 Feasibility & Scalability
+## 🔹 Feasibility & Scalability
 - Modular architecture
 - Cloud-native backend
 - Scalable vector databases
@@ -257,5 +256,5 @@ After each session (Teacher or Student):
 
 ---
 
-## 📄 Conclusion
+## 🔹 Conclusion
 The platform bridges the gap between **teaching intent and student understanding** by combining **AI, cognitive science, and immersive 3D technologies** to deliver adaptive, engaging, and effective learning experiences.
