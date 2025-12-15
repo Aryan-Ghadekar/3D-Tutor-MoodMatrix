@@ -108,7 +108,7 @@ Pose landmarks and posture indicators are temporally smoothed and fused with emo
 
 ## 🔹 Cognitive Load Processing Pipeline
 
-![Cognitive Load Pipeline](./assets/cognitive_load_pipeline.jpeg)
+![Cognitive Load Pipeline](./assets/cognitive_load_pipeline.png)
 
 The pipeline combines **emotion-based** and **body posture–based** cognitive load estimation, followed by weighted fusion and temporal smoothing before adaptive actions are triggered.
 
