@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
-import Header from "../components/Header";
+import { AuthHeader } from "./auth/components/AuthHeader";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -8,7 +8,7 @@ export default function ClientLayout({ children }) {
 
   return (
     <>
-      {!isAuthPage && <Header />}
+      {!isAuthPage && <AuthHeader />}
       <main>{children}</main>
     </>
   );

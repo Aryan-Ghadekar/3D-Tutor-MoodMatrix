@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "../theme-provider";
-import { cognitiveAPI, quizAPI, helpAPI } from '@/lib/api';
+import { cognitiveAPI, quizAPI, helpAPI } from '../../lib/api';
 import {
   ChevronLeft, ChevronRight, Play, Pause, Volume2, Maximize2, Settings,
   Share2,
@@ -14,14 +14,14 @@ import {
   Layers, Network, ZapOff, BookOpen, Video, Headphones, Type,
   AlertTriangle,
   ThumbsUp, Rocket, GraduationCap, Target as TargetIcon, Sparkle as
-  SparkleIcon,
+    SparkleIcon,
   Shield, ShieldCheck, Timer, Repeat, GitCompare, PieChart, Coffee, Moon,
   Sunrise, Battery, BatteryCharging, BatteryFull, BatteryLow,
   ThermometerSun,
   ThermometerSnowflake, Brain as BrainIcon, Heart, HeartPulse, EyeOff,
   Focus,
   GitPullRequest, GitCommit, GitMerge, Sigma, Percent, Target as
-  Crosshair,
+    Crosshair,
   RotateCw as RotateCwIcon, PauseCircle, PlayCircle, SkipBack,
   SkipForward,
   FastForward, Rewind, MicOff, VolumeX, Wifi, WifiOff, Cloud, CloudOff,
@@ -33,7 +33,7 @@ import {
   Cpu as CpuIcon, DatabaseZap, BrainCog, UserCheck, UserX, Scale, GitFork,
   ArrowLeftRight, RefreshCcw as RefreshCcwIcon, Rotate3d, TestTube2,
   Microscope, Stethoscope, HeartBeat, ActivitySquare, Brain as
-  BrainActivity
+    BrainActivity
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 
@@ -452,7 +452,7 @@ export default function StudySessionPage() {
   const checkAndUnlockAchievements = useCallback(() => {
     const newAchievements = [...achievements];
     let unlocked = null;
-    
+
     // First mistake AND actually learned from it (has explanation shown)
     if (learningData.mistakes.length >= 1 && !achievements[0].earned && showExplanation) {
       newAchievements[0].earned = true;
@@ -462,7 +462,7 @@ export default function StudySessionPage() {
 
     const recentMistakes = learningData.mistakes.filter(m => Date.now() - m.timestamp < 300000);
     const recentCorrect = learningData.mistakes.length - recentMistakes.length;
-    
+
     if (recentCorrect >= 3 && !achievements[1].earned) {
       newAchievements[1].earned = true;
       newAchievements[1].progress = 100;
@@ -515,7 +515,7 @@ export default function StudySessionPage() {
         }
         return prev;
       });
-      
+
       setMisconceptions(prev => {
         const existing = prev.find(m => m.concept === question.concept);
         if (existing) {
@@ -574,7 +574,7 @@ export default function StudySessionPage() {
     if (isTired && isCorrect) {
       console.log("⚡ APPROACH 2.1: Tired + Correct = Light Revision/Break Suggested");
       setTiredCorrectCount(prev => prev + 1);
-      
+
       if (tiredCorrectCount >= 1) {
         setCurrentIntervention({
           type: "APPROACH_2_1",
@@ -617,7 +617,7 @@ export default function StudySessionPage() {
     if (isTired && !isCorrect) {
       console.log("🔍 APPROACH 2.2: Tired + Wrong = Diagnostic Break → Test");
       setTiredWrongCount(prev => prev + 1);
-      
+
       setDiagnosticState({
         active: true,
         type: 'fatigue_vs_misconception',
@@ -657,7 +657,7 @@ export default function StudySessionPage() {
   const handleApproachLowLoadWrong = useCallback((question, isCorrect) => {
     if (cognitiveLoad < 0.4 && !isCorrect) {
       console.log("💡 APPROACH: Low Load + Wrong = Trigger Explain More");
-      
+
       // Trigger Explain More view automatically
       setCurrentIntervention({
         type: "LOW_LOAD_WRONG",
@@ -696,7 +696,7 @@ export default function StudySessionPage() {
   // ========== CONDUCT POST-BREAK TEST ==========
   const conductPostBreakTest = useCallback((originalQuestion) => {
     const similarQuestion = findSimilarQuestion(originalQuestion.concept, originalQuestion.id);
-    
+
     if (!similarQuestion) {
       const retryQuestion = { ...originalQuestion, isRetry: true };
       setDiagnosticState(prev => ({ ...prev, postBreakQuestion: retryQuestion }));
@@ -745,9 +745,9 @@ export default function StudySessionPage() {
   // ========== HANDLE POST-BREAK TEST RESULT ==========
   const handlePostBreakTestResult = useCallback((question, isCorrect) => {
     if (!diagnosticState.active) return;
-    
+
     console.log(`📊 POST-BREAK TEST RESULT: ${isCorrect ? 'CORRECT' : 'WRONG'}`);
-    
+
     if (isCorrect) {
       setDiagnosticState(prev => ({ ...prev, result: 'fatigue_confirmed' }));
       setLearningData(prev => ({
@@ -863,7 +863,7 @@ export default function StudySessionPage() {
 
     if (isTired && !isCorrect && hasMisconceptionHistory) {
       console.log("🎓 APPROACH 2.3: Tired + Wrong + History = Break → Teach");
-      
+
       setCurrentIntervention({
         type: "APPROACH_2_3",
         title: "🎓 Known Difficulty Area",
@@ -931,7 +931,7 @@ export default function StudySessionPage() {
     setShowBreakModal(false);
     clearInterval(breakTimerRef.current);
     setCognitiveLoad(prev => Math.max(0.2, prev - 0.25));
-    
+
     setCurrentIntervention({
       type: "POST_BREAK_REFRESH",
       title: "🔄 Break Complete!",
@@ -1231,7 +1231,7 @@ export default function StudySessionPage() {
     if (recentMistakes.length >= 2) {
       const concepts = [...new Set(recentMistakes.map(m => m.concept))];
       const conceptStr = concepts.length > 0 ? concepts.join(", ") : 'these concepts';
-      
+
       let suggestedStyle = "analogy";
       if (learningStyle.detected === "visual") suggestedStyle = "visual";
       if (learningStyle.detected === "kinesthetic") suggestedStyle = "story";
@@ -1599,23 +1599,23 @@ export default function StudySessionPage() {
   };
 
   const getLoadColor = (load) => {
-    if (load > 0.7) return { 
-      text: "text-red-600 dark:text-red-400", 
-      bg: "bg-red-500 dark:bg-red-600", 
-      lightBg: "bg-red-50 dark:bg-red-900", 
-      border: "border-red-200 dark:border-red-800" 
+    if (load > 0.7) return {
+      text: "text-red-600 dark:text-red-400",
+      bg: "bg-red-500 dark:bg-red-600",
+      lightBg: "bg-red-50 dark:bg-red-900",
+      border: "border-red-200 dark:border-red-800"
     };
-    if (load > 0.4) return { 
-      text: "text-amber-600 dark:text-amber-400", 
-      bg: "bg-amber-500 dark:bg-amber-600", 
-      lightBg: "bg-amber-50 dark:bg-amber-900", 
-      border: "border-amber-200 dark:border-amber-800" 
+    if (load > 0.4) return {
+      text: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-500 dark:bg-amber-600",
+      lightBg: "bg-amber-50 dark:bg-amber-900",
+      border: "border-amber-200 dark:border-amber-800"
     };
-    return { 
-      text: "text-green-600 dark:text-green-400", 
-      bg: "bg-green-500 dark:bg-green-600", 
-      lightBg: "bg-green-50 dark:bg-green-900", 
-      border: "border-green-200 dark:border-green-800" 
+    return {
+      text: "text-green-600 dark:text-green-400",
+      bg: "bg-green-500 dark:bg-green-600",
+      lightBg: "bg-green-50 dark:bg-green-900",
+      border: "border-green-200 dark:border-green-800"
     };
   };
 
@@ -1640,24 +1640,22 @@ export default function StudySessionPage() {
       {/* ========== LEARNING INSIGHT NOTIFICATION ========== */}
       {showMistakeInsight && currentInsight && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">
-          <div className={`rounded-xl shadow-2xl max-w-sm border-l-4 ${
-            currentInsight.type === 'mistake_identified'
+          <div className={`rounded-xl shadow-2xl max-w-sm border-l-4 ${currentInsight.type === 'mistake_identified'
               ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
               : currentInsight.type === 'concept_mastered'
-              ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
-              : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
-          }`}>
+                ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
+                : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
+            }`}>
             <div className="p-4">
               <div className="flex items-start gap-3">
-                <div className={`p-2 rounded-lg ${
-                  currentInsight.type === 'mistake_identified'
+                <div className={`p-2 rounded-lg ${currentInsight.type === 'mistake_identified'
                     ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
                     : currentInsight.type === 'concept_mastered'
-                    ? 'bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300'
-                    : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
-                }`}>
+                      ? 'bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300'
+                      : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
+                  }`}>
                   {currentInsight.type === 'mistake_identified' ? '🎯' :
-                   currentInsight.type === 'concept_mastered' ? '✅' : '💡'}
+                    currentInsight.type === 'concept_mastered' ? '✅' : '💡'}
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-900 dark:text-white text-sm">
@@ -1728,26 +1726,25 @@ export default function StudySessionPage() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-full ${
-                    currentIntervention.type === 'APPROACH_1' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
-                    currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400' :
-                    currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400' :
-                    currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400' :
-                    currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' :
-                    currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400' :
-                    currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400' :
-                    currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
-                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                  }`}>
+                  <div className={`p-2.5 rounded-full ${currentIntervention.type === 'APPROACH_1' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
+                      currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400' :
+                        currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400' :
+                          currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400' :
+                            currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' :
+                              currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400' :
+                                currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400' :
+                                  currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
+                                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    }`}>
                     {currentIntervention.type === 'APPROACH_1' ? <Brain className="w-5 h-5" /> :
-                     currentIntervention.type === 'APPROACH_2_1' ? <Zap className="w-5 h-5" /> :
-                     currentIntervention.type === 'APPROACH_2_2' ? <TestTube className="w-5 h-5" /> :
-                     currentIntervention.type === 'APPROACH_2_3' ? <GraduationCap className="w-5 h-5" /> :
-                     currentIntervention.type === 'POST_BREAK_TEST' ? <ClipboardCheck className="w-5 h-5" /> :
-                     currentIntervention.type === 'FATIGUE_CONFIRMED' ? <Check className="w-5 h-5" /> :
-                     currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? <AlertCircle className="w-5 h-5" /> :
-                     currentIntervention.type === 'LOW_LOAD_WRONG' ? <HelpCircle className="w-5 h-5" /> :
-                     <HelpCircle className="w-5 h-5" />}
+                      currentIntervention.type === 'APPROACH_2_1' ? <Zap className="w-5 h-5" /> :
+                        currentIntervention.type === 'APPROACH_2_2' ? <TestTube className="w-5 h-5" /> :
+                          currentIntervention.type === 'APPROACH_2_3' ? <GraduationCap className="w-5 h-5" /> :
+                            currentIntervention.type === 'POST_BREAK_TEST' ? <ClipboardCheck className="w-5 h-5" /> :
+                              currentIntervention.type === 'FATIGUE_CONFIRMED' ? <Check className="w-5 h-5" /> :
+                                currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? <AlertCircle className="w-5 h-5" /> :
+                                  currentIntervention.type === 'LOW_LOAD_WRONG' ? <HelpCircle className="w-5 h-5" /> :
+                                    <HelpCircle className="w-5 h-5" />}
                   </div>
                   <div>
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white">
@@ -1771,17 +1768,16 @@ export default function StudySessionPage() {
                 )}
               </div>
 
-              <div className={`mb-6 p-4 rounded-lg border ${
-                currentIntervention.type === 'APPROACH_1' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
-                currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-800' :
-                currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-800' :
-                currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-50 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800' :
-                currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800' :
-                currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800' :
-                currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-200 dark:border-indigo-800' :
-                currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
-                'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
-              }`}>
+              <div className={`mb-6 p-4 rounded-lg border ${currentIntervention.type === 'APPROACH_1' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
+                  currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-800' :
+                    currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-800' :
+                      currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-50 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800' :
+                        currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800' :
+                          currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800' :
+                            currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-200 dark:border-indigo-800' :
+                              currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
+                                'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                }`}>
                 <p className="text-gray-800 dark:text-gray-300">
                   {currentIntervention.message}
                 </p>
@@ -1810,19 +1806,18 @@ export default function StudySessionPage() {
                   <button
                     key={index}
                     onClick={action.action}
-                    className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
-                      index === 0
+                    className={`w-full p-4 rounded-xl text-left transition-all border-2 ${index === 0
                         ? currentIntervention.type === 'APPROACH_1' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
                           currentIntervention.type === 'APPROACH_2_1' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30' :
-                          currentIntervention.type === 'APPROACH_2_2' ? 'border-red-500 bg-red-50 dark:bg-red-900/30' :
-                          currentIntervention.type === 'APPROACH_2_3' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30' :
-                          currentIntervention.type === 'POST_BREAK_TEST' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
-                          currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' :
-                          currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' :
-                          currentIntervention.type === 'LOW_LOAD_WRONG' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
-                          'border-gray-500 bg-gray-50 dark:bg-gray-700'
+                            currentIntervention.type === 'APPROACH_2_2' ? 'border-red-500 bg-red-50 dark:bg-red-900/30' :
+                              currentIntervention.type === 'APPROACH_2_3' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30' :
+                                currentIntervention.type === 'POST_BREAK_TEST' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
+                                  currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' :
+                                    currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' :
+                                      currentIntervention.type === 'LOW_LOAD_WRONG' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
+                                        'border-gray-500 bg-gray-50 dark:bg-gray-700'
                         : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-900 dark:text-white">
@@ -1911,21 +1906,19 @@ export default function StudySessionPage() {
                 </button>
               </div>
 
-              <div className={`mb-6 p-4 rounded-lg ${
-                suggestion.type === 'quiz'
+              <div className={`mb-6 p-4 rounded-lg ${suggestion.type === 'quiz'
                   ? 'bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700'
                   : suggestion.type === 'explanation'
-                  ? 'bg-purple-50 dark:bg-purple-900 border border-purple-200 dark:border-purple-700'
-                  : 'bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700'
-              }`}>
+                    ? 'bg-purple-50 dark:bg-purple-900 border border-purple-200 dark:border-purple-700'
+                    : 'bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700'
+                }`}>
                 <div className="flex items-start gap-2">
-                  <div className={`p-1.5 rounded ${
-                    suggestion.type === 'quiz'
+                  <div className={`p-1.5 rounded ${suggestion.type === 'quiz'
                       ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
                       : suggestion.type === 'explanation'
-                      ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
-                      : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
-                  }`}>
+                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
+                        : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
+                    }`}>
                     {suggestion.type === 'quiz' ? (
                       <FileQuestion className="w-4 h-4" />
                     ) : suggestion.type === 'explanation' ? (
@@ -1956,18 +1949,16 @@ export default function StudySessionPage() {
                     setShowHelpOffer(false);
                     handleTakeQuiz();
                   }}
-                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${
-                    suggestion.type === 'quiz'
+                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'quiz'
                       ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 shadow-md'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${
-                      suggestion.type === 'quiz'
+                    <div className={`p-2.5 rounded-lg ${suggestion.type === 'quiz'
                         ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                    }`}>
+                      }`}>
                       <FileQuestion className="w-5 h-5" />
                     </div>
                     <div>
@@ -1994,18 +1985,16 @@ export default function StudySessionPage() {
                     setShowHelpOffer(false);
                     handleExplainMore();
                   }}
-                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${
-                    suggestion.type === 'explanation'
+                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'explanation'
                       ? 'border-purple-500 bg-purple-50 dark:bg-purple-900 shadow-md'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${
-                      suggestion.type === 'explanation'
+                    <div className={`p-2.5 rounded-lg ${suggestion.type === 'explanation'
                         ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                    }`}>
+                      }`}>
                       <HelpCircle className="w-5 h-5" />
                     </div>
                     <div>
@@ -2030,18 +2019,16 @@ export default function StudySessionPage() {
                     setShowHelpOffer(false);
                     handleAskQuestions();
                   }}
-                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${
-                    suggestion.type === 'qa'
+                  className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'qa'
                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 shadow-md'
                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${
-                      suggestion.type === 'qa'
+                    <div className={`p-2.5 rounded-lg ${suggestion.type === 'qa'
                         ? 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                    }`}>
+                      }`}>
                       <MessageCircle className="w-5 h-5" />
                     </div>
                     <div>
@@ -2088,16 +2075,15 @@ export default function StudySessionPage() {
               {cognitiveLoad > 0.7 ? "High" : cognitiveLoad > 0.4 ? "Moderate" : "Low"} Cognitive Load
               <span className="text-xs">({Math.round(cognitiveLoad * 100)}%)</span>
             </div>
-            <div className={`px-3 py-1.5 rounded-md ${
-              learningStyle.detected === 'visual' ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700' :
-              learningStyle.detected === 'auditory' ? 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700' :
-              learningStyle.detected === 'kinesthetic' ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700' :
-              'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
-            } text-sm font-semibold flex items-center gap-2`}>
+            <div className={`px-3 py-1.5 rounded-md ${learningStyle.detected === 'visual' ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700' :
+                learningStyle.detected === 'auditory' ? 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700' :
+                  learningStyle.detected === 'kinesthetic' ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700' :
+                    'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
+              } text-sm font-semibold flex items-center gap-2`}>
               {learningStyle.detected === 'visual' ? <Eye className="w-4 h-4" /> :
-               learningStyle.detected === 'auditory' ? <Headphones className="w-4 h-4" /> :
-               learningStyle.detected === 'kinesthetic' ? <Hand className="w-4 h-4" /> :
-               <BookOpen className="w-4 h-4" />}
+                learningStyle.detected === 'auditory' ? <Headphones className="w-4 h-4" /> :
+                  learningStyle.detected === 'kinesthetic' ? <Hand className="w-4 h-4" /> :
+                    <BookOpen className="w-4 h-4" />}
               {learningStyle.detected.charAt(0).toUpperCase() + learningStyle.detected.slice(1)} Learner
             </div>
             {isTired && (
@@ -2127,13 +2113,12 @@ export default function StudySessionPage() {
             </button>
             <button
               onClick={toggleELI5Mode}
-              className={`text-sm px-3 py-1.5 rounded flex items-center gap-1.5 font-medium transition ${
-                eli5Mode.active
+              className={`text-sm px-3 py-1.5 rounded flex items-center gap-1.5 font-medium transition ${eli5Mode.active
                   ? 'bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700'
                   : theme === 'light'
-                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
-                  : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600'
-              }`}
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
+                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600'
+                }`}
             >
               <Lightbulb className="w-4 h-4" />
               {eli5Mode.active ? "Simple Mode" : "ELI5 Mode"}
@@ -2189,24 +2174,21 @@ export default function StudySessionPage() {
               {achievements.map((achievement, index) => (
                 <div
                   key={achievement.id}
-                  className={`p-4 rounded-xl border transition-all ${
-                    achievement.earned
+                  className={`p-4 rounded-xl border transition-all ${achievement.earned
                       ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900 dark:to-amber-900 border-yellow-300 dark:border-yellow-700'
                       : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-full ${
-                      achievement.earned
+                    <div className={`p-3 rounded-full ${achievement.earned
                         ? 'bg-gradient-to-r from-yellow-400 to-orange-500'
                         : 'bg-gray-300 dark:bg-gray-700'
-                    }`}>
+                      }`}>
                       <span className="text-xl">{achievement.icon}</span>
                     </div>
                     <div>
-                      <h3 className={`font-bold text-sm ${
-                        achievement.earned ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
+                      <h3 className={`font-bold text-sm ${achievement.earned ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+                        }`}>
                         {achievement.name}
                       </h3>
                       <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
@@ -2223,11 +2205,10 @@ export default function StudySessionPage() {
                     </div>
                     <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden mt-1">
                       <div
-                        className={`h-full rounded-full transition-all ${
-                          achievement.earned
+                        className={`h-full rounded-full transition-all ${achievement.earned
                             ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
                             : 'bg-gray-400 dark:bg-gray-600'
-                        }`}
+                          }`}
                         style={{ width: `${achievement.progress}%` }}
                       ></div>
                     </div>
@@ -2247,13 +2228,12 @@ export default function StudySessionPage() {
                   learningInsights.map((insight, index) => (
                     <div
                       key={index}
-                      className={`p-4 rounded-lg border-l-4 ${
-                        insight.type === 'mistake_identified'
+                      className={`p-4 rounded-lg border-l-4 ${insight.type === 'mistake_identified'
                           ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
                           : insight.type === 'concept_mastered'
-                          ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
-                          : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
-                      }`}
+                            ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
+                            : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
+                        }`}
                     >
                       <div className="flex items-start justify-between">
                         <div>
@@ -2333,13 +2313,12 @@ export default function StudySessionPage() {
                 {currentQuestion ? (
                   <div className={`p-6 rounded-xl ${theme === 'light' ? 'bg-gray-50 border border-gray-300' : 'bg-gray-800 border border-gray-700'}`}>
                     <div className="flex items-center gap-2 mb-4">
-                      <div className={`px-3 py-1.5 rounded text-sm font-bold ${
-                        currentQuestion.difficulty === 'easy'
+                      <div className={`px-3 py-1.5 rounded text-sm font-bold ${currentQuestion.difficulty === 'easy'
                           ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
                           : currentQuestion.difficulty === 'medium'
-                          ? 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
-                          : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700'
-                      }`}>
+                            ? 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700'
+                        }`}>
                         {currentQuestion.difficulty.toUpperCase()} LEVEL
                       </div>
                       {currentQuestion.isDiagnostic && (
@@ -2364,22 +2343,20 @@ export default function StudySessionPage() {
                           key={optIndex}
                           onClick={() => handleAnswerSelect(currentQuestionIndex, optIndex)}
                           disabled={userAnswers[currentQuestionIndex] !== undefined}
-                          className={`w-full p-4 rounded-lg text-left transition border ${
-                            userAnswers[currentQuestionIndex] === optIndex
+                          className={`w-full p-4 rounded-lg text-left transition border ${userAnswers[currentQuestionIndex] === optIndex
                               ? optIndex === currentQuestion.correct
                                 ? 'bg-green-100 dark:bg-green-900 border-2 border-green-500 dark:border-green-600'
                                 : 'bg-red-100 dark:bg-red-900 border-2 border-red-500 dark:border-red-600'
                               : `${theme === 'light' ? 'hover:bg-gray-100 border-gray-300' : 'hover:bg-gray-700 border-gray-600'}`
-                          } ${userAnswers[currentQuestionIndex] !== undefined ? 'cursor-default' : 'cursor-pointer'}`}
+                            } ${userAnswers[currentQuestionIndex] !== undefined ? 'cursor-default' : 'cursor-pointer'}`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                              userAnswers[currentQuestionIndex] === optIndex
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${userAnswers[currentQuestionIndex] === optIndex
                                 ? optIndex === currentQuestion.correct
                                   ? 'border-green-500 bg-green-500 dark:border-green-600 dark:bg-green-600'
                                   : 'border-red-500 bg-red-500 dark:border-red-600 dark:bg-red-600'
                                 : 'border-gray-400 dark:border-gray-500'
-                            }`}>
+                              }`}>
                               {userAnswers[currentQuestionIndex] === optIndex && (
                                 <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
                               )}
@@ -2421,11 +2398,10 @@ export default function StudySessionPage() {
                       <button
                         onClick={handleNextQuestion}
                         disabled={userAnswers[currentQuestionIndex] === undefined}
-                        className={`px-6 py-3 rounded-lg font-semibold transition ${
-                          userAnswers[currentQuestionIndex] === undefined
+                        className={`px-6 py-3 rounded-lg font-semibold transition ${userAnswers[currentQuestionIndex] === undefined
                             ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border border-gray-400 dark:border-gray-600'
                             : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90 border border-blue-700 dark:border-blue-800'
-                        }`}
+                          }`}
                       >
                         {currentQuestionIndex === adaptiveQuestions.length - 1 ? 'See Results' : 'Next Question'}
                       </button>
@@ -2467,8 +2443,8 @@ export default function StudySessionPage() {
                     </div>
                     <div className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">
                       {quizScore === adaptiveQuestions.length ? "Perfect! 🎯" :
-                       quizScore >= adaptiveQuestions.length * 0.7 ? "Great Job! 👍" :
-                       "Keep Practicing! 📚"}
+                        quizScore >= adaptiveQuestions.length * 0.7 ? "Great Job! 👍" :
+                          "Keep Practicing! 📚"}
                     </div>
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border ${loadColor.border} ${loadColor.lightBg} ${loadColor.text}`}>
                       <Brain className="w-4 h-4" />
@@ -2639,9 +2615,8 @@ export default function StudySessionPage() {
                 </div>
                 <button
                   onClick={handlePlayPause}
-                  className={`absolute bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-110 border-2 border-white dark:border-gray-800 ${
-                    isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
-                  }`}
+                  className={`absolute bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-110 border-2 border-white dark:border-gray-800 ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+                    }`}
                 >
                   {isPlaying ? (
                     <Pause className="w-4 h-4 text-white" />
@@ -2724,8 +2699,8 @@ export default function StudySessionPage() {
                     </div>
                     <p className={`text-xs ${loadColor.text}`}>
                       {cognitiveLoad > 0.7 ? "High load detected. Try taking a quiz to reinforce learning." :
-                       cognitiveLoad > 0.4 ? "Moderate load. You're learning well!" :
-                       "Optimal learning state. Keep going!"}
+                        cognitiveLoad > 0.4 ? "Moderate load. You're learning well!" :
+                          "Optimal learning state. Keep going!"}
                     </p>
                     {learningData.mistakes.length > 0 && (
                       <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
@@ -2767,11 +2742,10 @@ export default function StudySessionPage() {
                   <button
                     onClick={handleSubmitAvatarQuestion}
                     disabled={!avatarQuestion.trim()}
-                    className={`mt-4 py-2.5 w-full rounded-lg font-semibold transition border ${
-                      !avatarQuestion.trim()
+                    className={`mt-4 py-2.5 w-full rounded-lg font-semibold transition border ${!avatarQuestion.trim()
                         ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
                         : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 border-purple-600 dark:border-purple-700'
-                    }`}
+                      }`}
                   >
                     Ask Professor
                   </button>
@@ -2823,11 +2797,10 @@ export default function StudySessionPage() {
                       <button
                         onClick={handleSubmitUserQuestion}
                         disabled={!userQuestion.trim()}
-                        className={`px-4 py-2 rounded-lg transition border ${
-                          !userQuestion.trim()
+                        className={`px-4 py-2 rounded-lg transition border ${!userQuestion.trim()
                             ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
                             : 'bg-blue-600 dark:bg-blue-700 text-white hover:opacity-90 border-blue-700 dark:border-blue-800'
-                        }`}
+                          }`}
                       >
                         Ask
                       </button>
