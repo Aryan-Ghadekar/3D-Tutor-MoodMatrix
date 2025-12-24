@@ -35,12 +35,24 @@ import {
   Microscope, Stethoscope, HeartBeat, ActivitySquare, Brain as
     BrainActivity
 } from "lucide-react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  TextContent,
+  CodeContent,
+  ImageContent,
+  ChartContent,
+  GraphContent
+} from "../../components/PPTContent";
 
 export default function StudySessionPage() {
   const { theme } = useTheme();
 
   // ========== CORE STATES ==========
+  const searchParams = useSearchParams();
+  const [topic, setTopic] = useState(searchParams.get("topic") || "General Topic");
+  const [slides, setSlides] = useState([]);
+  const [loadingSlides, setLoadingSlides] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(1);
   const [activeView, setActiveView] = useState(null);
@@ -393,7 +405,6 @@ export default function StudySessionPage() {
   ]);
 
   const [adaptiveQuestions, setAdaptiveQuestions] = useState([]);
-  const totalSlides = 9;
   const breakTimerRef = useRef(null);
   const confidenceLevel = useRef(0.7);
 
@@ -413,7 +424,45 @@ export default function StudySessionPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // ========== HELPER FUNCTIONS ==========
+  // ========== FETCH DYNAMIC PPT CONTENT ==========
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        setLoadingSlides(true);
+        const response = await fetch('/api/generate-ppt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic })
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Process slides to fetch image URLs if needed
+          const processedSlides = await Promise.all(data.slides.map(async (slide) => {
+            if (slide.type === 'image') {
+              try {
+                const imgRes = await fetch(`http://localhost:8000/fetch-image?keywords=${encodeURIComponent(slide.content.keywords.join(','))}`);
+                const imgData = await imgRes.json();
+                return { ...slide, content: { ...slide.content, imageUrl: imgData.url } };
+              } catch (e) {
+                console.error("Failed to fetch image from localhost:8000", e);
+                return slide;
+              }
+            }
+            return slide;
+          }));
+          setSlides(processedSlides);
+        }
+      } catch (error) {
+        console.error("Error fetching slides:", error);
+      } finally {
+        setLoadingSlides(false);
+      }
+    };
+
+    if (topic) fetchSlides();
+  }, [topic]);
+
+  const totalSlides = slides.length || 4;
   const findSimilarQuestion = (concept, excludeId = null) => {
     const questions = allQuestions.filter(q => q.concept === concept && q.id !== excludeId);
     if (questions.length > 0) {
@@ -1641,18 +1690,18 @@ export default function StudySessionPage() {
       {showMistakeInsight && currentInsight && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">
           <div className={`rounded-xl shadow-2xl max-w-sm border-l-4 ${currentInsight.type === 'mistake_identified'
-              ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
-              : currentInsight.type === 'concept_mastered'
-                ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
-                : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
+            ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
+            : currentInsight.type === 'concept_mastered'
+              ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
+              : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
             }`}>
             <div className="p-4">
               <div className="flex items-start gap-3">
                 <div className={`p-2 rounded-lg ${currentInsight.type === 'mistake_identified'
-                    ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
-                    : currentInsight.type === 'concept_mastered'
-                      ? 'bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300'
-                      : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
+                  ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
+                  : currentInsight.type === 'concept_mastered'
+                    ? 'bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300'
+                    : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
                   }`}>
                   {currentInsight.type === 'mistake_identified' ? '🎯' :
                     currentInsight.type === 'concept_mastered' ? '✅' : '💡'}
@@ -1727,14 +1776,14 @@ export default function StudySessionPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className={`p-2.5 rounded-full ${currentIntervention.type === 'APPROACH_1' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
-                      currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400' :
-                        currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400' :
-                          currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400' :
-                            currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' :
-                              currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400' :
-                                currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400' :
-                                  currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
-                                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400' :
+                      currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400' :
+                        currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400' :
+                          currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' :
+                            currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400' :
+                              currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400' :
+                                currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
+                                  'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                     }`}>
                     {currentIntervention.type === 'APPROACH_1' ? <Brain className="w-5 h-5" /> :
                       currentIntervention.type === 'APPROACH_2_1' ? <Zap className="w-5 h-5" /> :
@@ -1769,14 +1818,14 @@ export default function StudySessionPage() {
               </div>
 
               <div className={`mb-6 p-4 rounded-lg border ${currentIntervention.type === 'APPROACH_1' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
-                  currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-800' :
-                    currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-800' :
-                      currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-50 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800' :
-                        currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800' :
-                          currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800' :
-                            currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-200 dark:border-indigo-800' :
-                              currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
-                                'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                currentIntervention.type === 'APPROACH_2_1' ? 'bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-800' :
+                  currentIntervention.type === 'APPROACH_2_2' ? 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-800' :
+                    currentIntervention.type === 'APPROACH_2_3' ? 'bg-purple-50 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800' :
+                      currentIntervention.type === 'POST_BREAK_TEST' ? 'bg-green-50 dark:bg-green-900/50 border-green-200 dark:border-green-800' :
+                        currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'bg-emerald-50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800' :
+                          currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-200 dark:border-indigo-800' :
+                            currentIntervention.type === 'LOW_LOAD_WRONG' ? 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800' :
+                              'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                 }`}>
                 <p className="text-gray-800 dark:text-gray-300">
                   {currentIntervention.message}
@@ -1807,16 +1856,16 @@ export default function StudySessionPage() {
                     key={index}
                     onClick={action.action}
                     className={`w-full p-4 rounded-xl text-left transition-all border-2 ${index === 0
-                        ? currentIntervention.type === 'APPROACH_1' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
-                          currentIntervention.type === 'APPROACH_2_1' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30' :
-                            currentIntervention.type === 'APPROACH_2_2' ? 'border-red-500 bg-red-50 dark:bg-red-900/30' :
-                              currentIntervention.type === 'APPROACH_2_3' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30' :
-                                currentIntervention.type === 'POST_BREAK_TEST' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
-                                  currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' :
-                                    currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' :
-                                      currentIntervention.type === 'LOW_LOAD_WRONG' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
-                                        'border-gray-500 bg-gray-50 dark:bg-gray-700'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                      ? currentIntervention.type === 'APPROACH_1' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
+                        currentIntervention.type === 'APPROACH_2_1' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30' :
+                          currentIntervention.type === 'APPROACH_2_2' ? 'border-red-500 bg-red-50 dark:bg-red-900/30' :
+                            currentIntervention.type === 'APPROACH_2_3' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30' :
+                              currentIntervention.type === 'POST_BREAK_TEST' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' :
+                                currentIntervention.type === 'FATIGUE_CONFIRMED' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' :
+                                  currentIntervention.type === 'MISCONCEPTION_CONFIRMED' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' :
+                                    currentIntervention.type === 'LOW_LOAD_WRONG' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' :
+                                      'border-gray-500 bg-gray-50 dark:bg-gray-700'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                       }`}
                   >
                     <div className="flex items-center justify-between">
@@ -1907,17 +1956,17 @@ export default function StudySessionPage() {
               </div>
 
               <div className={`mb-6 p-4 rounded-lg ${suggestion.type === 'quiz'
-                  ? 'bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700'
-                  : suggestion.type === 'explanation'
-                    ? 'bg-purple-50 dark:bg-purple-900 border border-purple-200 dark:border-purple-700'
-                    : 'bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700'
+                ? 'bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700'
+                : suggestion.type === 'explanation'
+                  ? 'bg-purple-50 dark:bg-purple-900 border border-purple-200 dark:border-purple-700'
+                  : 'bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700'
                 }`}>
                 <div className="flex items-start gap-2">
                   <div className={`p-1.5 rounded ${suggestion.type === 'quiz'
-                      ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
-                      : suggestion.type === 'explanation'
-                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
-                        : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
+                    ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
+                    : suggestion.type === 'explanation'
+                      ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
+                      : 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
                     }`}>
                     {suggestion.type === 'quiz' ? (
                       <FileQuestion className="w-4 h-4" />
@@ -1950,14 +1999,14 @@ export default function StudySessionPage() {
                     handleTakeQuiz();
                   }}
                   className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'quiz'
-                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 shadow-md'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 shadow-md'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2.5 rounded-lg ${suggestion.type === 'quiz'
-                        ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      ? 'bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
                       <FileQuestion className="w-5 h-5" />
                     </div>
@@ -1986,14 +2035,14 @@ export default function StudySessionPage() {
                     handleExplainMore();
                   }}
                   className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'explanation'
-                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900 shadow-md'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900 shadow-md'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2.5 rounded-lg ${suggestion.type === 'explanation'
-                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
                       <HelpCircle className="w-5 h-5" />
                     </div>
@@ -2020,14 +2069,14 @@ export default function StudySessionPage() {
                     handleAskQuestions();
                   }}
                   className={`w-full flex items-center justify-between p-4 rounded-xl text-left transition-all border-2 ${suggestion.type === 'qa'
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 shadow-md'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 shadow-md'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2.5 rounded-lg ${suggestion.type === 'qa'
-                        ? 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      ? 'bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                       }`}>
                       <MessageCircle className="w-5 h-5" />
                     </div>
@@ -2076,9 +2125,9 @@ export default function StudySessionPage() {
               <span className="text-xs">({Math.round(cognitiveLoad * 100)}%)</span>
             </div>
             <div className={`px-3 py-1.5 rounded-md ${learningStyle.detected === 'visual' ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700' :
-                learningStyle.detected === 'auditory' ? 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700' :
-                  learningStyle.detected === 'kinesthetic' ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700' :
-                    'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
+              learningStyle.detected === 'auditory' ? 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700' :
+                learningStyle.detected === 'kinesthetic' ? 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700' :
+                  'bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
               } text-sm font-semibold flex items-center gap-2`}>
               {learningStyle.detected === 'visual' ? <Eye className="w-4 h-4" /> :
                 learningStyle.detected === 'auditory' ? <Headphones className="w-4 h-4" /> :
@@ -2114,10 +2163,10 @@ export default function StudySessionPage() {
             <button
               onClick={toggleELI5Mode}
               className={`text-sm px-3 py-1.5 rounded flex items-center gap-1.5 font-medium transition ${eli5Mode.active
-                  ? 'bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700'
-                  : theme === 'light'
-                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
-                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600'
+                ? 'bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700'
+                : theme === 'light'
+                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
+                  : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600'
                 }`}
             >
               <Lightbulb className="w-4 h-4" />
@@ -2175,14 +2224,14 @@ export default function StudySessionPage() {
                 <div
                   key={achievement.id}
                   className={`p-4 rounded-xl border transition-all ${achievement.earned
-                      ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900 dark:to-amber-900 border-yellow-300 dark:border-yellow-700'
-                      : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60'
+                    ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900 dark:to-amber-900 border-yellow-300 dark:border-yellow-700'
+                    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-3 rounded-full ${achievement.earned
-                        ? 'bg-gradient-to-r from-yellow-400 to-orange-500'
-                        : 'bg-gray-300 dark:bg-gray-700'
+                      ? 'bg-gradient-to-r from-yellow-400 to-orange-500'
+                      : 'bg-gray-300 dark:bg-gray-700'
                       }`}>
                       <span className="text-xl">{achievement.icon}</span>
                     </div>
@@ -2206,8 +2255,8 @@ export default function StudySessionPage() {
                     <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden mt-1">
                       <div
                         className={`h-full rounded-full transition-all ${achievement.earned
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
-                            : 'bg-gray-400 dark:bg-gray-600'
+                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
+                          : 'bg-gray-400 dark:bg-gray-600'
                           }`}
                         style={{ width: `${achievement.progress}%` }}
                       ></div>
@@ -2229,10 +2278,10 @@ export default function StudySessionPage() {
                     <div
                       key={index}
                       className={`p-4 rounded-lg border-l-4 ${insight.type === 'mistake_identified'
-                          ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
-                          : insight.type === 'concept_mastered'
-                            ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
-                            : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
+                        ? 'border-amber-500 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
+                        : insight.type === 'concept_mastered'
+                          ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:border-green-700'
+                          : 'border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-700'
                         }`}
                     >
                       <div className="flex items-start justify-between">
@@ -2314,10 +2363,10 @@ export default function StudySessionPage() {
                   <div className={`p-6 rounded-xl ${theme === 'light' ? 'bg-gray-50 border border-gray-300' : 'bg-gray-800 border border-gray-700'}`}>
                     <div className="flex items-center gap-2 mb-4">
                       <div className={`px-3 py-1.5 rounded text-sm font-bold ${currentQuestion.difficulty === 'easy'
-                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
-                          : currentQuestion.difficulty === 'medium'
-                            ? 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
-                            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700'
+                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
+                        : currentQuestion.difficulty === 'medium'
+                          ? 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                          : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700'
                         }`}>
                         {currentQuestion.difficulty.toUpperCase()} LEVEL
                       </div>
@@ -2344,18 +2393,18 @@ export default function StudySessionPage() {
                           onClick={() => handleAnswerSelect(currentQuestionIndex, optIndex)}
                           disabled={userAnswers[currentQuestionIndex] !== undefined}
                           className={`w-full p-4 rounded-lg text-left transition border ${userAnswers[currentQuestionIndex] === optIndex
-                              ? optIndex === currentQuestion.correct
-                                ? 'bg-green-100 dark:bg-green-900 border-2 border-green-500 dark:border-green-600'
-                                : 'bg-red-100 dark:bg-red-900 border-2 border-red-500 dark:border-red-600'
-                              : `${theme === 'light' ? 'hover:bg-gray-100 border-gray-300' : 'hover:bg-gray-700 border-gray-600'}`
+                            ? optIndex === currentQuestion.correct
+                              ? 'bg-green-100 dark:bg-green-900 border-2 border-green-500 dark:border-green-600'
+                              : 'bg-red-100 dark:bg-red-900 border-2 border-red-500 dark:border-red-600'
+                            : `${theme === 'light' ? 'hover:bg-gray-100 border-gray-300' : 'hover:bg-gray-700 border-gray-600'}`
                             } ${userAnswers[currentQuestionIndex] !== undefined ? 'cursor-default' : 'cursor-pointer'}`}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${userAnswers[currentQuestionIndex] === optIndex
-                                ? optIndex === currentQuestion.correct
-                                  ? 'border-green-500 bg-green-500 dark:border-green-600 dark:bg-green-600'
-                                  : 'border-red-500 bg-red-500 dark:border-red-600 dark:bg-red-600'
-                                : 'border-gray-400 dark:border-gray-500'
+                              ? optIndex === currentQuestion.correct
+                                ? 'border-green-500 bg-green-500 dark:border-green-600 dark:bg-green-600'
+                                : 'border-red-500 bg-red-500 dark:border-red-600 dark:bg-red-600'
+                              : 'border-gray-400 dark:border-gray-500'
                               }`}>
                               {userAnswers[currentQuestionIndex] === optIndex && (
                                 <div className="w-2.5 h-2.5 rounded-full bg-white"></div>
@@ -2399,8 +2448,8 @@ export default function StudySessionPage() {
                         onClick={handleNextQuestion}
                         disabled={userAnswers[currentQuestionIndex] === undefined}
                         className={`px-6 py-3 rounded-lg font-semibold transition ${userAnswers[currentQuestionIndex] === undefined
-                            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border border-gray-400 dark:border-gray-600'
-                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90 border border-blue-700 dark:border-blue-800'
+                          ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border border-gray-400 dark:border-gray-600'
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90 border border-blue-700 dark:border-blue-800'
                           }`}
                       >
                         {currentQuestionIndex === adaptiveQuestions.length - 1 ? 'See Results' : 'Next Question'}
@@ -2503,51 +2552,34 @@ export default function StudySessionPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                <div className="space-y-6">
-                  <p className="text-base text-gray-800 dark:text-gray-300 leading-relaxed">
-                    Neural networks are computational models inspired by the human brain.
-                    They consist of interconnected nodes called neurons that process data
-                    to learn patterns and make decisions without explicit programming.
-                  </p>
-
-                  <div className={`p-5 rounded-lg border ${theme === 'light' ? 'bg-blue-50 border-blue-300' : 'bg-blue-900 border-blue-700'}`}>
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-blue-500" />
-                      Key Benefits
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4">
-                      {[
-                        { title: "Handles Complexity", desc: "Solves non-linear problems efficiently" },
-                        { title: "Adaptive Learning", desc: "Learns patterns autonomously" },
-                        { title: "AI Applications", desc: "Image recognition, NLP, and more" },
-                        { title: "Scalability", desc: "Parallel processing capabilities" }
-                      ].map((item, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-1.5"></div>
-                          <div>
-                            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{item.title}</h3>
-                            <p className="text-xs text-gray-700 dark:text-gray-400 mt-1">{item.desc}</p>
-                          </div>
-                        </div>
-                      ))}
+                <div className="h-full">
+                  {loadingSlides ? (
+                    <div className="h-full flex flex-col items-center justify-center gap-4 text-blue-500">
+                      <RefreshCw className="w-12 h-12 animate-spin" />
+                      <p className="font-semibold animate-pulse">AI is generating your study session for {topic}...</p>
                     </div>
-                  </div>
+                  ) : slides.length > 0 ? (
+                    (() => {
+                      const slide = slides[currentSlide - 1];
+                      if (!slide) return null;
 
-                  {currentSlide === 4 && (
-                    <div className={`p-4 rounded-lg border-l-4 ${theme === 'light' ? 'bg-green-50 border-green-500' : 'bg-green-900 border-green-500'}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <HelpCircle className="w-5 h-5 text-green-600" />
-                        <span className="text-xs font-semibold text-green-700 dark:text-green-400">
-                          Clarification Slide (Generated)
-                        </span>
-                      </div>
-                      <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
-                        Understanding Backpropagation
-                      </h3>
-                      <p className="text-xs text-gray-800 dark:text-gray-300">
-                        Algorithm for training neural networks by calculating gradient of loss function.
-                      </p>
-                    </div>
+                      switch (slide.type) {
+                        case 'text':
+                          return <TextContent {...slide.content} />;
+                        case 'code':
+                          return <CodeContent {...slide.content} />;
+                        case 'image':
+                          return <ImageContent {...slide.content} />;
+                        case 'chart':
+                          return <ChartContent {...slide.content} />;
+                        case 'graph':
+                          return <GraphContent {...slide.content} />;
+                        default:
+                          return null;
+                      }
+                    })()
+                  ) : (
+                    <p className="text-center text-gray-500">No slides generated. Please try a different topic.</p>
                   )}
                 </div>
               </div>
@@ -2743,8 +2775,8 @@ export default function StudySessionPage() {
                     onClick={handleSubmitAvatarQuestion}
                     disabled={!avatarQuestion.trim()}
                     className={`mt-4 py-2.5 w-full rounded-lg font-semibold transition border ${!avatarQuestion.trim()
-                        ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
-                        : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 border-purple-600 dark:border-purple-700'
+                      ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
+                      : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 border-purple-600 dark:border-purple-700'
                       }`}
                   >
                     Ask Professor
@@ -2798,8 +2830,8 @@ export default function StudySessionPage() {
                         onClick={handleSubmitUserQuestion}
                         disabled={!userQuestion.trim()}
                         className={`px-4 py-2 rounded-lg transition border ${!userQuestion.trim()
-                            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
-                            : 'bg-blue-600 dark:bg-blue-700 text-white hover:opacity-90 border-blue-700 dark:border-blue-800'
+                          ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-400 dark:border-gray-600'
+                          : 'bg-blue-600 dark:bg-blue-700 text-white hover:opacity-90 border-blue-700 dark:border-blue-800'
                           }`}
                       >
                         Ask

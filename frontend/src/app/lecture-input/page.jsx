@@ -14,7 +14,7 @@ export default function LectureInputPage() {
     const handleProceed = (e) => {
         e.preventDefault();
         if (lectureTopic.trim()) {
-            router.push("/study-session");
+            router.push(`/study-session?topic=${encodeURIComponent(lectureTopic.trim())}`);
         }
     };
 
