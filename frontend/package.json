@@ -10,10 +10,18 @@
   },
   "dependencies": {
     "@radix-ui/react-switch": "1.1.2",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.4.2",
+    "framer-motion": "^12.23.26",
+    "katex": "^0.16.27",
     "lucide-react": "0.378.0",
-    "next": "14.2.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-draggable": "^4.5.0",
+    "react-katex": "^3.1.0",
+    "recharts": "^3.6.0",
+    "three": "^0.182.0"
   },
   "devDependencies": {
     "autoprefixer": "10.4.19",

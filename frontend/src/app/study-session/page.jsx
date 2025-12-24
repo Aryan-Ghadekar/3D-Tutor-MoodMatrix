@@ -42,7 +42,8 @@ import {
   CodeContent,
   ImageContent,
   ChartContent,
-  GraphContent
+  GraphContent,
+  MixedContent
 } from "../../components/PPTContent";
 
 export default function StudySessionPage() {
@@ -436,17 +437,24 @@ export default function StudySessionPage() {
         });
         const data = await response.json();
         if (data.success) {
-          // Process slides to fetch image URLs if needed
+          // Process slides to fetch image URLs for mixed content
           const processedSlides = await Promise.all(data.slides.map(async (slide) => {
-            if (slide.type === 'image') {
-              try {
-                const imgRes = await fetch(`http://localhost:8000/fetch-image?keywords=${encodeURIComponent(slide.content.keywords.join(','))}`);
-                const imgData = await imgRes.json();
-                return { ...slide, content: { ...slide.content, imageUrl: imgData.url } };
-              } catch (e) {
-                console.error("Failed to fetch image from localhost:8000", e);
-                return slide;
-              }
+            if (slide.type === 'mixed' && slide.content.items) {
+              const processedItems = await Promise.all(slide.content.items.map(async (item) => {
+                if (item.type === 'image') {
+                  try {
+                    const query = item.keywords?.[0] || 'physics diagram';
+                    const imgRes = await fetch(`http://localhost:5000/search_image?query=${encodeURIComponent(query)}`);
+                    const imgData = await imgRes.json();
+                    return { ...item, imageUrl: imgData.image_url };
+                  } catch (e) {
+                    console.error("Failed to fetch image from localhost:5000", e);
+                    return item;
+                  }
+                }
+                return item;
+              }));
+              return { ...slide, content: { ...slide.content, items: processedItems } };
             }
             return slide;
           }));
@@ -2574,6 +2582,8 @@ export default function StudySessionPage() {
                           return <ChartContent {...slide.content} />;
                         case 'graph':
                           return <GraphContent {...slide.content} />;
+                        case 'mixed':
+                          return <MixedContent {...slide.content} />;
                         default:
                           return null;
                       }
