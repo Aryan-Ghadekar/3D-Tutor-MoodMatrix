@@ -2,6 +2,7 @@
 import { useTheme } from "./theme-provider";
 import { Brain, Play, Settings, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Header from "../components/Header";
 
 export default function HomePage() {
   const { theme } = useTheme();
@@ -24,6 +25,7 @@ export default function HomePage() {
           : "bg-gradient-to-br from-[#0B1220] via-[#0E1628] to-[#0A1020] text-white"
         }`}
     >
+      <Header />
       {/* ================= HERO SECTION ================= */}
       <section className="flex flex-col items-center text-center pt-28 px-6">
         <h1

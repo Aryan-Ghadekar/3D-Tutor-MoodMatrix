@@ -2,6 +2,7 @@
 
 import { useTheme } from "../theme-provider";
 import { cognitiveAPI, quizAPI, helpAPI } from '../../lib/api';
+import Header from "../../components/Header";
 import {
   ChevronLeft, ChevronRight, Play, Pause, Volume2, Maximize2, Settings,
   Share2,
@@ -1693,6 +1694,7 @@ export default function StudySessionPage() {
 
   return (
     <div className={`h-screen ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'} transition-colors flex flex-col overflow-hidden`}>
+      <Header />
 
       {/* ========== LEARNING INSIGHT NOTIFICATION ========== */}
       {showMistakeInsight && currentInsight && (
