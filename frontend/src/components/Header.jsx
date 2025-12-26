@@ -48,7 +48,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/study-session"
+              href="/lecture-input"
               className="hover:text-blue-500 transition"
             >
               Study Session
