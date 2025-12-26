@@ -5,7 +5,7 @@ const OPENROUTER_API_KEY = "sk-or-v1-56cad77b89441cea21583c09908c39b74cb3301acb2
 export async function POST(req) {
     try {
         const { topic } = await req.json();
-        console.log(`🚀 Generating real AI PPT for topic: ${topic}`);
+        console.log(`Generating real AI PPT for topic: ${topic}`);
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
