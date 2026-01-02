@@ -1,0 +1,122 @@
+{
+  "lectureId": "ai-fallback-685956",
+  "topic": "YouTube Lecture",
+  "duration": "45 minutes",
+  "date": "2026-01-01",
+  "instructor": "Prof. AI Assistant",
+  "impTopics": [
+    {
+      "id": "topic-1",
+      "title": "Introduction to YouTube Lecture",
+      "description": " Large language models, they are everywhere",
+      "importance": "high",
+      "weightage": 35,
+      "prerequisites": [],
+      "commonMisconceptions": [
+        "Overcomplicating basics",
+        "Missing key relationships"
+      ],
+      "keyInsights": [
+        "Start with clear foundations",
+        "Build understanding gradually"
+      ]
+    },
+    {
+      "id": "topic-2",
+      "title": "Core Principles",
+      "description": " They get some things amazingly right and other things very interestingly wrong",
+      "importance": "high",
+      "weightage": 30,
+      "prerequisites": [
+        "topic-1"
+      ],
+      "commonMisconceptions": [
+        "Theory vs practice confusion",
+        "Misapplication of concepts"
+      ],
+      "keyInsights": [
+        "Connect theory to real-world",
+        "Focus on practical applications"
+      ]
+    },
+    {
+      "id": "topic-3",
+      "title": "Practical Applications",
+      "description": " My name is Marina Denoletski",
+      "importance": "medium",
+      "weightage": 25,
+      "prerequisites": [
+        "topic-1",
+        "topic-2"
+      ],
+      "commonMisconceptions": [
+        "Overlooking context",
+        "Simplistic approaches"
+      ],
+      "keyInsights": [
+        "Apply knowledge flexibly",
+        "Adapt to different scenarios"
+      ]
+    }
+  ],
+  "keyConcepts": [
+    {
+      "name": "Fundamental Concept",
+      "definition": "Core idea that enables understanding",
+      "examples": [
+        "Basic application",
+        "Simple implementation"
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "Application Framework",
+      "definition": "Structured approach to using knowledge",
+      "examples": [
+        "Systematic problem solving",
+        "Methodical application"
+      ],
+      "complexity": "medium"
+    }
+  ],
+  "difficultyMetrics": {
+    "conceptualDifficulty": "medium",
+    "mathematicalDifficulty": "low",
+    "implementationDifficulty": "medium",
+    "overall": "intermediate"
+  },
+  "learningObjectives": [
+    "Master fundamental concepts",
+    "Apply knowledge in practical scenarios",
+    "Develop analytical thinking skills"
+  ],
+  "prerequisiteKnowledge": [
+    "Basic subject understanding",
+    "Critical thinking abilities"
+  ],
+  "assessmentCriteria": {
+    "knowledgeCheck": [
+      "Concept definitions",
+      "Theory recall"
+    ],
+    "skillEvaluation": [
+      "Problem solving",
+      "Scenario analysis"
+    ],
+    "misconceptionDetection": [
+      "Error identification",
+      "Concept clarification"
+    ]
+  },
+  "metadata": {
+    "course": "AI-Enhanced Learning Plan",
+    "targetAudience": [
+      "University students",
+      "Professional learners"
+    ],
+    "generatedBy": "Quality Fallback System",
+    "confidenceScore": 0.8,
+    "analysisDepth": "structured",
+    "fallbackUsed": true
+  }
+}
