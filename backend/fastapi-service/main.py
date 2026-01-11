@@ -2,7 +2,7 @@ import sys
 import warnings
 warnings.filterwarnings("ignore")
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
@@ -600,34 +600,413 @@ def save_lecture_plan_to_mock(lecture_plan):
 
 def save_quiz_results(results_data):
     """Save quiz results to file"""
-    results_dir = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\quiz_results")
-    results_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        results_dir = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\quiz_results")
+        results_dir.mkdir(parents=True, exist_ok=True)
+        
+        results_file = results_dir / "quiz_results.json"
+        
+        all_results = []
+        if results_file.exists():
+            try:
+                with open(results_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    if content.strip():  # Check if file is not empty
+                        all_results = json.loads(content)
+                        if not isinstance(all_results, list):
+                            all_results = [all_results]
+            except json.JSONDecodeError as e:
+                print(f"JSON decode error, starting fresh: {e}")
+                all_results = []
+        
+        results_data["saved_at"] = datetime.now().isoformat()
+        all_results.insert(0, results_data)
+        all_results = all_results[:50]  # Keep last 50 results
+        
+        with open(results_file, "w", encoding="utf-8") as f:
+            json.dump(all_results, f, indent=2, ensure_ascii=False)
+        
+        print(f"Saved quiz results to: {results_file.resolve()}")
+        return str(results_file.resolve())
+    except Exception as e:
+        print(f"Error in save_quiz_results: {e}")
+        raise
+
+# =========================================================
+# AI-POWERED SLIDE GENERATION WITH OPENROUTER
+# =========================================================
+
+def generate_slide_with_ai(
+    topic: dict,
+    action_type: str,
+    student_goal: str,
+    knowledge_state: dict,
+    user_question: str = None,
+    context: str = ""
+) -> dict:
+    """
+    Generate complete slide content using AI based on:
+    1. Student Goal & Exam
+    2. Knowledge State from Quiz Results  
+    3. Lecture Plan Content
+    """
     
-    results_file = results_dir / "quiz_results.json"
+    knowledge_level = knowledge_state.get('knowledgeLevel', 'intermediate')
+    avg_score = knowledge_state.get('averageScore', 0)
+    weak_topics = knowledge_state.get('weakTopics', [])
+    misconceptions = knowledge_state.get('misconceptions', [])
     
-    all_results = []
-    if results_file.exists():
-        try:
-            with open(results_file, "r", encoding="utf-8") as f:
-                all_results = json.load(f)
-                if not isinstance(all_results, list):
-                    all_results = [all_results]
-        except:
-            all_results = []
-    
-    results_data["saved_at"] = datetime.now().isoformat()
-    all_results.insert(0, results_data)
-    all_results = all_results[:50]  # Keep last 50 results
-    
-    with open(results_file, "w", encoding="utf-8") as f:
-        json.dump(all_results, f, indent=2)
-    
-    print(f"Saved quiz results to: {results_file.resolve()}")
-    return str(results_file.resolve())
+    # Build comprehensive AI prompt
+    system_prompt = f"""You are an expert educational content creator specializing in {student_goal.upper()} exam preparation.
+
+Your task is to create engaging, pedagogically sound learning slides that adapt to the student's knowledge level and learning needs.
+
+CRITICAL REQUIREMENTS:
+1. Generate content specifically tailored for {student_goal.upper()} exam preparation
+2. Adapt complexity based on student's knowledge level: {knowledge_level} (average score: {avg_score}%)
+3. Address known weak areas: {', '.join(weak_topics[:3]) if weak_topics else 'None identified yet'}
+4. Correct known misconceptions: {len(misconceptions)} identified
+5. Include exam-relevant examples, analogies, and real-world applications
+6. Provide clear explanations with proper depth for the knowledge level
+7. Add memory hooks and learning strategies
+
+RESPONSE FORMAT (JSON):
+{{
+  "title": "Clear, concise slide title (max 10 words)",
+  "narrative": "Engaging 3-4 paragraph explanation with examples and context. Make it conversational and educational.",
+  "keyInsights": [
+    "4-5 critical points the student must understand",
+    "Each insight should be actionable and exam-relevant",
+    "Focus on concepts frequently tested in {student_goal.upper()}"
+  ],
+  "analogies": [
+    {{
+      "domain": "Relatable real-world domain",
+      "comparison": "How this concept is similar to the domain",
+      "lesson": "What the student should learn from this analogy"
+    }}
+  ],
+  "realWorldScenario": {{
+    "situation": "Practical scenario where this concept applies",
+    "application": "How to apply the concept in this scenario",
+    "outcome": "Result of proper application"
+  }},
+  "interactiveElement": "Thought-provoking question to engage the student",
+  "examRelevance": "Specific details about how this appears in {student_goal.upper()} exams - question types, weightage, frequency",
+  "commonTraps": [
+    "3-4 common mistakes students make with this concept",
+    "Include misconceptions and wrong approaches"
+  ],
+  "memoryHook": "Memorable phrase, acronym, or pattern to remember this concept"
+}}
+
+ADAPTATION RULES:
+- If knowledge_level is 'beginner': Use simple language, more examples, step-by-step breakdowns
+- If knowledge_level is 'intermediate': Balance theory with practice, moderate complexity
+- If knowledge_level is 'advanced': Include technical depth, edge cases, advanced applications
+- If weak_topics mentioned: Provide extra clarity on related concepts
+- If misconceptions exist: Explicitly address and correct them
+
+Return ONLY valid JSON, no markdown formatting, no extra text."""
+
+    # Build user prompt based on action type
+    if action_type == 'concept_explanation':
+        user_prompt = f"""Create an educational slide explaining this concept:
+
+TOPIC: {topic.get('title', 'Unknown Topic')}
+
+TOPIC DETAILS:
+Description: {topic.get('description', topic.get('full_content', 'No description available'))[:500]}
+
+Key Insights from Material: {', '.join(topic.get('keyInsights', [])[:3])}
+Common Misconceptions: {', '.join(topic.get('commonMisconceptions', [])[:2])}
+Real-World Applications: {', '.join(topic.get('realWorldApplications', [])[:2])}
+Importance Level: {topic.get('importance', 'medium')}
+Difficulty: {topic.get('difficulty', 'medium')}
+
+STUDENT CONTEXT:
+- Preparing for: {student_goal.upper()}
+- Current knowledge level: {knowledge_level} ({avg_score}% average score)
+- Weak areas: {', '.join(weak_topics[:3]) if weak_topics else 'None yet'}
+- Recent quiz performance: {"Below expectations" if avg_score < 60 else "Good" if avg_score < 80 else "Excellent"}
+
+Create a comprehensive, engaging slide that helps the student master this concept for their {student_goal.upper()} exam."""
+
+    elif action_type == 'explain-more':
+        user_prompt = f"""The student asked for MORE DETAILED explanation of:
+
+TOPIC: {topic.get('title', 'Unknown Topic')}
+
+CONTEXT: They've seen the basic explanation but want deeper insights.
+
+STUDENT PROFILE:
+- Knowledge level: {knowledge_level} ({avg_score}% average)
+- They're ready for: {"More advanced content" if avg_score >= 70 else "Clearer explanations with more examples"}
+
+Create a DEEPER, MORE DETAILED slide that:
+1. Goes beyond surface-level understanding
+2. Includes advanced insights and nuances
+3. Provides multiple perspectives and approaches
+4. Covers edge cases and special scenarios
+5. Includes complex examples and applications
+6. Addresses subtle points often missed by students
+
+Make this significantly more comprehensive than a basic explanation."""
+
+    elif action_type == 'ask-question':
+        user_prompt = f"""The student asked this SPECIFIC QUESTION:
+
+QUESTION: "{user_question}"
+
+ABOUT TOPIC: {topic.get('title', 'Unknown Topic')}
+
+STUDENT CONTEXT:
+- Knowledge level: {knowledge_level}
+- Current score: {avg_score}%
+- Preparing for: {student_goal.upper()}
+
+Create a slide that:
+1. DIRECTLY answers their specific question
+2. Provides step-by-step explanation
+3. Includes concrete examples
+4. Shows how to verify the answer
+5. Connects to exam patterns in {student_goal.upper()}
+6. Addresses related concepts they should know
+
+Focus on making the answer clear, complete, and exam-relevant."""
+
+    elif action_type == 'quiz-results':
+        user_prompt = f"""Create a QUIZ PERFORMANCE ANALYSIS slide:
+
+TOPIC TESTED: {topic.get('title', 'Quiz Topic')}
+
+QUIZ CONTEXT: {context}
+
+STUDENT PERFORMANCE:
+- Current knowledge level: {knowledge_level}
+- Average score: {avg_score}%
+- Weak topics identified: {', '.join(weak_topics[:5])}
+- Misconceptions found: {len(misconceptions)}
+
+Recent Mistakes:
+{chr(10).join([f"- {m.get('concept', 'Unknown')}: {m.get('type', 'Error')}" for m in misconceptions[:3]])}
+
+Create a slide that:
+1. Analyzes their performance objectively
+2. Identifies specific areas needing improvement
+3. Explains WHY they made mistakes (conceptual gaps, misconceptions, etc.)
+4. Provides ACTIONABLE recommendations
+5. Offers encouragement and learning strategies
+6. Maps improvement areas to {student_goal.upper()} exam requirements
+
+Be honest but supportive. Focus on growth opportunities."""
+
+    else:
+        user_prompt = f"""Create an educational slide about: {topic.get('title', 'Topic')}
+
+For {student_goal.upper()} exam preparation at {knowledge_level} level."""
+
+    # Call OpenRouter API
+    try:
+        payload = {
+            "model": OPENROUTER_MODEL,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.7,
+            "max_tokens": 2000
+        }
+
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "http://localhost:3000",
+            "X-Title": "Study Session AI"
+        }
+
+        print(f"Calling AI for {action_type}...")
+        
+        response = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=30)
+        response.raise_for_status()
+        
+        result = response.json()
+        content = result["choices"][0]["message"]["content"].strip()
+        
+        # Clean and parse JSON
+        content = content.replace("```json", "").replace("```", "").strip()
+        slide_content = json.loads(content)
+        
+        print(f"AI generated: {slide_content.get('title', 'Untitled')}")
+        
+        return slide_content
+        
+    except requests.exceptions.RequestException as e:
+        print(f"OpenRouter API error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+    except json.JSONDecodeError as e:
+        print(f"JSON parsing error: {e}")
+        print(f"Raw content: {content[:200]}")
+        raise HTTPException(status_code=500, detail=f"AI response parsing failed: {str(e)}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail=f"Slide generation error: {str(e)}")
+
 
 # =========================================================
 # API ENDPOINTS
 # =========================================================
+
+@app.post("/generate-dynamic-slide")
+async def generate_dynamic_slide(
+    session_id: str = Body(...),
+    lecture_plan: dict = Body(...),
+    student_goal: str = Body('gate'),
+    knowledge_state: dict = Body({}),
+    current_topic_index: int = Body(0),
+    action_type: str = Body('concept_explanation'),
+    user_question: Optional[str] = Body(None),
+    context: Optional[str] = Body('')
+):
+    """
+    Generate dynamic slide with AI using three input streams:
+    1. Student Goal & Exam Preference
+    2. Knowledge State from Quiz Results
+    3. Lecture Plan Content
+    """
+    try:
+        print(f"\n{'='*60}")
+        print(f"AI-POWERED SLIDE GENERATION")
+        print(f"{'='*60}")
+        print(f"Action: {action_type}")
+        print(f"Goal: {student_goal.upper()}")
+        print(f"Topic Index: {current_topic_index}")
+        print(f"Knowledge Level: {knowledge_state.get('knowledgeLevel', 'intermediate')}")
+        if user_question:
+            print(f"Question: {user_question[:50]}...")
+        print(f"{'='*60}\n")
+
+        # Extract current topic
+        topics = lecture_plan.get('impTopics', [])
+        if current_topic_index >= len(topics):
+            raise HTTPException(status_code=400, detail="Invalid topic index")
+        
+        current_topic = topics[current_topic_index]
+        
+        # Generate slide content with AI
+        slide_content = generate_slide_with_ai(
+            topic=current_topic,
+            action_type=action_type,
+            student_goal=student_goal,
+            knowledge_state=knowledge_state,
+            user_question=user_question,
+            context=context
+        )
+        
+        # Get relevant images from Wikimedia
+        images = await get_wikimedia_images(current_topic, action_type)
+        
+        # Create complete slide object
+        slide = {
+            "id": f"slide_{int(datetime.now().timestamp()*1000)}",
+            "title": slide_content.get('title', current_topic.get('title', 'Learning Slide')),
+            "type": action_type,
+            "content": slide_content,
+            "images": images,
+            "metadata": {
+                "generatedAt": datetime.now().isoformat(),
+                "sessionId": session_id,
+                "topicIndex": current_topic_index,
+                "topicTitle": current_topic.get('title', ''),
+                "studentGoal": student_goal,
+                "knowledgeLevel": knowledge_state.get('knowledgeLevel', 'intermediate'),
+                "actionType": action_type,
+                "hasImages": len(images) > 0,
+                "generatedBy": "AI",
+                "aiModel": OPENROUTER_MODEL
+            }
+        }
+        
+        print(f"   Complete slide generated:")
+        print(f"   Title: {slide['title']}")
+        print(f"   Images: {len(images)}")
+        print(f"   Type: {action_type}")
+        print(f"   AI Model: {OPENROUTER_MODEL}\n")
+        
+        return {
+            "success": True,
+            "slide": slide,
+            "message": f"AI-generated slide for {action_type}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in slide generation: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def get_wikimedia_images(topic: dict, action_type: str) -> list:
+    """Get relevant images from image server (Wikimedia)"""
+    try:
+        title = topic.get('title', 'concept')
+        
+        # Build intelligent search query
+        search_terms = [title]
+        
+        # Add context based on action type
+        if action_type == 'concept_explanation':
+            search_terms.append('diagram')
+        elif action_type == 'explain-more':
+            search_terms.append('detailed illustration')
+        elif action_type == 'ask-question':
+            search_terms.append('explanation')
+        
+        search_query = ' '.join(search_terms)
+        
+        print(f"Searching images: {search_query}")
+        
+        # Call image server
+        response = requests.get(
+            "http://localhost:8002/search_image",
+            params={"query": search_query},
+            timeout=8
+        )
+        
+        if response.ok:
+            data = response.json()
+            image_url = data.get('image_url', '')
+            
+            # Check if real image (not placeholder)
+            if image_url and 'placeholder' not in image_url.lower():
+                print(f"Found Wikimedia image")
+                return [{
+                    "id": f"img_{int(datetime.now().timestamp()*1000)}",
+                    "url": image_url,
+                    "caption": f"Visual representation: {title}",
+                    "alt": f"Educational diagram for {title}",
+                    "source": "wikimedia",
+                    "isPlaceholder": False
+                }]
+        
+        print(f"No Wikimedia image found, using placeholder")
+        
+    except Exception as e:
+        print(f"Image fetch error: {e}")
+    
+    # Fallback placeholder
+    from urllib.parse import quote
+    return [{
+        "id": f"placeholder_{int(datetime.now().timestamp()*1000)}",
+        "url": f"https://via.placeholder.com/800x500/3b82f6/ffffff?text={quote(topic.get('title', 'Concept')[:30])}",
+        "caption": f"Concept: {topic.get('title', 'Topic')}",
+        "alt": "Educational concept",
+        "source": "placeholder",
+        "isPlaceholder": True
+    }]
+
 @app.post("/analyze-lecture")
 async def analyze_lecture(
     pdf: Optional[UploadFile] = File(None),
@@ -668,25 +1047,44 @@ async def generate_diagnostic_mcq(request: MCQRequest):
     """Generate diagnostic MCQs from lecture plan"""
     try:
         lecture_plan = request.lecture_plan
-        topics = lecture_plan.get('impTopics', [])[:12]
+        topics = lecture_plan.get('impTopics', [])
+        num_questions = request.num_questions
         
-        print(f"Generating {request.num_questions} MCQs...")
+        if not topics:
+            raise HTTPException(status_code=400, detail="No topics found in lecture plan")
+        
+        print(f"Generating {num_questions} MCQs from {len(topics)} topics...")
         
         questions = []
-        for i, topic in enumerate(topics):
-            if i >= request.num_questions:
+        questions_per_topic = max(1, num_questions // len(topics))
+        
+        # Generate multiple questions per topic if needed
+        for topic_idx, topic in enumerate(topics):
+            # Calculate how many questions to generate from this topic
+            if len(questions) >= num_questions:
                 break
             
-            print(f"Generating question {i+1}/{request.num_questions}...")
-                
-            title = topic.get('title', f'Topic {i+1}')
-            description = topic.get('description', '')
-            full_content = topic.get('full_content', description)
-            misconceptions = topic.get('commonMisconceptions', [])
-            insights = topic.get('keyInsights', [])
+            # Generate 1-2 questions per topic depending on need
+            num_from_this_topic = min(
+                questions_per_topic + (1 if len(questions) < num_questions - len(topics) + topic_idx else 0),
+                num_questions - len(questions)
+            )
             
-            q = create_diagnostic_question(i+1, topic, full_content, misconceptions, insights)
-            questions.append(q)
+            for q_num in range(num_from_this_topic):
+                if len(questions) >= num_questions:
+                    break
+                
+                q_id = len(questions) + 1
+                print(f"Generating question {q_id}/{num_questions} from topic: {topic.get('title', 'Unknown')[:50]}...")
+                
+                title = topic.get('title', f'Topic {topic_idx+1}')
+                description = topic.get('description', '')
+                full_content = topic.get('full_content', description)
+                misconceptions = topic.get('commonMisconceptions', [])
+                insights = topic.get('keyInsights', [])
+                
+                q = create_diagnostic_question(q_id, topic, full_content, misconceptions, insights)
+                questions.append(q)
         
         print(f"Generated {len(questions)} questions successfully")
         
@@ -695,7 +1093,8 @@ async def generate_diagnostic_mcq(request: MCQRequest):
             "questions": questions,
             "metadata": {
                 "generatedAt": datetime.now().isoformat(),
-                "totalQuestions": len(questions)
+                "totalQuestions": len(questions),
+                "topicsUsed": len(topics)
             }
         }
     except Exception as e:
@@ -759,6 +1158,8 @@ async def analyze_quiz_results(request: AnswerAnalysisRequest):
 async def save_quiz_results_endpoint(request: SaveResultsRequest):
     """Save quiz results to file"""
     try:
+        print(f"Received quiz results: session={request.session_id}, score={request.score}")
+        
         results_data = {
             "session_id": request.session_id,
             "lecture_id": request.lecture_id,
@@ -769,19 +1170,26 @@ async def save_quiz_results_endpoint(request: SaveResultsRequest):
             "answers": request.answers,
             "misconceptions": request.misconceptions,
             "weak_topics": request.weak_topics,
-            "recommendations": request.recommendations
+            "recommendations": request.recommendations,
+            "timestamp": datetime.now().isoformat()
         }
         
         saved_path = save_quiz_results(results_data)
         
+        print(f"Successfully saved quiz results to: {saved_path}")
+        
         return {
             "success": True,
             "message": "Quiz results saved successfully",
-            "saved_path": saved_path
+            "saved_path": saved_path,
+            "session_id": request.session_id
         }
     except Exception as e:
-        print(f"Error saving quiz results: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = str(e)
+        print(f"Error saving quiz results: {error_msg}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to save results: {error_msg}")
 
 # =========================================================
 # HEALTH CHECK
@@ -798,3 +1206,66 @@ async def root():
             "/save-quiz-results"
         ]
     }
+
+@app.get("/get-lecture-plan")
+async def get_lecture_plan(
+    sessionId: Optional[str] = None,
+    latest: Optional[bool] = False
+):
+    """Get lecture plan - always returns latest if sessionId not found"""
+    try:
+        mock_file_path = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\mock_lecture_plan.json")
+        
+        if not mock_file_path.exists():
+            raise HTTPException(status_code=404, detail="No lecture plans found")
+        
+        with open(mock_file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            
+            # Ensure data is a list
+            if not isinstance(data, list):
+                data = [data]
+            
+            if not data:
+                raise HTTPException(status_code=404, detail="No lecture plans available")
+            
+            # If sessionId provided, try to find it, but fallback to latest
+            if sessionId:
+                for plan in data:
+                    if plan.get('sessionId') == sessionId:
+                        print(f"Found lecture plan with sessionId: {sessionId}")
+                        return plan
+                
+                # SessionId not found - return latest instead of 404
+                print(f"SessionId {sessionId} not found, returning latest plan")
+                return data[0]
+            
+            # Otherwise return latest (first in list)
+            print(f"Returning latest lecture plan")
+            return data[0]
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting lecture plan: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# =========================================================
+# SERVER STARTUP
+# =========================================================
+if __name__ == "__main__":
+    import uvicorn
+    print("="*60)
+    print("Starting Study Plan Generator API")
+    print("="*60)
+    print("Endpoints:")
+    print("  - POST /analyze-lecture")
+    print("  - POST /generate-diagnostic-mcq")
+    print("  - POST /analyze-quiz-results")
+    print("  - POST /save-quiz-results")
+    print("="*60)
+    print("Server running at: http://localhost:8001")
+    print("API docs: http://localhost:8001/docs")
+    print("="*60)
+    
+    uvicorn.run(app, host="0.0.0.0", port=8001)
