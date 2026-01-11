@@ -24,7 +24,7 @@ export class QuizStorage {
       // Save current session
       sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(newResult));
       
-      console.log('✅ Quiz results saved:', {
+      console.log('Quiz results saved:', {
         score: quizData.score,
         total: quizData.total,
         misconceptions: quizData.misconceptions?.length || 0
@@ -32,7 +32,7 @@ export class QuizStorage {
       
       return true;
     } catch (error) {
-      console.error('❌ Failed to save quiz results:', error);
+      console.error('Failed to save quiz results:', error);
       return false;
     }
   }
@@ -114,6 +114,6 @@ export class QuizStorage {
   static clearAll() {
     localStorage.removeItem(this.STORAGE_KEY);
     sessionStorage.removeItem(this.SESSION_KEY);
-    console.log('🗑️ All quiz data cleared');
+    console.log('All quiz data cleared');
   }
 }
