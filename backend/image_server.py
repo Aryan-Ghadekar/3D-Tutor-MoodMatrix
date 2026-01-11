@@ -201,3 +201,16 @@ def root():
         "message": "Image Scraper API (FastAPI)",
         "timestamp": time.time()
     }
+
+# =========================================================
+# MAIN EXECUTION
+# =========================================================
+if __name__ == "__main__":
+    import uvicorn
+    print("\n" + "="*50)
+    print("STARTING IMAGE SERVER API")
+    print("="*50)
+    print(f"Server will run on: http://localhost:8002")
+    print("="*50 + "\n")
+    
+    uvicorn.run(app, host="127.0.0.1", port=8002)
