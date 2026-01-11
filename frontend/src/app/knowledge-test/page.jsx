@@ -31,15 +31,15 @@ export default function KnowledgeTestPage() {
     setGeneratingQuestions(true);
     try {
       // Call AI question generation API
-      const response = await fetch('/api/generate-ai-questions', {
+      const response = await fetch('http://localhost:8001/generate-diagnostic-mcq', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          lecturePlan: lecturePlan,
-          questionCount: 10,
-          questionTypes: ['conceptual', 'application', 'misconception', 'definition', 'analysis', 'practical', 'evaluation']
+          lecture_plan: lecturePlan,
+          num_questions: 10,
+          question_types: ['conceptual', 'application', 'misconception']
         })
       });
 
@@ -583,32 +583,39 @@ export default function KnowledgeTestPage() {
     
     // Skill-based recommendations
     analysis.weaknesses.forEach(weakness => {
+      // ✅ ADD THIS CHECK
+      if (typeof weakness !== 'string') {
+        console.warn('Invalid weakness type:', weakness);
+        return;
+      }
+      
       switch (weakness) {
         case 'conceptual_understanding':
-          recommendations.push('Focus on understanding fundamental principles and core concepts');
+          recommendations.push(`Focus on understanding fundamental principles and core concepts`);
           break;
         case 'practical_application':
-          recommendations.push('Practice applying concepts in real-world scenarios');
+          recommendations.push(`Practice applying concepts in real-world scenarios`);
           break;
         case 'misconception_identification':
-          recommendations.push('Review common misconceptions and clarify misunderstandings');
+          recommendations.push(`Review common misconceptions and clarify misunderstandings`);
           break;
         case 'definitional_knowledge':
-          recommendations.push('Study precise definitions and terminology');
+          recommendations.push(`Study precise definitions and terminology`);
           break;
         case 'analytical_thinking':
-          recommendations.push('Practice analyzing components and relationships');
+          recommendations.push(`Practice analyzing components and relationships`);
           break;
         case 'practical_reasoning':
-          recommendations.push('Work on practical problem-solving skills');
+          recommendations.push(`Work on practical problem-solving skills`);
           break;
         case 'evaluative_judgment':
-          recommendations.push('Develop criteria for evaluating effectiveness and quality');
+          recommendations.push(`Develop criteria for evaluating effectiveness and quality`);
           break;
         default:
-          recommendations.push(`Focus on improving ${weakness.replace('_', ' ')}`);
+          recommendations.push(`Focus on improving ${weakness.replace(/_/g, ' ')}`); // ✅ Also use /g flag
       }
     });
+
     
     // Topic-specific recommendations
     Object.entries(analysis.topicPerformance).forEach(([topicId, performance]) => {
@@ -683,13 +690,37 @@ export default function KnowledgeTestPage() {
       
       // Try to save to backend
       try {
-        await fetch('/api/save-test-results', {
+        const response = await fetch('http://localhost:8001/save-quiz-results', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(report)
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            session_id: testResults.sessionId || 'unknown',
+            lecture_id: testResults.lectureId || 'unknown',
+            score: testResults.score || 0,
+            correct: testResults.correctAnswers || 0,
+            total: testResults.totalQuestions || 0,
+            questions: testResults.questionDetails || [],
+            answers: Object.entries(testResults.answers || {}).map(([qId, answer]) => ({
+              questionId: qId,
+              selectedAnswer: answer
+            })),
+            misconceptions: testResults.knowledgeAnalysis?.misconceptions || [],
+            weak_topics: testResults.knowledgeAnalysis?.weaknesses || [],
+            recommendations: testResults.knowledgeAnalysis?.recommendations || []
+          })
         });
-      } catch (error) {
-        console.log('Backend save failed, using localStorage only');
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Quiz results saved:', result);
+        } else {
+          console.warn('⚠️ Backend save failed:', await response.text());
+        }
+      } catch (apiError) {
+        console.log('⚠️ API not available, using localStorage only:', apiError.message);
       }
       
     } catch (error) {
@@ -703,85 +734,137 @@ export default function KnowledgeTestPage() {
       const score = calculateScore();
       const knowledgeAnalysis = analyzeStudentKnowledge();
       
-      let testResults = {
-        lectureId,
-        sessionId,
-        topic: displayTopic,
-        score,
-        totalQuestions: testQuestions.length,
-        correctAnswers: Math.round((score / 100) * testQuestions.length),
-        answers,
-        knowledgeAnalysis,
-        completedAt: new Date().toISOString(),
-        questionDetails: testQuestions.map(q => ({
-          id: q.id,
-          type: q.type,
-          topicName: q.topicName,
-          question: q.question,
-          userAnswer: answers[q.id],
-          correctAnswer: q.options.find(opt => opt.isCorrect)?.id,
-          isCorrect: answers[q.id] === q.options.find(opt => opt.isCorrect)?.id,
-          explanation: q.explanation,
-          assessedSkill: q.assessedSkill,
-          difficulty: q.difficulty
-        }))
+      // Calculate correct answers
+      const correctAnswers = Math.round((score / 100) * testQuestions.length);
+      
+      // Format questions for backend
+      const formattedQuestions = testQuestions.map(q => ({
+        id: q.id.toString(),
+        question: q.question,
+        options: q.options.map(opt => ({
+          id: opt.id,
+          text: opt.text,
+          isCorrect: opt.isCorrect
+        })),
+        correctAnswer: q.options.find(opt => opt.isCorrect)?.id || 'A',
+        topicId: q.topicId || 'unknown',
+        conceptsTested: [q.topicName || 'Unknown Topic']
+      }));
+      
+      // Format answers for backend
+      const formattedAnswers = Object.entries(answers).map(([questionId, selectedAnswer]) => {
+        const question = testQuestions.find(q => q.id.toString() === questionId);
+        const selectedOption = question?.options.find(opt => opt.id === selectedAnswer);
+        return {
+          questionId: questionId.toString(),
+          selectedAnswer: selectedAnswer,
+          isCorrect: selectedOption?.isCorrect || false
+        };
+      });
+      
+      // Format misconceptions
+      const formattedMisconceptions = knowledgeAnalysis.misconceptions.map(m => ({
+        topic: m.topic || 'Unknown',
+        misconception: m.misconception || m.explanation || 'No explanation',
+        userAnswer: m.userAnswer || 'Not provided',
+        correctAnswer: m.correctAnswer || 'Unknown'
+      }));
+      
+      // Prepare the data in the EXACT format the backend expects
+      const saveData = {
+        session_id: sessionId || `session_${Date.now()}`,
+        lecture_id: lectureId || `lecture_${Date.now()}`,
+        score: parseFloat(score.toFixed(2)),
+        correct: correctAnswers,
+        total: testQuestions.length,
+        questions: formattedQuestions,
+        answers: formattedAnswers,
+        misconceptions: formattedMisconceptions,
+        weak_topics: knowledgeAnalysis.weaknesses || [],
+        recommendations: knowledgeAnalysis.recommendations || []
       };
       
-      if (lecturePlan) {
-        // Add lecture-specific data
-        testResults.lecturePlan = lecturePlan;
-        testResults.sourceType = lecturePlan.source_type || 'unknown';
-        
-        // Update session data
-        if (typeof window !== 'undefined') {
-          const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
-          sessionData.knowledgeTestResults = testResults;
-          sessionData.knowledgeTestCompleted = true;
-          sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
-          localStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
+      console.log('📤 Sending to backend:', {
+        endpoint: 'http://localhost:8001/save-quiz-results',
+        dataStructure: {
+          session_id: saveData.session_id,
+          lecture_id: saveData.lecture_id,
+          score: saveData.score,
+          questionsCount: saveData.questions.length,
+          answersCount: saveData.answers.length
         }
-        
-        // Save detailed results to file
-        await saveTestResultsToFile(testResults);
-        
-        // Send to backend for storage
-        try {
-          await fetch('/api/save-knowledge-test', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(testResults)
-          });
-        } catch (apiError) {
-          console.log('API not available, using localStorage only');
-        }
-        
-        // Navigate to STUDY SESSION
-        const params = new URLSearchParams();
-        if (lectureId) params.append('lectureId', lectureId);
-        if (sessionId) params.append('sessionId', sessionId);
-        params.append('knowledgeTestCompleted', 'true');
-        router.push(`/study-session?${params.toString()}`);
-        
-      } else {
-        // Simple topic-based test
-        testResults.sourceType = 'topic';
-        
-        // Save to localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('lastTestResults', JSON.stringify(testResults));
-        }
-        
-        // Save detailed results to file
-        await saveTestResultsToFile(testResults);
-        
-        // Navigate to STUDY SESSION
-        router.push('/study-session');
+      });
+      
+      // Save to localStorage first (backup)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('lastTestResults', JSON.stringify(saveData));
+        console.log('✅ Saved to localStorage');
       }
       
+      // Try to save to backend
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        const response = await fetch('http://localhost:8001/save-quiz-results', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(saveData),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Backend error:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText
+          });
+          throw new Error(`Backend returned ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Successfully saved to backend:', result);
+        
+      } catch (backendError) {
+        if (backendError.name === 'AbortError') {
+          console.warn('⚠️ Request timeout - backend might be slow');
+        } else {
+          console.warn('⚠️ Backend save failed (using localStorage only):', backendError.message);
+        }
+        // Don't throw - localStorage save is enough
+      }
+      
+      // Update session storage
+      if (typeof window !== 'undefined' && lecturePlan) {
+        const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
+        sessionData.knowledgeTestResults = saveData;
+        sessionData.knowledgeTestCompleted = true;
+        sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
+      }
+      
+      // Navigate to study session
+      const params = new URLSearchParams();
+      if (lectureId) params.append('lectureId', lectureId);
+      if (sessionId) params.append('sessionId', sessionId);
+      params.append('knowledgeTestCompleted', 'true');
+      
+      router.push(`/study-session?${params.toString()}`);
+      
     } catch (error) {
-      console.error('Error saving test:', error);
-      alert('Error saving test results. Please try again.');
-      router.push('/study-session');
+      console.error('❌ Error in handleSubmit:', error);
+      alert('Results saved to browser storage. You can continue to study session.');
+      
+      // Still navigate even if save failed
+      const params = new URLSearchParams();
+      if (lectureId) params.append('lectureId', lectureId);
+      if (sessionId) params.append('sessionId', sessionId);
+      router.push(`/study-session?${params.toString()}`);
     } finally {
       setLoading(false);
     }

@@ -8,12 +8,12 @@ import { NextResponse } from 'next/server';
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 
 export async function POST(request) {
-  console.log('🚀 === AI SLIDE GENERATION REQUEST ===');
+  console.log('=== AI SLIDE GENERATION REQUEST ===');
   
   try {
     const data = await request.json();
     
-    console.log('📥 Request Details:', {
+    console.log('Request Details:', {
       actionType: data.actionType,
       sessionId: data.sessionId?.substring(0, 8) + '...',
       topicIndex: data.currentTopicIndex,
@@ -31,7 +31,7 @@ export async function POST(request) {
     }
     
     // Call AI backend
-    console.log('🤖 Calling AI backend...');
+    console.log('Calling AI backend...');
     
     const backendResponse = await fetch(`${BACKEND_URL}/generate-dynamic-slide`, {
       method: 'POST',
@@ -53,7 +53,7 @@ export async function POST(request) {
     
     if (!backendResponse.ok) {
       const errorText = await backendResponse.text();
-      console.error('❌ Backend error:', backendResponse.status, errorText);
+      console.error('Backend error:', backendResponse.status, errorText);
       throw new Error(`Backend error: ${backendResponse.status} - ${errorText.substring(0, 100)}`);
     }
     
@@ -63,7 +63,7 @@ export async function POST(request) {
       throw new Error(result.message || 'AI generation failed');
     }
     
-    console.log('✅ AI Slide Generated:', {
+    console.log('AI Slide Generated:', {
       title: result.slide?.title,
       type: result.slide?.type,
       hasImages: result.slide?.images?.length > 0,
@@ -83,7 +83,7 @@ export async function POST(request) {
     });
     
   } catch (error) {
-    console.error('❌ CRITICAL ERROR in slide generation:', error);
+    console.error('CRITICAL ERROR in slide generation:', error);
     
     // Create emergency fallback slide (NON-AI)
     const emergencySlide = {
