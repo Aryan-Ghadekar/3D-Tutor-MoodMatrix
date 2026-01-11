@@ -583,7 +583,6 @@ export default function KnowledgeTestPage() {
     
     // Skill-based recommendations
     analysis.weaknesses.forEach(weakness => {
-      // ✅ ADD THIS CHECK
       if (typeof weakness !== 'string') {
         console.warn('Invalid weakness type:', weakness);
         return;
@@ -612,7 +611,7 @@ export default function KnowledgeTestPage() {
           recommendations.push(`Develop criteria for evaluating effectiveness and quality`);
           break;
         default:
-          recommendations.push(`Focus on improving ${weakness.replace(/_/g, ' ')}`); // ✅ Also use /g flag
+          recommendations.push(`Focus on improving ${weakness.replace(/_/g, ' ')}`); 
       }
     });
 
@@ -715,12 +714,12 @@ export default function KnowledgeTestPage() {
         
         if (response.ok) {
           const result = await response.json();
-          console.log('✅ Quiz results saved:', result);
+          console.log('Quiz results saved:', result);
         } else {
-          console.warn('⚠️ Backend save failed:', await response.text());
+          console.warn('Backend save failed:', await response.text());
         }
       } catch (apiError) {
-        console.log('⚠️ API not available, using localStorage only:', apiError.message);
+        console.log('API not available, using localStorage only:', apiError.message);
       }
       
     } catch (error) {
@@ -784,7 +783,7 @@ export default function KnowledgeTestPage() {
         recommendations: knowledgeAnalysis.recommendations || []
       };
       
-      console.log('📤 Sending to backend:', {
+      console.log('Sending to backend:', {
         endpoint: 'http://localhost:8001/save-quiz-results',
         dataStructure: {
           session_id: saveData.session_id,
@@ -798,7 +797,7 @@ export default function KnowledgeTestPage() {
       // Save to localStorage first (backup)
       if (typeof window !== 'undefined') {
         localStorage.setItem('lastTestResults', JSON.stringify(saveData));
-        console.log('✅ Saved to localStorage');
+        console.log('Saved to localStorage');
       }
       
       // Try to save to backend
@@ -820,7 +819,7 @@ export default function KnowledgeTestPage() {
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ Backend error:', {
+          console.error('Backend error:', {
             status: response.status,
             statusText: response.statusText,
             error: errorText
@@ -829,13 +828,13 @@ export default function KnowledgeTestPage() {
         }
         
         const result = await response.json();
-        console.log('✅ Successfully saved to backend:', result);
+        console.log('Successfully saved to backend:', result);
         
       } catch (backendError) {
         if (backendError.name === 'AbortError') {
-          console.warn('⚠️ Request timeout - backend might be slow');
+          console.warn('Request timeout - backend might be slow');
         } else {
-          console.warn('⚠️ Backend save failed (using localStorage only):', backendError.message);
+          console.warn('Backend save failed (using localStorage only):', backendError.message);
         }
         // Don't throw - localStorage save is enough
       }
@@ -857,7 +856,7 @@ export default function KnowledgeTestPage() {
       router.push(`/study-session?${params.toString()}`);
       
     } catch (error) {
-      console.error('❌ Error in handleSubmit:', error);
+      console.error('Error in handleSubmit:', error);
       alert('Results saved to browser storage. You can continue to study session.');
       
       // Still navigate even if save failed
