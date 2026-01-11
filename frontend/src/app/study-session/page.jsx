@@ -104,14 +104,14 @@ function StudySessionContent() {
   
   useEffect(() => {
     const initializeIntelligentSession = async () => {
-      console.log('🚀 Starting intelligent study session initialization...');
+      console.log('Starting intelligent study session initialization...');
       studyStartTimeRef.current = Date.now();
       
       try {
         // 1. Get or create session ID
         const newSessionId = await getOrCreateSessionId();
         setSessionId(newSessionId);
-        console.log('📝 Session ID:', newSessionId);
+        console.log('Session ID:', newSessionId);
         
         // 2. Load student goal and preferences
         const { goal, level } = await loadStudentPreferences(searchParams);
@@ -122,19 +122,19 @@ function StudySessionContent() {
         await initializeLearningServices(newSessionId, goal);
         
         // 4. Initialize Intelligence Engine with REAL data
-        const engine = await initializeIntelligenceEngine(newSessionId, goal, level);  // ✅ GET ENGINE
+        const engine = await initializeIntelligenceEngine(newSessionId, goal, level);  // GET ENGINE
         
         // 5. Load or generate first slide
-        await loadOrGenerateFirstSlide(engine);  // ✅ PASS ENGINE
+        await loadOrGenerateFirstSlide(engine);  // PASS ENGINE
         
         // 6. Start tracking
         startProgressTracking();
         
         setLoading(false);
-        console.log('✅ Intelligent study session initialized successfully');
+        console.log('Intelligent study session initialized successfully');
         
       } catch (err) {
-        console.error('❌ Session initialization failed:', err);
+        console.error('Session initialization failed:', err);
         setError(`Failed to initialize: ${err.message}`);
         createEmergencyLearningSession();
         setLoading(false);
@@ -207,12 +207,12 @@ function StudySessionContent() {
       level = urlLevel || 'intermediate';
     }
     
-    console.log('🎯 Student preferences:', { goal, level });
+    console.log('Student preferences:', { goal, level });
     return { goal, level };
   };
 
   const initializeLearningServices = async (sessionId, goal) => {
-    console.log('🔧 Initializing learning services...');
+    console.log('Initializing learning services...');
     
     // Initialize Misconception Tracker
     const tracker = new MisconceptionTracker(sessionId);
@@ -233,7 +233,7 @@ function StudySessionContent() {
   };
 
   const initializeIntelligenceEngine = async (sessionId, goal, level) => {
-    console.log('🧠 Initializing Intelligence Engine v3...');
+    console.log('Initializing Intelligence Engine v3...');
     setLoadingMessage('Loading intelligent learning engine...');
     
     try {
@@ -248,7 +248,7 @@ function StudySessionContent() {
       setLecturePlan(engine.lecturePlan);
       setTotalTopics(engine.lecturePlan?.impTopics?.length || 0);
       
-      console.log('✅ Intelligence Engine initialized:', {
+      console.log('Intelligence Engine initialized:', {
         topics: engine.lecturePlan?.impTopics?.length,
         enhancedTopics: engine.enhancedTopics?.length,
         studentGoal: engine.studentGoal
@@ -257,7 +257,7 @@ function StudySessionContent() {
       return engine;
       
     } catch (error) {
-      console.error('❌ Intelligence Engine failed:', error);
+      console.error('Intelligence Engine failed:', error);
       throw new Error(`Learning system error: ${error.message}`);
     }
   };
@@ -270,7 +270,7 @@ function StudySessionContent() {
     const activeEngine = engine || intelligenceEngine;
     const activeSessionId = sessionId;
     
-    // ✅ More lenient validation - only require engine
+    // More lenient validation - only require engine
     if (!activeEngine) {
       console.error('Missing engine:', { 
         engine: !!activeEngine, 
@@ -279,7 +279,7 @@ function StudySessionContent() {
       throw new Error('Learning system not initialized - no intelligence engine');
     }
     
-    // ✅ Ensure we always have a session ID (CREATE THIS EARLY)
+    // Ensure we always have a session ID (CREATE THIS EARLY)
     const finalSessionId = activeSessionId || sessionId || `temp_${Date.now()}`;
     
     setLoading(true);
@@ -295,22 +295,21 @@ function StudySessionContent() {
       // Get knowledge state from quiz storage
       const knowledgeState = QuizStorage.getStudentProfile();
       
-      console.log('🤖 Requesting AI slide generation:', {
+      console.log('Requesting AI slide generation:', {
         actionType,
         topicIndex: currentTopicIndex,
         topicTitle: currentTopic.title,
         goal: studentGoal,
         knowledgeLevel: knowledgeState.knowledgeLevel,
         hasQuestion: !!userQuestion,
-        sessionId: finalSessionId // ✅ Log the actual session ID being used
+        sessionId: finalSessionId // Log the actual session ID being used
       });
       
-      // ✅ FIXED: Call AI API with guaranteed finalSessionId
       const response = await fetch('/api/generate-slide', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sessionId: finalSessionId, // ✅ USE finalSessionId here
+          sessionId: finalSessionId, 
           lecturePlan: lecturePlan || activeEngine.lecturePlan,
           goal: studentGoal,
           knowledgeState: knowledgeState,
@@ -323,10 +322,10 @@ function StudySessionContent() {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('❌ API Error:', {
+        console.error('API Error:', {
           status: response.status,
           error: errorData.error || 'Unknown error',
-          sessionId: finalSessionId // ✅ Log finalSessionId in errors too
+          sessionId: finalSessionId // Log finalSessionId in errors too
         });
         throw new Error(errorData.error || `AI generation failed: ${response.status}`);
       }
@@ -341,9 +340,9 @@ function StudySessionContent() {
       
       // Show warning if fallback
       if (result.isFallback) {
-        console.warn('⚠️ Using fallback slide - AI temporarily unavailable');
+        console.warn('Using fallback slide - AI temporarily unavailable');
       } else {
-        console.log('✅ AI slide generated:', {
+        console.log('AI slide generated:', {
           title: newSlide.title,
           aiModel: newSlide.metadata?.aiModel,
           hasImages: newSlide.images?.length > 0
@@ -362,13 +361,13 @@ function StudySessionContent() {
         topicTitle: currentTopic.title,
         aiGenerated: !result.isFallback,
         userQuestion: userQuestion,
-        sessionId: finalSessionId // ✅ Use finalSessionId in tracking
+        sessionId: finalSessionId // Use finalSessionId in tracking
       });
       
       return newSlide;
       
     } catch (error) {
-      console.error('❌ AI slide generation failed:', error);
+      console.error('AI slide generation failed:', error);
       setError(`Failed to generate content: ${error.message}`);
       throw error;
     } finally {
@@ -420,7 +419,7 @@ function StudySessionContent() {
   //     setCurrentSlideIndex(prev => prev + 1);
       
   //   } catch (error) {
-  //     console.error('❌ Next slide failed:', error);
+  //     console.error('Next slide failed:', error);
   //     setError(`Failed to load next slide: ${error.message}`);
   //   }
   // };
@@ -471,14 +470,14 @@ function StudySessionContent() {
       setQuizScore(null);
       setQuizCompleted(false);
       
-      console.log('✅ Quiz loaded:', {
+      console.log('Quiz loaded:', {
         topic: currentTopic.title,
         difficulty,
         questions: quizResult.quiz.questions.length
       });
       
     } catch (err) {
-      console.error('❌ Quiz generation error:', err);
+      console.error('Quiz generation error:', err);
       setError(`Failed to load quiz: ${err.message}`);
     } finally {
       setLoading(false);
@@ -582,9 +581,9 @@ function StudySessionContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quizResults)
       });
-      console.log('✅ Quiz results saved to backend');
+      console.log('Quiz results saved to backend');
     } catch (err) {
-      console.warn('⚠️ Backend save failed (local storage used):', err);
+      console.warn('Backend save failed (local storage used):', err);
     }
 
     // Generate AI analysis slide if there were mistakes
@@ -605,15 +604,6 @@ function StudySessionContent() {
     });
   };
 
-
-  
-  
-
-
-
-
-
-
   
   const handleSessionComplete = () => {
     setActiveView('completion');
@@ -629,7 +619,7 @@ function StudySessionContent() {
       });
     }
     
-    console.log('🎓 Study session completed');
+    console.log('Study session completed');
   };
 
   const loadOrGenerateFirstSlide = async (engine) => {
@@ -649,7 +639,7 @@ function StudySessionContent() {
       }
       
       // Generate first slide using the new dynamic system - PASS ENGINE
-      const firstSlide = await generateDynamicSlide('concept_explanation', '', activeEngine);  // ✅ PASS ENGINE
+      const firstSlide = await generateDynamicSlide('concept_explanation', '', activeEngine);  // PASS ENGINE
       
       if (!firstSlide) {
         throw new Error('Failed to generate first slide');
@@ -664,10 +654,10 @@ function StudySessionContent() {
       // Start topic timer
       currentTopicStartTimeRef.current = Date.now();
       
-      console.log('✅ First slide loaded:', firstSlide.title);
+      console.log('First slide loaded:', firstSlide.title);
       
     } catch (error) {
-      console.error('❌ Failed to load first slide:', error);
+      console.error('Failed to load first slide:', error);
       throw error;
     }
   };
@@ -697,106 +687,7 @@ function StudySessionContent() {
     interactionCountRef.current += 1;
     lastInteractionTimeRef.current = Date.now();
   };
-  
-  // const updateMisconceptionData = (tracker) => {
-  //   if (!tracker) return;
     
-  //   const misconceptionsData = tracker.getMisconceptions();
-  //   setMisconceptions(misconceptionsData);
-    
-  //   // Update cognitive load based on misconceptions
-  //   if (misconceptionsData.length > 3) {
-  //     setCognitiveLoad('high');
-  //   } else if (misconceptionsData.length > 1) {
-  //     setCognitiveLoad('medium');
-  //   } else {
-  //     setCognitiveLoad('low');
-  //   }
-  // };
-  
-  // const updateCognitiveLoad = () => {
-  //   // Calculate cognitive load based on various factors
-  //   const factors = {
-  //     timeSpent: Date.now() - currentTopicStartTimeRef.current,
-  //     interactionCount: interactionCountRef.current,
-  //     misconceptionCount: misconceptions.length,
-  //     quizPerformance: quizHistory.length > 0 
-  //       ? quizHistory.filter(q => q.isCorrect).length / quizHistory.length
-  //       : 1.0
-  //   };
-    
-  //   let load = 'medium';
-    
-  //   if (factors.timeSpent > 10 * 60 * 1000 || factors.misconceptionCount > 3) {
-  //     load = 'high';
-  //   } else if (factors.timeSpent < 2 * 60 * 1000 && factors.quizPerformance > 0.8) {
-  //     load = 'low';
-  //   }
-    
-  //   setCognitiveLoad(load);
-  // };
-  
-  // const startSlideTimer = () => {
-  //   if (slideTimerRef.current) {
-  //     clearTimeout(slideTimerRef.current);
-  //   }
-    
-  //   // Auto-advance after appropriate time based on cognitive load
-  //   const timeLimit = cognitiveLoad === 'high' ? 120000 : // 2 minutes
-  //                   cognitiveLoad === 'medium' ? 180000 : // 3 minutes
-  //                   240000; // 4 minutes
-    
-  //   slideTimerRef.current = setTimeout(() => {
-  //     // Show suggestion to move on
-  //     setShowHelpOffer(true);
-  //   }, timeLimit);
-  // };
-  
-  // const saveSessionProgress = () => {
-  //   if (!sessionStorage || !sessionId) return;
-    
-  //   const progressData = {
-  //     currentTopicIndex,
-  //     topicsCompleted: Array.from(topicsCompleted),
-  //     slideHistory,
-  //     quizHistory,
-  //     misconceptions,
-  //     cognitiveLoad,
-  //     totalTimeSpent: Date.now() - studyStartTimeRef.current,
-  //     lastActivity: new Date().toISOString()
-  //   };
-    
-  //   sessionStorage.updateSession(sessionId, progressData);
-  // };
-  
-  // EMERGENCY AND FALLBACK FUNCTIONS
-  // =========================================================
-  
-  // const handleDownloadPPT = () => {
-  //   // Create PPT from slides
-  //   const pptData = {
-  //     sessionId: sessionId,
-  //     slides: slides,
-  //     metadata: {
-  //       generatedAt: new Date().toISOString(),
-  //       studentGoal: studentGoal,
-  //       topicsCompleted: Array.from(topicsCompleted),
-  //       quizHistory: quizHistory
-  //     }
-  //   };
-    
-  //   // Download as JSON for now (could be enhanced to actual PPT)
-  //   const blob = new Blob([JSON.stringify(pptData, null, 2)], { type: 'application/json' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = `learning-session-${sessionId}.json`;
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // };
-  
   const startProgressTracking = () => {
     // Start slide timer
     startSlideTimer();
@@ -808,185 +699,6 @@ function StudySessionContent() {
     
     return () => clearInterval(loadInterval);
   };
-
-  // =========================================================
-  // RENDER FUNCTIONS FOR UI COMPONENTS
-  // =========================================================
-  
-  // const renderQuizContent = () => {
-  //   if (!quizStarted) {
-  //     return (
-  //       <div className="flex-1 flex items-center justify-center p-6">
-  //         <div className="text-center">
-  //           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-  //             <FileQuestion className="w-8 h-8 text-white" />
-  //           </div>
-  //           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-  //             Test Your Understanding
-  //           </h3>
-  //           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-  //             Take a quick quiz to check your knowledge
-  //           </p>
-  //           <button
-  //             onClick={handleTakeQuiz}
-  //             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 font-semibold"
-  //           >
-  //             Start Quiz
-  //           </button>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-    
-  //   if (quizCompleted) {
-  //     return (
-  //       <div className="flex-1 flex items-center justify-center p-6">
-  //         <div className="text-center">
-  //           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-  //             <Trophy className="w-8 h-8 text-white" />
-  //           </div>
-  //           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-  //             Quiz Completed!
-  //           </h3>
-  //           <p className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-  //             {quizScore}%
-  //           </p>
-  //           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-  //             {quizHistory.filter(q => q.isCorrect).length} out of {quizHistory.length} correct
-  //           </p>
-  //           <button
-  //             onClick={() => {
-  //               setQuizStarted(false);
-  //               setQuizCompleted(false);
-  //               setQuizData(null);
-  //               setQuizHistory([]);
-  //               setActiveView(null);
-  //             }}
-  //             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:opacity-90 font-semibold"
-  //           >
-  //             Close Quiz
-  //           </button>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-    
-  //   if (!quizData || currentQuestionIndex >= quizData.questions.length) {
-  //     return (
-  //       <div className="flex-1 flex items-center justify-center p-6">
-  //         <div className="text-center">
-  //           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-  //             <AlertCircle className="w-8 h-8 text-gray-500" />
-  //           </div>
-  //           <p className="text-gray-600 dark:text-gray-400">
-  //             No quiz questions available
-  //           </p>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-    
-  //   const currentQuestion = quizData.questions[currentQuestionIndex];
-    
-  //   return (
-  //     <div className="flex-1 flex flex-col min-h-0">
-  //       <div className="flex-1 p-6 overflow-y-auto">
-  //         {/* Progress Bar */}
-  //         <div className="mb-6">
-  //           <div className="flex items-center justify-between mb-2">
-  //             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-  //               Question {currentQuestionIndex + 1} of {quizData.questions.length}
-  //             </span>
-  //             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-  //               {Math.round(((currentQuestionIndex + 1) / quizData.questions.length) * 100)}%
-  //             </span>
-  //           </div>
-  //           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-  //             <div 
-  //               className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-  //               style={{ width: `${((currentQuestionIndex + 1) / quizData.questions.length) * 100}%` }}
-  //             />
-  //           </div>
-  //         </div>
-          
-  //         {/* Question */}
-  //         <div className="mb-6">
-  //           <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-  //             {currentQuestion.question}
-  //           </h4>
-            
-  //           {/* Options */}
-  //           <div className="space-y-3">
-  //             {currentQuestion.options.map((option, index) => {
-  //               const isSelected = selectedAnswer === index;
-  //               const isCorrect = index === currentQuestion.correctAnswer;
-  //               const showResult = selectedAnswer !== null;
-                
-  //               return (
-  //                 <button
-  //                   key={index}
-  //                   onClick={() => handleQuizAnswer(index)}
-  //                   disabled={selectedAnswer !== null}
-  //                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-  //                     showResult && isCorrect
-  //                       ? 'border-green-500 bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200'
-  //                       : showResult && isSelected && !isCorrect
-  //                       ? 'border-red-500 bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-200'
-  //                       : isSelected
-  //                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-  //                       : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
-  //                   } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-  //                 >
-  //                   <div className="flex items-center gap-3">
-  //                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-  //                       showResult && isCorrect
-  //                         ? 'border-green-500 bg-green-500'
-  //                         : showResult && isSelected && !isCorrect
-  //                         ? 'border-red-500 bg-red-500'
-  //                         : isSelected
-  //                         ? 'border-blue-500 bg-blue-500'
-  //                         : 'border-gray-400 dark:border-gray-600'
-  //                     }`}>
-  //                       {showResult && isCorrect && <CheckCircle className="w-4 h-4 text-white" />}
-  //                       {showResult && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-white" />}
-  //                       {!showResult && isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
-  //                     </div>
-  //                     <span className="flex-1">{option}</span>
-  //                   </div>
-  //                 </button>
-  //               );
-  //             })}
-  //           </div>
-  //         </div>
-          
-  //         {/* Explanation */}
-  //         {selectedAnswer !== null && currentQuestion.explanation && (
-  //           <div className={`p-4 rounded-lg border-2 ${
-  //             selectedAnswer === currentQuestion.correctAnswer
-  //               ? 'border-green-200 bg-green-50 dark:bg-green-900 dark:border-green-700'
-  //               : 'border-amber-200 bg-amber-50 dark:bg-amber-900 dark:border-amber-700'
-  //           }`}>
-  //             <div className="flex items-start gap-2">
-  //               {selectedAnswer === currentQuestion.correctAnswer ? (
-  //                 <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-  //               ) : (
-  //                 <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-  //               )}
-  //               <div>
-  //                 <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-  //                   {selectedAnswer === currentQuestion.correctAnswer ? 'Correct!' : 'Explanation'}
-  //                 </p>
-  //                 <p className="text-sm text-gray-700 dark:text-gray-300">
-  //                   {currentQuestion.explanation}
-  //                 </p>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         )}
-  //       </div>
-  //     </div>
-  //   );
-  // };
   
   const renderAskQuestionsContent = () => {
     return (
@@ -1044,73 +756,6 @@ function StudySessionContent() {
     );
   };
   
-  // const renderAdaptivePanel = () => {
-  //   if (showHelpOffer) {
-  //     return (
-  //       <div className={`p-4 rounded-lg border-2 mb-4 ${
-  //         theme === 'light'
-  //           ? 'bg-blue-50 border-blue-300'
-  //           : 'bg-blue-900 border-blue-700'
-  //       }`}>
-  //         <div className="flex items-start gap-3">
-  //           <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-  //           <div className="flex-1">
-  //             <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-  //               Ready to continue?
-  //             </p>
-  //             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-  //               You've been on this slide for a while. Would you like to move on or get more help?
-  //             </p>
-  //             <div className="flex gap-2">
-  //               <button
-  //                 onClick={() => setShowHelpOffer(false)}
-  //                 className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition"
-  //               >
-  //                 Stay Here
-  //               </button>
-  //               <button
-  //                 onClick={handleNextSlide}
-  //                 className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition"
-  //               >
-  //                 Next Slide
-  //               </button>
-  //               <button
-  //                 onClick={handleExplainMore}
-  //                 className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600 transition"
-  //               >
-  //                 Explain More
-  //               </button>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-    
-  //   if (misconceptions.length > 0) {
-  //     return (
-  //       <div className={`p-4 rounded-lg border-2 mb-4 ${
-  //         theme === 'light'
-  //           ? 'bg-red-50 border-red-300'
-  //           : 'bg-red-900 border-red-700'
-  //       }`}>
-  //         <div className="flex items-start gap-3">
-  //           <AlertOctagon className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-  //           <div className="flex-1">
-  //             <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-  //               Learning Gaps Detected
-  //             </p>
-  //             <p className="text-sm text-gray-700 dark:text-gray-300">
-  //               {misconceptions.length} misconception{misconceptions.length > 1 ? 's' : ''} identified. Consider reviewing these topics.
-  //             </p>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-    
-  //   return null;
-  // };
   
   const updateMisconceptionData = (tracker) => {
     if (!tracker) return;
@@ -1206,7 +851,7 @@ function StudySessionContent() {
   
   const generateNewSlide = async (topicIndex, actionType = null, context = '') => {
     if (!intelligenceEngine) {
-      console.error('❌ Intelligence engine not available');
+      console.error('Intelligence engine not available');
       return null;
     }
     
@@ -1278,7 +923,7 @@ function StudySessionContent() {
       // Restart slide timer
       startSlideTimer();
       
-      console.log(`✅ Slide generated: ${slide.title}`, {
+      console.log(`Slide generated: ${slide.title}`, {
         actionType,
         topicIndex,
         totalSlides: newSlides.length
@@ -1287,7 +932,7 @@ function StudySessionContent() {
       return slide;
       
     } catch (err) {
-      console.error('❌ Error generating slide:', err);
+      console.error('Error generating slide:', err);
       setError(`Failed to generate content: ${err.message}`);
       
       // Create emergency slide
@@ -1378,7 +1023,7 @@ function StudySessionContent() {
       setCurrentTopicIndex(topicIndex);
       currentTopicStartTimeRef.current = Date.now();
     } catch (error) {
-      console.error('❌ Failed to jump to topic:', error);
+      console.error('Failed to jump to topic:', error);
       setError(`Failed to load topic: ${error.message}`);
     } finally {
       setLoading(false);
