@@ -37,7 +37,7 @@ export default function LoginPage() {
     setTimeout(() => {
       console.log("Login attempt:", { ...formData, userType });
       setLoading(false);
-      router.push("/"); 
+      router.push("/onboarding/goal"); 
     }, 1500);
   };
 
