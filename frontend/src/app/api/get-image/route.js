@@ -1,3 +1,5 @@
+// src/app/api/get-image/route.js - COMPLETE NEW FILE
+
 import { NextResponse } from 'next/server';
 import { EducationalImageGenerator } from '@/lib/image-generator';
 
