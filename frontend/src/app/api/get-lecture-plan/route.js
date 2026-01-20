@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 const FASTAPI_URL = BACKEND_URL;
 
 // Force correct port - override any caching
-const FALLBACK_URLS = ["http://localhost:8000", "http://localhost:8001"];
+const FALLBACK_URLS = ["http://localhost:8001", "http://localhost:8001"];
 
 export async function POST(request) {
   try {
@@ -173,7 +173,7 @@ export async function POST(request) {
         return NextResponse.json(
           { 
             error: 'Backend service is not running',
-            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8000'
+            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8001'
           },
           { status: 503 }
         );
