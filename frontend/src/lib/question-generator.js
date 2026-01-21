@@ -8,7 +8,7 @@ const LECTURE_PLAN_PATH = path.join(process.cwd(), 'frontend', 'src', 'app', 'li
 
 export async function generateAssessmentQuestions(sessionId, studentGoal = null) {
   try {
-    console.log(`🎯 Generating CONTENT-BASED diagnostic MCQs for session: ${sessionId}`);
+    console.log(`Generating CONTENT-BASED diagnostic MCQs for session: ${sessionId}`);
     
     // 1. Read ACTUAL content from mock_lecture_plan.json
     const lecturePlans = readLecturePlansFromFile();
@@ -25,14 +25,14 @@ export async function generateAssessmentQuestions(sessionId, studentGoal = null)
     // Use latest if not found
     if (!targetPlan && lecturePlans.length > 0) {
       targetPlan = lecturePlans[0];
-      console.log(`📋 Using latest lecture plan: "${targetPlan.topic}"`);
+      console.log(`Using latest lecture plan: "${targetPlan.topic}"`);
     }
     
     if (!targetPlan) {
       throw new Error('Could not find lecture plan');
     }
     
-    console.log(`📚 Lecture: "${targetPlan.topic}" with ${targetPlan.impTopics?.length || 0} topics`);
+    console.log(`Lecture: "${targetPlan.topic}" with ${targetPlan.impTopics?.length || 0} topics`);
     
     // 3. Extract ALL content from the lecture plan
     const lectureContent = extractCompleteLectureContent(targetPlan);
@@ -43,7 +43,7 @@ export async function generateAssessmentQuestions(sessionId, studentGoal = null)
     // 5. Ensure we have 10-12 quality questions
     const finalQuestions = ensureQuestionCount(diagnosticQuestions, lectureContent, 10);
     
-    console.log(`✅ Generated ${finalQuestions.length} diagnostic MCQs from ACTUAL lecture content`);
+    console.log(`Generated ${finalQuestions.length} diagnostic MCQs from ACTUAL lecture content`);
     
     return {
       success: true,
@@ -64,7 +64,7 @@ export async function generateAssessmentQuestions(sessionId, studentGoal = null)
     };
     
   } catch (error) {
-    console.error("❌ Diagnostic MCQ generation error:", error.message);
+    console.error("Diagnostic MCQ generation error:", error.message);
     
     // Fallback
     const fallbackQuestions = generateContentBasedFallbackQuestions(sessionId, 10);
@@ -90,7 +90,7 @@ export async function generateAssessmentQuestions(sessionId, studentGoal = null)
 function readLecturePlansFromFile() {
   try {
     if (!fs.existsSync(LECTURE_PLAN_PATH)) {
-      console.warn(`⚠️ File not found: ${LECTURE_PLAN_PATH}`);
+      console.warn(`File not found: ${LECTURE_PLAN_PATH}`);
       return null;
     }
     
@@ -98,14 +98,14 @@ function readLecturePlansFromFile() {
     const lecturePlans = JSON.parse(fileContent);
     
     if (!Array.isArray(lecturePlans)) {
-      console.warn('⚠️ Lecture plan file does not contain an array');
+      console.warn('Lecture plan file does not contain an array');
       return null;
     }
     
-    console.log(`📁 Loaded ${lecturePlans.length} lecture plans`);
+    console.log(`Loaded ${lecturePlans.length} lecture plans`);
     return lecturePlans;
   } catch (error) {
-    console.error('❌ Error reading lecture plan file:', error.message);
+    console.error('Error reading lecture plan file:', error.message);
     return null;
   }
 }

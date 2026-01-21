@@ -112,7 +112,7 @@ export default function LectureInputPage() {
             }
 
             const lecturePlan = await response.json();
-            console.log('✅ Lecture plan received:', lecturePlan);
+            console.log('Lecture plan received:', lecturePlan);
             
             // Validate response structure (backend returns direct plan object)
             if (!lecturePlan || !lecturePlan.impTopics || lecturePlan.impTopics.length === 0) {
@@ -135,7 +135,7 @@ export default function LectureInputPage() {
                 sessionId: sessionId
             }));
             
-            console.log('✅ Data saved to localStorage. Navigating...');
+            console.log('Data saved to localStorage. Navigating...');
             
             // Navigate to knowledge test
             setTimeout(() => {
@@ -143,7 +143,7 @@ export default function LectureInputPage() {
             }, 500);
             
         } catch (error) {
-            console.error('❌ Processing failed:', error);
+            console.error('Processing failed:', error);
             alert(`Error: ${error.message}\n\nPlease check:\n1. Backend is running on correct port\n2. Files are valid formats\n3. YouTube link is correct\n\nCheck console for details.`);
             setIsUploading(false);
         }
@@ -171,12 +171,12 @@ export default function LectureInputPage() {
             const isValidExtension = file.name.toLowerCase().match(/\.(pdf|ppt|pptx|mp3|wav|m4a|mp4|ogg|webm|png|jpg|jpeg|gif|webp)$/i);
             
             if (!isValidType && !isValidExtension) {
-                alert(`❌ Unsupported file: ${file.name}\nType: ${file.type}\n\nSupported: PDF, PPT, PPTX, MP3, WAV, M4A, OGG, WEBM`);
+                alert(`Unsupported file: ${file.name}\nType: ${file.type}\n\nSupported: PDF, PPT, PPTX, MP3, WAV, M4A, OGG, WEBM`);
                 return false;
             }
             
             if (file.size > maxSize) {
-                alert(`❌ File too large: ${file.name}\nSize: ${(file.size / (1024 * 1024)).toFixed(2)}MB\nMax: 50MB`);
+                alert(`File too large: ${file.name}\nSize: ${(file.size / (1024 * 1024)).toFixed(2)}MB\nMax: 50MB`);
                 return false;
             }
             
@@ -337,8 +337,8 @@ export default function LectureInputPage() {
                                             : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                                     }`}>
                                         {files.some(f => f.type === 'application/pdf' || f.type.includes('powerpoint') || f.type.includes('presentation'))
-                                            ? '✓ Ready' 
-                                            : '⚠ Need PDF/PPT'}
+                                            ? 'Ready' 
+                                            : 'Need PDF/PPT'}
                                     </div>
                                 </div>
                                 <div className="space-y-1.5 max-h-40 overflow-y-auto">

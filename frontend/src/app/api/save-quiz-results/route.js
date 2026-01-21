@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Backend configuration
-const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if needed
+const BACKEND_URL = "http://localhost:8001";  
 
 export async function POST(request) {
   try {
@@ -63,7 +63,7 @@ export async function POST(request) {
 
     const data = await response.json();
     
-    console.log(`✅ Quiz results saved successfully`);
+    console.log(`Quiz results saved successfully`);
     
     return NextResponse.json({
       success: true,

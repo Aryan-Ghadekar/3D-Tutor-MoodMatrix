@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
 // Backend configuration
-const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if needed
+const BACKEND_URL = "http://localhost:8001";  
 
 export async function POST(request) {
   try {
     const body = await request.json();
     
-    // This is the comprehensive report format
+    // comprehensive report format
     const {
       metadata,
       knowledgeAnalysis,
@@ -84,7 +84,7 @@ export async function POST(request) {
 
       const data = await response.json();
       
-      console.log(`✅ Comprehensive test report saved successfully`);
+      console.log(`Comprehensive test report saved successfully`);
       
       return NextResponse.json({
         success: true,

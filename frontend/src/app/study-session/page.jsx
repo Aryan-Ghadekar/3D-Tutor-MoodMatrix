@@ -1,8 +1,3 @@
-/**
- * STUDY SESSION PAGE
- * Uses REAL lecture plan with smart progress tracking
- */
-
 "use client";
 
 import { useTheme } from "../theme-provider";
@@ -23,7 +18,7 @@ import { useState, useEffect, Suspense, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import MisconceptionTracker from "@/lib/misconception-tracker";
 import SessionStorage from "@/lib/session-storage";
-import IntelligenceEngine from '../../lib/intelligenceEngine'; // Correct relative path
+import IntelligenceEngine from '../../lib/intelligenceEngine'; 
 import { QuizStorage } from '../lib/quiz-storage';
 
 // =========================================================
@@ -122,10 +117,10 @@ function StudySessionContent() {
         await initializeLearningServices(newSessionId, goal);
         
         // 4. Initialize Intelligence Engine with REAL data
-        const engine = await initializeIntelligenceEngine(newSessionId, goal, level);  // GET ENGINE
+        const engine = await initializeIntelligenceEngine(newSessionId, goal, level);  
         
         // 5. Load or generate first slide
-        await loadOrGenerateFirstSlide(engine);  // PASS ENGINE
+        await loadOrGenerateFirstSlide(engine); 
         
         // 6. Start tracking
         startProgressTracking();
@@ -596,7 +591,7 @@ function StudySessionContent() {
         console.error('Failed to generate quiz analysis slide:', error);
       }
     }
-    console.log('📊 Quiz completed:', {
+    console.log('Quiz completed:', {
       score,
       correct: correctAnswers,
       total: totalQuestions,

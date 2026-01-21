@@ -1,14 +1,9 @@
-/**
- * AI-POWERED SLIDE GENERATION API
- * Connects frontend to AI backend for dynamic slide creation
- */
-
 import { NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 
 export async function POST(request) {
-  console.log('=== AI SLIDE GENERATION REQUEST ===');
+  console.log('=== SLIDE GENERATION ===');
   
   try {
     const data = await request.json();
