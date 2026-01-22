@@ -13,30 +13,40 @@ Handles real-time cognitive load tracking and quiz logic.
 cd backend
 npm install
 npm run dev
+```
 
-
-2️⃣ FastAPI Backend — AI, RAG & Study Plan Generation
+### 2️⃣ FastAPI Backend — AI, RAG & Study Plan Generation
 Port: 8000 (default)
 
 Acts as the RAG engine responsible for PDF processing, LLM inference, and study plan generation.
 
 cd backend/fastapi-service
 
-# Create a virtual environment (recommended)
+### Create a virtual environment (recommended)
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-# Install dependencies
+### Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Run the server
+### Run the server
+```bash
 uvicorn main:app --reload
-3️⃣ Frontend — Next.js User Interface
+```
+
+### 3️⃣ Frontend — Next.js User Interface
 Port: 3000
 
+```bash
 cd frontend
 npm install
 npm run dev
+```
+
 🛠 Setup Requirements
 Node.js (v18+ recommended)
 
@@ -47,12 +57,13 @@ npm or yarn
 🔐 Environment Variables
 Check for .env files in the following directories:
 
+```bash
 backend/
 
 backend/fastapi-service/
 
 frontend/
-
+```
 You may need to add environment variables such as:
 
 OPENROUTER_API_KEY=your_api_key_here
