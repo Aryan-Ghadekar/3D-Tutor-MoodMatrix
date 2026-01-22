@@ -20,7 +20,7 @@ export async function GET(request) {
       }, { status: 400 });
     }
     
-    console.log(`📊 Generating quiz results for session: ${sessionId}, goal: ${studentGoal}`);
+    console.log(`Generating quiz results for session: ${sessionId}, goal: ${studentGoal}`);
     
     // 1. Get study plan from storage
     const studyPlan = getStudyPlan(sessionId);
@@ -41,7 +41,7 @@ export async function GET(request) {
     const questionResult = await generateAssessmentQuestions(sessionId, studentGoal);
     
     if (!questionResult.success) {
-      console.warn(`⚠️ Using fallback questions for session: ${sessionId}`);
+      console.warn(`Using fallback questions for session: ${sessionId}`);
     }
     
     // 3. Create sample answers for demo/GET request
@@ -174,7 +174,7 @@ export async function GET(request) {
     return NextResponse.json(response);
     
   } catch (error) {
-    console.error('❌ Error in get-quiz-results:', error);
+    console.error('Error in get-quiz-results:', error);
     
     return NextResponse.json({
       success: false,
@@ -216,7 +216,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
     
-    console.log(`📝 Analyzing student answers for session: ${sessionId}, student: ${studentId}`);
+    console.log(`Analyzing student answers for session: ${sessionId}, student: ${studentId}`);
     
     // 1. Get study plan
     const studyPlan = getStudyPlan(sessionId);
@@ -253,7 +253,7 @@ export async function POST(request) {
     });
     
     if (invalidAnswers.length > 0) {
-      console.warn(`⚠️ Missing answers for questions: ${invalidAnswers.join(', ')}`);
+      console.warn(`Missing answers for questions: ${invalidAnswers.join(', ')}`);
     }
     
     // 4. Analyze results
@@ -376,7 +376,7 @@ export async function POST(request) {
     return NextResponse.json(response);
     
   } catch (error) {
-    console.error('❌ Error in POST quiz-results:', error);
+    console.error('Error in POST quiz-results:', error);
     
     return NextResponse.json({
       success: false,

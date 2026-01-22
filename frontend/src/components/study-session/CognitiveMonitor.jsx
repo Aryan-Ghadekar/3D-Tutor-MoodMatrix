@@ -40,7 +40,7 @@ export default function CognitiveMonitor({ sessionId, userId }) {
   };
 
   const triggerHelpOffer = (offerType) => {
-    console.log(`🚨 Triggering help offer: ${offerType}`);
+    console.log(`Triggering help offer: ${offerType}`);
     const event = new CustomEvent('cognitive-help-offer', {
       detail: { offerType, loadValue: cognitiveLoad }
     });
@@ -55,7 +55,7 @@ export default function CognitiveMonitor({ sessionId, userId }) {
   return (
     <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg border">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold text-gray-700">🧠 Cognitive Load Monitor</h3>
+        <h3 className="font-bold text-gray-700">Cognitive Load Monitor</h3>
         <button
           onClick={() => setIsMonitoring(!isMonitoring)}
           className={`px-2 py-1 text-xs rounded ${
@@ -91,7 +91,7 @@ export default function CognitiveMonitor({ sessionId, userId }) {
 
       <div className="text-xs text-gray-500">
         Status: {isMonitoring ? 'Monitoring...' : 'Paused'}
-        {cognitiveLoad > 70 && <span className="ml-2 text-red-500">⚠️ High load detected</span>}
+        {cognitiveLoad > 70 && <span className="ml-2 text-red-500">High load detected</span>}
       </div>
     </div>
   );

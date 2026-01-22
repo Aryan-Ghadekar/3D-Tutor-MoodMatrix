@@ -7,7 +7,7 @@ export class RealContentGenerator {
   }
 
   async generateSlideContent(topic, actionType, context, studentGoal, knowledgeLevel, lecturePlan) {
-    console.log('🎯 Generating REAL content for:', topic.title);
+    console.log('Generating REAL content for:', topic.title);
     
     try {
       let prompt;

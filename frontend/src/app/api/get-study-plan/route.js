@@ -9,7 +9,6 @@ export async function POST(request) {
     
     console.log('Getting study plan for:', { topic, studentGoal });
     
-    // Try to get from mock lecture plan first
     try {
       const filePath = path.join(process.cwd(), 'src/app/lib/mock_lecture_plan.json');
       if (fs.existsSync(filePath)) {

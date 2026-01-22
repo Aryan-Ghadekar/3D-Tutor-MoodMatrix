@@ -9,7 +9,7 @@ export default class MisconceptionTracker {
     this.quizHistory = [];
     this.studentProfile = this.createInitialProfile();
     
-    console.log(`🧠 MisconceptionTracker created for session: ${sessionId}`);
+    console.log(`MisconceptionTracker created for session: ${sessionId}`);
   }
 
   // =========================================================
@@ -39,7 +39,7 @@ export default class MisconceptionTracker {
   // =========================================================
 
   addQuizResults(quizData, userAnswers, quizId) {
-    console.log(`📊 Processing quiz results: ${quizId}`);
+    console.log(`Processing quiz results: ${quizId}`);
     
     try {
       // Validate input
@@ -54,7 +54,7 @@ export default class MisconceptionTracker {
       const { score, performanceAnalysis } = this.calculateQuizPerformance(quizData.questions, userAnswers);
       const misconceptions = this.analyzeQuizForMisconceptions(quizData.questions, userAnswers, quizData.topic);
       
-      console.log(`📈 Quiz ${quizId}: Score ${score}%, ${misconceptions.length} misconceptions found`);
+      console.log(`Quiz ${quizId}: Score ${score}%, ${misconceptions.length} misconceptions found`);
       
       // Process each misconception
       misconceptions.forEach(misconception => {
@@ -76,7 +76,7 @@ export default class MisconceptionTracker {
       };
       
     } catch (error) {
-      console.error('❌ Error processing quiz results:', error);
+      console.error('Error processing quiz results:', error);
       return {
         success: false,
         error: error.message,
@@ -337,7 +337,7 @@ export default class MisconceptionTracker {
         existing.severity = 'high';
       }
       
-      console.log(`📝 Updated misconception: ${key} (count: ${existing.count})`);
+      console.log(`Updated misconception: ${key} (count: ${existing.count})`);
       
     } else {
       // Create new misconception
@@ -359,7 +359,7 @@ export default class MisconceptionTracker {
       };
       
       this.misconceptions.set(key, newMisconception);
-      console.log(`🎯 New misconception recorded: ${key}`);
+      console.log(`New misconception recorded: ${key}`);
     }
   }
 
@@ -397,7 +397,7 @@ export default class MisconceptionTracker {
       this.quizHistory = this.quizHistory.slice(-20);
     }
     
-    console.log(`📚 Added to quiz history: ${quizId} (Score: ${score}%)`);
+    console.log(`Added to quiz history: ${quizId} (Score: ${score}%)`);
   }
 
   updateStudentProfile(score, misconceptions, performanceAnalysis) {
@@ -452,7 +452,7 @@ export default class MisconceptionTracker {
     
     this.studentProfile.lastUpdated = new Date().toISOString();
     
-    console.log(`👤 Student profile updated. Average score: ${this.studentProfile.averageScore}%`);
+    console.log(`Student profile updated. Average score: ${this.studentProfile.averageScore}%`);
   }
 
   updateLearningPattern() {
@@ -667,11 +667,11 @@ export default class MisconceptionTracker {
       misconception.resolved = true;
       misconception.resolvedAt = new Date().toISOString();
       misconception.resolutionMethod = 'manual';
-      console.log(`✅ Marked misconception as resolved: ${misconceptionId}`);
+      console.log(`Marked misconception as resolved: ${misconceptionId}`);
       return true;
     }
     
-    console.log(`⚠️ Misconception not found: ${misconceptionId}`);
+    console.log(`Misconception not found: ${misconceptionId}`);
     return false;
   }
 
@@ -688,7 +688,7 @@ export default class MisconceptionTracker {
       }
     });
     
-    console.log(`🎓 Marked concept as mastered: ${concept} (resolved ${resolvedCount} misconceptions)`);
+    console.log(`Marked concept as mastered: ${concept} (resolved ${resolvedCount} misconceptions)`);
     return resolvedCount;
   }
 
@@ -717,7 +717,7 @@ export default class MisconceptionTracker {
     const key = `${concept}_${type}`;
     this.misconceptions.set(key, misconception);
     
-    console.log(`📝 Added manual misconception: ${concept} - ${type}`);
+    console.log(`Added manual misconception: ${concept} - ${type}`);
     return misconception.id;
   }
 
@@ -738,13 +738,13 @@ export default class MisconceptionTracker {
       
       if (typeof window !== 'undefined') {
         localStorage.setItem(`misconception_tracker_${this.sessionId}`, JSON.stringify(data));
-        console.log(`💾 Saved misconception data for session: ${this.sessionId}`);
+        console.log(`Saved misconception data for session: ${this.sessionId}`);
         return true;
       }
       
       return false;
     } catch (error) {
-      console.error('❌ Error saving to localStorage:', error);
+      console.error('Error saving to localStorage:', error);
       return false;
     }
   }
@@ -766,16 +766,16 @@ export default class MisconceptionTracker {
             if (!value.severity) value.severity = 'medium';
           });
           
-          console.log(`📂 Loaded misconception data: ${this.misconceptions.size} misconceptions, ${this.quizHistory.length} quizzes`);
+          console.log(`Loaded misconception data: ${this.misconceptions.size} misconceptions, ${this.quizHistory.length} quizzes`);
           return true;
         }
       }
       
-      console.log(`📭 No saved data found for session: ${this.sessionId}`);
+      console.log(`No saved data found for session: ${this.sessionId}`);
       return false;
       
     } catch (error) {
-      console.error('❌ Error loading from localStorage:', error);
+      console.error('Error loading from localStorage:', error);
       return false;
     }
   }
@@ -789,7 +789,7 @@ export default class MisconceptionTracker {
       localStorage.removeItem(`misconception_tracker_${this.sessionId}`);
     }
     
-    console.log(`🧹 Cleared misconception data for session: ${this.sessionId}`);
+    console.log(`Cleared misconception data for session: ${this.sessionId}`);
   }
 
   exportData() {
@@ -838,6 +838,6 @@ export default class MisconceptionTracker {
 
   reset() {
     this.clearSession();
-    console.log(`🔄 MisconceptionTracker reset for session: ${this.sessionId}`);
+    console.log(`MisconceptionTracker reset for session: ${this.sessionId}`);
   }
 }
