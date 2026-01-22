@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 
 // Backend configuration
-const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if needed
+const BACKEND_URL = "http://localhost:8000";  // Change to 8001 if needed
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    
+
     const {
       sessionId,
       lectureId,
@@ -29,7 +29,7 @@ export async function POST(request) {
     }
 
     console.log(`Saving quiz results for session: ${sessionId}`);
-    
+
     const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
       method: 'POST',
       headers: {
@@ -53,18 +53,18 @@ export async function POST(request) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Backend error:', errorData);
       return NextResponse.json(
-        { 
-          success: false, 
-          error: errorData.detail || 'Failed to save results to backend' 
+        {
+          success: false,
+          error: errorData.detail || 'Failed to save results to backend'
         },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    
+
     console.log(`✅ Quiz results saved successfully`);
-    
+
     return NextResponse.json({
       success: true,
       message: 'Quiz results saved successfully',
@@ -74,10 +74,10 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error in save-quiz-results API:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Internal server error while saving results',
-        details: error.message 
+        details: error.message
       },
       { status: 500 }
     );

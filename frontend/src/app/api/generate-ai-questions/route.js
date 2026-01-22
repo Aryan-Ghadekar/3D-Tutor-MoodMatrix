@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Backend configuration - change port here if needed
-const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if your backend runs on 8001
+const BACKEND_URL = "http://localhost:8000";  // Change to 8001 if your backend runs on 8001
 
 export async function POST(request) {
   try {
@@ -9,12 +9,12 @@ export async function POST(request) {
     const lecturePlan = body.lecturePlan;
     const questionCount = body.questionCount || 10;
     const questionTypes = body.questionTypes || [
-      'conceptual', 
-      'application', 
-      'misconception', 
-      'definition', 
-      'analysis', 
-      'practical', 
+      'conceptual',
+      'application',
+      'misconception',
+      'definition',
+      'analysis',
+      'practical',
       'evaluation'
     ];
 
@@ -27,7 +27,7 @@ export async function POST(request) {
     }
 
     console.log(`Forwarding question generation request to: ${BACKEND_URL}/generate-diagnostic-mcq`);
-    
+
     const response = await fetch(`${BACKEND_URL}/generate-diagnostic-mcq`, {
       method: 'POST',
       headers: {
@@ -44,21 +44,21 @@ export async function POST(request) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Backend error:', errorData);
       return NextResponse.json(
-        { 
-          success: false, 
-          error: errorData.detail || 'Failed to generate questions from backend' 
+        {
+          success: false,
+          error: errorData.detail || 'Failed to generate questions from backend'
         },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    
+
     // Transform the response to match frontend expectations
     const questions = data.questions || [];
-    
+
     console.log(`Successfully generated ${questions.length} questions`);
-    
+
     return NextResponse.json({
       success: true,
       questions: questions,
@@ -75,10 +75,10 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error in generate-ai-questions API:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Internal server error while generating questions',
-        details: error.message 
+        details: error.message
       },
       { status: 500 }
     );

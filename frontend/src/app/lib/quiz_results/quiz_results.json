@@ -1,0 +1,385 @@
+[
+  {
+    "session_id": "92aa1e62-0b0e-4d39-ad29-a3287a835dfb",
+    "lecture_id": "8ee08cf6-fbd6-4ebc-a80d-62b7e87ed6e1",
+    "score": 30.0,
+    "correct": 3,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "What is the key difference between setting 'visibility: hidden;' and 'display: none;' in CSS?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Both reserve space for the element",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "'visibility: hidden;' reserves space, 'display: none;' does not",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "'display: none;' reserves space, 'visibility: hidden;' does not",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Both do not reserve space for the element",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "What is the key difference between setting 'visibility: hidden;' and 'display: none;' in CSS?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Both reserve space for the element",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "'visibility: hidden;' reserves space, while 'display: none;' does not reserve space",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "'visibility: hidden;' does not reserve space, while 'display: none;' reserves space",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Both do not reserve space for the element",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "What color will a div change to when the viewport width is 350px?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Green",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pink",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Red",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Blue",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "What color will a div have if the viewport width is 350px?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Green",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pink",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Red",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Blue",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "In CSS, what does the semicolon at the end of a property-value pair indicate?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Separation between selectors",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "End of a property and its value",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Beginning of a new rule",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Ignored by the browser",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "In CSS, which unit is most commonly used for text properties?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Pixels",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Centimeters",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Inches",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Points",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "What is the purpose of using media queries in responsive web design?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To apply different styles based on screen size and orientation",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "To create animations on the website",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "To optimize images for faster loading times",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To increase the website's security measures",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "Which CSS property is used to apply 2D & 3D transformations to an element?",
+        "options": [
+          {
+            "id": "A",
+            "text": "transition",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "transform",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "animation",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "translate",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "In Flexbox, which property is used to define how flex items are aligned along the main axis of the flex container?",
+        "options": [
+          {
+            "id": "A",
+            "text": "justify-content",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "align-items",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "flex-wrap",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "align-content",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which CSS property is used to define the name of a keyframe animation?",
+        "options": [
+          {
+            "id": "A",
+            "text": "animation-type",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "animation-key",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "animation-name",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "keyframe-name",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "A",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "D",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-22T13:06:27.374484",
+    "saved_at": "2026-01-22T13:06:27.375119"
+  }
+]

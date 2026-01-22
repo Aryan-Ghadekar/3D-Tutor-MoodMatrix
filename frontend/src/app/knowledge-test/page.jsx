@@ -8,12 +8,12 @@ import Header from '../../components/Header';
 export default function KnowledgeTestPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get parameters
   const lectureId = searchParams.get('lectureId');
   const sessionId = searchParams.get('sessionId');
   const topic = searchParams.get('topic') || "Computer Engineering";
-  
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function KnowledgeTestPage() {
     setGeneratingQuestions(true);
     try {
       // Call AI question generation API
-      const response = await fetch('http://localhost:8001/generate-diagnostic-mcq', {
+      const response = await fetch('http://localhost:8000/generate-diagnostic-mcq', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function KnowledgeTestPage() {
       // Mix other question types
       const questionTypes = ['definition', 'analysis', 'practical', 'evaluation'];
       const randomType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
-      
+
       switch (randomType) {
         case 'definition':
           questions.push(generateDefinitionQuestion(content, questionId++));
@@ -109,7 +109,7 @@ export default function KnowledgeTestPage() {
   const generateConceptualQuestion = (content, questionId) => {
     const correctAnswer = extractKeyConcept(content.fullText);
     const distractors = generateDistractors(correctAnswer, content, 'conceptual');
-    
+
     return {
       id: questionId,
       type: 'conceptual',
@@ -129,11 +129,11 @@ export default function KnowledgeTestPage() {
   };
 
   const generateApplicationQuestion = (content, questionId) => {
-    const application = content.applications && content.applications.length > 0 ? 
+    const application = content.applications && content.applications.length > 0 ?
       content.applications[0] : extractApplication(content.fullText);
     const scenarios = generateApplicationScenarios(content.title, application);
     const correctIndex = Math.floor(Math.random() * 4);
-    
+
     return {
       id: questionId,
       type: 'application',
@@ -153,11 +153,11 @@ export default function KnowledgeTestPage() {
   };
 
   const generateMisconceptionQuestion = (content, questionId) => {
-    const misconception = content.misconceptions && content.misconceptions.length > 0 ? 
+    const misconception = content.misconceptions && content.misconceptions.length > 0 ?
       content.misconceptions[0] : generateCommonMisconception(content.title);
     const correctConcept = extractKeyConcept(content.fullText);
     const distractors = generateMisconceptionDistractors(correctConcept, misconception);
-    
+
     return {
       id: questionId,
       type: 'misconception',
@@ -179,7 +179,7 @@ export default function KnowledgeTestPage() {
   const generateDefinitionQuestion = (content, questionId) => {
     const definition = extractDefinition(content.fullText);
     const terms = generateDefinitionOptions(content.title, definition);
-    
+
     return {
       id: questionId,
       type: 'definition',
@@ -201,7 +201,7 @@ export default function KnowledgeTestPage() {
   const generateAnalysisQuestion = (content, questionId) => {
     const analysisScenario = generateAnalysisScenario(content);
     const options = generateAnalysisOptions(content, analysisScenario);
-    
+
     return {
       id: questionId,
       type: 'analysis',
@@ -223,7 +223,7 @@ export default function KnowledgeTestPage() {
   const generatePracticalQuestion = (content, questionId) => {
     const practicalScenario = generatePracticalScenario(content);
     const solutions = generateSolutionOptions(content, practicalScenario);
-    
+
     return {
       id: questionId,
       type: 'practical',
@@ -245,7 +245,7 @@ export default function KnowledgeTestPage() {
   const generateEvaluationQuestion = (content, questionId) => {
     const evaluationScenario = generateEvaluationScenario(content);
     const criteria = generateEvaluationCriteria(content);
-    
+
     return {
       id: questionId,
       type: 'evaluation',
@@ -267,7 +267,7 @@ export default function KnowledgeTestPage() {
   // Helper functions
   const extractKeyConcept = (fullText) => {
     if (!fullText) return "Core concept understanding";
-    
+
     const sentences = fullText.split(/[.!?]+/).filter(s => s.trim().length > 20);
     if (sentences.length > 0) {
       return sentences[0].trim().substring(0, 100) + (sentences[0].length > 100 ? "..." : "");
@@ -277,10 +277,10 @@ export default function KnowledgeTestPage() {
 
   const extractApplication = (fullText) => {
     if (!fullText) return "Practical application in real-world scenarios";
-    
+
     const appKeywords = ['application', 'used for', 'applies to', 'practical', 'real-world', 'implemented'];
     const sentences = fullText.split(/[.!?]+/);
-    
+
     for (const sentence of sentences) {
       if (appKeywords.some(keyword => sentence.toLowerCase().includes(keyword))) {
         return sentence.trim();
@@ -291,7 +291,7 @@ export default function KnowledgeTestPage() {
 
   const extractDefinition = (fullText) => {
     if (!fullText) return "Comprehensive understanding and application";
-    
+
     const sentences = fullText.split(/[.!?]+/);
     for (const sentence of sentences) {
       if (sentence.toLowerCase().includes('is') || sentence.toLowerCase().includes('refers to')) {
@@ -303,7 +303,7 @@ export default function KnowledgeTestPage() {
 
   const generateDistractors = (correctAnswer, content, type) => {
     const distractors = [];
-    
+
     if (type === 'conceptual') {
       distractors.push(
         `Related but incorrect concept about ${content.title}`,
@@ -311,7 +311,7 @@ export default function KnowledgeTestPage() {
         `Oversimplified explanation of ${content.title}`
       );
     }
-    
+
     return distractors.slice(0, 3);
   };
 
@@ -322,7 +322,7 @@ export default function KnowledgeTestPage() {
       `Applying ${title} principles to improve system performance`,
       `Utilizing ${title} for optimal resource management`
     ];
-    
+
     return scenarios;
   };
 
@@ -333,7 +333,7 @@ export default function KnowledgeTestPage() {
       `${title} can be mastered without practical experience`,
       `${title} is only theoretical and has no practical use`
     ];
-    
+
     return misconceptions[Math.floor(Math.random() * misconceptions.length)];
   };
 
@@ -434,7 +434,7 @@ export default function KnowledgeTestPage() {
       ...prev,
       [questionId]: answerId
     }));
-    
+
     // Auto-advance after answering
     if (currentQuestion < testQuestions.length - 1) {
       setTimeout(() => setCurrentQuestion(prev => prev + 1), 500);
@@ -443,10 +443,10 @@ export default function KnowledgeTestPage() {
 
   const calculateScore = () => {
     if (!testQuestions.length) return 0;
-    
+
     let correctAnswers = 0;
     let totalQuestions = 0;
-    
+
     testQuestions.forEach(question => {
       const userAnswer = answers[question.id];
       if (userAnswer) {
@@ -457,7 +457,7 @@ export default function KnowledgeTestPage() {
         }
       }
     });
-    
+
     return totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
   };
 
@@ -471,14 +471,14 @@ export default function KnowledgeTestPage() {
       recommendations: [],
       detailedMisunderstandings: []
     };
-    
+
     testQuestions.forEach(question => {
       const userAnswer = answers[question.id];
       if (!userAnswer) return;
-      
+
       const selectedOption = question.options.find(opt => opt.id === userAnswer);
       const isCorrect = selectedOption && selectedOption.isCorrect;
-      
+
       // Analyze by skill type
       const skill = question.assessedSkill;
       if (!analysis.skillLevels[skill]) {
@@ -488,7 +488,7 @@ export default function KnowledgeTestPage() {
       if (isCorrect) {
         analysis.skillLevels[skill].correct++;
       }
-      
+
       // Analyze topic performance
       if (!analysis.topicPerformance[question.topicId]) {
         analysis.topicPerformance[question.topicId] = {
@@ -511,17 +511,17 @@ export default function KnowledgeTestPage() {
       if (isCorrect) {
         analysis.topicPerformance[question.topicId].correct++;
       }
-      
+
       // Identify strengths and weaknesses
       if (isCorrect) {
         if (!analysis.strengths.includes(skill)) {
           analysis.strengths.push(skill);
         }
       } else {
-        if (!analysis.weaknesses.includes(skill)) {
+        if (skill && !analysis.weaknesses.includes(skill)) {
           analysis.weaknesses.push(skill);
         }
-        
+
         // Track detailed misunderstandings
         const misunderstanding = {
           topic: question.topicName,
@@ -534,9 +534,9 @@ export default function KnowledgeTestPage() {
           assessedSkill: skill,
           misconceptionType: identifyMisconceptionType(question, selectedOption?.text)
         };
-        
+
         analysis.detailedMisunderstandings.push(misunderstanding);
-        
+
         // Check for misconceptions
         if (question.type === 'misconception' && !isCorrect) {
           analysis.misconceptions.push({
@@ -548,19 +548,19 @@ export default function KnowledgeTestPage() {
         }
       }
     });
-    
+
     // Generate specific recommendations based on misunderstandings
     analysis.recommendations = generateRecommendations(analysis);
-    
+
     return analysis;
   };
 
   const identifyMisconceptionType = (question, userAnswer) => {
     if (!userAnswer) return 'no_answer';
-    
+
     const questionType = question.type;
     const userAnswerLower = userAnswer.toLowerCase();
-    
+
     if (questionType === 'conceptual') {
       if ('only about theoretical' in userAnswerLower) return 'theoretical_only';
       if ('complicate simple' in userAnswerLower) return 'overcomplication';
@@ -574,20 +574,20 @@ export default function KnowledgeTestPage() {
       if ('only mathematical' in userAnswerLower) return 'domain_confusion';
       if ('programming language' in userAnswerLower) return 'category_error';
     }
-    
+
     return 'general_misunderstanding';
   };
 
   const generateRecommendations = (analysis) => {
     const recommendations = [];
-    
+
     // Skill-based recommendations
     analysis.weaknesses.forEach(weakness => {
       if (typeof weakness !== 'string') {
         console.warn('Invalid weakness type:', weakness);
         return;
       }
-      
+
       switch (weakness) {
         case 'conceptual_understanding':
           recommendations.push(`Focus on understanding fundamental principles and core concepts`);
@@ -611,11 +611,11 @@ export default function KnowledgeTestPage() {
           recommendations.push(`Develop criteria for evaluating effectiveness and quality`);
           break;
         default:
-          recommendations.push(`Focus on improving ${weakness.replace(/_/g, ' ')}`); 
+          recommendations.push(`Focus on improving ${weakness.replace(/_/g, ' ')}`);
       }
     });
 
-    
+
     // Topic-specific recommendations
     Object.entries(analysis.topicPerformance).forEach(([topicId, performance]) => {
       const accuracy = (performance.correct / performance.total) * 100;
@@ -625,7 +625,7 @@ export default function KnowledgeTestPage() {
         recommendations.push(`Strengthen understanding of ${performance.topicName} (${Math.round(accuracy)}% accuracy)`);
       }
     });
-    
+
     return recommendations;
   };
 
@@ -668,16 +668,16 @@ export default function KnowledgeTestPage() {
           }))
         }
       };
-      
+
       // Save to localStorage as backup
       if (typeof window !== 'undefined') {
         const existingResults = JSON.parse(localStorage.getItem('allTestResults') || '[]');
         existingResults.push(report);
         localStorage.setItem('allTestResults', JSON.stringify(existingResults));
-        
+
         // Also save current test for immediate access
         localStorage.setItem('currentTestResults', JSON.stringify(report));
-        
+
         // Save detailed misunderstandings separately for targeted remediation
         const misunderstandings = testResults.knowledgeAnalysis.detailedMisunderstandings || [];
         if (misunderstandings.length > 0) {
@@ -686,12 +686,12 @@ export default function KnowledgeTestPage() {
           localStorage.setItem('studentMisunderstandings', JSON.stringify(existingMisunderstandings));
         }
       }
-      
+
       // Try to save to backend
       try {
-        const response = await fetch('http://localhost:8001/save-quiz-results', {
+        const response = await fetch('http://localhost:8000/save-quiz-results', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
@@ -711,7 +711,7 @@ export default function KnowledgeTestPage() {
             recommendations: testResults.knowledgeAnalysis?.recommendations || []
           })
         });
-        
+
         if (response.ok) {
           const result = await response.json();
           console.log('Quiz results saved:', result);
@@ -721,7 +721,7 @@ export default function KnowledgeTestPage() {
       } catch (apiError) {
         console.log('API not available, using localStorage only:', apiError.message);
       }
-      
+
     } catch (error) {
       console.error('Error saving test results to file:', error);
     }
@@ -732,10 +732,10 @@ export default function KnowledgeTestPage() {
     try {
       const score = calculateScore();
       const knowledgeAnalysis = analyzeStudentKnowledge();
-      
+
       // Calculate correct answers
       const correctAnswers = Math.round((score / 100) * testQuestions.length);
-      
+
       // Format questions for backend
       const formattedQuestions = testQuestions.map(q => ({
         id: q.id.toString(),
@@ -749,7 +749,7 @@ export default function KnowledgeTestPage() {
         topicId: q.topicId || 'unknown',
         conceptsTested: [q.topicName || 'Unknown Topic']
       }));
-      
+
       // Format answers for backend
       const formattedAnswers = Object.entries(answers).map(([questionId, selectedAnswer]) => {
         const question = testQuestions.find(q => q.id.toString() === questionId);
@@ -760,7 +760,7 @@ export default function KnowledgeTestPage() {
           isCorrect: selectedOption?.isCorrect || false
         };
       });
-      
+
       // Format misconceptions
       const formattedMisconceptions = knowledgeAnalysis.misconceptions.map(m => ({
         topic: m.topic || 'Unknown',
@@ -768,7 +768,7 @@ export default function KnowledgeTestPage() {
         userAnswer: m.userAnswer || 'Not provided',
         correctAnswer: m.correctAnswer || 'Unknown'
       }));
-      
+
       // Prepare the data in the EXACT format the backend expects
       const saveData = {
         session_id: sessionId || `session_${Date.now()}`,
@@ -779,12 +779,12 @@ export default function KnowledgeTestPage() {
         questions: formattedQuestions,
         answers: formattedAnswers,
         misconceptions: formattedMisconceptions,
-        weak_topics: knowledgeAnalysis.weaknesses || [],
+        weak_topics: (knowledgeAnalysis.weaknesses || []).filter(w => w && typeof w === 'string'),
         recommendations: knowledgeAnalysis.recommendations || []
       };
-      
+
       console.log('Sending to backend:', {
-        endpoint: 'http://localhost:8001/save-quiz-results',
+        endpoint: 'http://localhost:8000/save-quiz-results',
         dataStructure: {
           session_id: saveData.session_id,
           lecture_id: saveData.lecture_id,
@@ -793,30 +793,30 @@ export default function KnowledgeTestPage() {
           answersCount: saveData.answers.length
         }
       });
-      
+
       // Save to localStorage first (backup)
       if (typeof window !== 'undefined') {
         localStorage.setItem('lastTestResults', JSON.stringify(saveData));
         console.log('Saved to localStorage');
       }
-      
+
       // Try to save to backend
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await fetch('http://localhost:8001/save-quiz-results', {
+
+        const response = await fetch('http://localhost:8000/save-quiz-results', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
           body: JSON.stringify(saveData),
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Backend error:', {
@@ -826,10 +826,10 @@ export default function KnowledgeTestPage() {
           });
           throw new Error(`Backend returned ${response.status}: ${errorText}`);
         }
-        
+
         const result = await response.json();
         console.log('Successfully saved to backend:', result);
-        
+
       } catch (backendError) {
         if (backendError.name === 'AbortError') {
           console.warn('Request timeout - backend might be slow');
@@ -838,7 +838,7 @@ export default function KnowledgeTestPage() {
         }
         // Don't throw - localStorage save is enough
       }
-      
+
       // Update session storage
       if (typeof window !== 'undefined' && lecturePlan) {
         const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
@@ -846,19 +846,19 @@ export default function KnowledgeTestPage() {
         sessionData.knowledgeTestCompleted = true;
         sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
       }
-      
+
       // Navigate to study session
       const params = new URLSearchParams();
       if (lectureId) params.append('lectureId', lectureId);
       if (sessionId) params.append('sessionId', sessionId);
       params.append('knowledgeTestCompleted', 'true');
-      
+
       router.push(`/study-session?${params.toString()}`);
-      
+
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       alert('Results saved to browser storage. You can continue to study session.');
-      
+
       // Still navigate even if save failed
       const params = new URLSearchParams();
       if (lectureId) params.append('lectureId', lectureId);
@@ -871,7 +871,7 @@ export default function KnowledgeTestPage() {
 
   const handleSkip = () => {
     let testResults = {};
-    
+
     if (lecturePlan) {
       // Skip lecture-based test
       testResults = {
@@ -884,12 +884,12 @@ export default function KnowledgeTestPage() {
         skipped: true,
         completedAt: new Date().toISOString()
       };
-      
+
       const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
       sessionData.knowledgeTestResults = testResults;
       sessionData.knowledgeTestCompleted = true;
       sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
-      
+
       router.push(`/study-session?lectureId=${lectureId}&sessionId=${sessionId}`);
     } else {
       // Skip simple topic-based test
@@ -901,11 +901,11 @@ export default function KnowledgeTestPage() {
         completedAt: new Date().toISOString(),
         skipped: true
       };
-      
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('lastTestResults', JSON.stringify(testResults));
       }
-      
+
       router.push('/study-session');
     }
   };
@@ -924,7 +924,7 @@ export default function KnowledgeTestPage() {
           // Try to get from session storage first
           if (typeof window !== 'undefined') {
             const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
-            
+
             if (sessionData.lecturePlan) {
               setLecturePlan(sessionData.lecturePlan);
               setDisplayTopic(sessionData.topic || topic);
@@ -934,7 +934,7 @@ export default function KnowledgeTestPage() {
               return;
             }
           }
-          
+
           // Fallback to API
           const response = await fetch(`/api/get-lecture-plan?lectureId=${lectureId}&sessionId=${sessionId}`);
           if (response.ok) {
@@ -985,7 +985,7 @@ export default function KnowledgeTestPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Header />
-      
+
       <main className="pt-16 p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           {/* Header with navigation */}
@@ -997,7 +997,7 @@ export default function KnowledgeTestPage() {
               <ArrowLeft className="w-5 h-5" />
               Back
             </button>
-            
+
             <button
               onClick={() => router.push('/study-session')}
               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -1041,7 +1041,7 @@ export default function KnowledgeTestPage() {
                 <span>{Math.round((currentQuestion + 1) / testQuestions.length * 100)}%</span>
               </div>
               <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300"
                   style={{ width: `${((currentQuestion + 1) / testQuestions.length) * 100}%` }}
                 />
@@ -1102,7 +1102,7 @@ export default function KnowledgeTestPage() {
                     Previous
                   </button>
                 )}
-                
+
                 {currentQuestion < testQuestions.length - 1 && (
                   <button
                     onClick={() => setCurrentQuestion(prev => prev + 1)}
@@ -1113,7 +1113,7 @@ export default function KnowledgeTestPage() {
                   </button>
                 )}
               </div>
-              
+
               <div className="flex gap-3">
                 <button
                   onClick={handleSkip}
@@ -1121,7 +1121,7 @@ export default function KnowledgeTestPage() {
                 >
                   Skip assessment
                 </button>
-                
+
                 {currentQuestion === testQuestions.length - 1 && (
                   <button
                     onClick={handleSubmit}
@@ -1140,7 +1140,7 @@ export default function KnowledgeTestPage() {
                 )}
               </div>
             </div>
-            
+
             {/* Info footer */}
             <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
