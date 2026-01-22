@@ -14,9 +14,8 @@ export function AuthHeader() {
           <Activity className="w-6 h-6 text-white" />
         </div>
         <span
-          className={`text-xl font-semibold ${
-            isDark ? "text-white" : "text-gray-900"
-          }`}
+          className={`text-xl font-semibold ${isDark ? "text-white" : "text-gray-900"
+            }`}
         >
           MoodMatrix
         </span>

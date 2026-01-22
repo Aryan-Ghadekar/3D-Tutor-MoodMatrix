@@ -1,6 +1,8 @@
 "use client";
 
 import { useTheme } from "../theme-provider";
+import Lottie from "lottie-react";
+import talkingAvatarAnimation from "../../assets/talking green man.json";
 import { cognitiveAPI, quizAPI, helpAPI } from '../../lib/api';
 import {
   ChevronLeft, ChevronRight, Play, Pause, Volume2, Maximize2, Settings,
@@ -2641,16 +2643,14 @@ export default function StudySessionPage() {
             <div className="p-6">
               <div className="relative h-48 w-full mb-4">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-40 h-40">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
-                      <User className="w-24 h-24 text-white" />
-                    </div>
-                    <img
-                      src="/3D_avatar_professor.jpg"
-                      alt="Professor Avatar"
-                      className="absolute inset-0 w-full h-full rounded-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
+                  <div className="relative w-120">
+                    <Lottie
+                      animationData={talkingAvatarAnimation}
+                      loop={true}
+                      autoplay={isPlaying}
+                      className="w-full"
+                      style={{
+                        filter: theme === 'dark' ? 'brightness(0.9)' : 'none'
                       }}
                     />
                   </div>

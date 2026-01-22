@@ -8,7 +8,7 @@ export default function ClientLayout({ children }) {
 
   return (
     <>
-      {!isAuthPage && <AuthHeader />}
+      {/* {!isAuthPage && <AuthHeader />} */}
       <main>{children}</main>
     </>
   );
