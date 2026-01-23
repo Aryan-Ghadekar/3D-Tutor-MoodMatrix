@@ -695,4 +695,5 @@ class EducationalImageGenerator {
   }
 }
 
+export { EducationalImageGenerator };
 export default ImageGenerator;
