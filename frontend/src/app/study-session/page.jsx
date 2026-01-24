@@ -2018,14 +2018,27 @@ function StudySessionContent() {
           </div>
 
           <div className="space-y-4">
-            {quizData.questions.map((question, index) => (
+            {quizData.questions.map((question, index) => {
+              // Convert number index to letter for comparison
+              const userAnswerLetter = question.userAnswer !== null ? ['A', 'B', 'C', 'D'][question.userAnswer] : null;
+              
+              console.log(`Question ${index}:`, {
+                userAnswer: question.userAnswer,
+                userAnswerLetter: userAnswerLetter,
+                correctAnswer: question.correctAnswer,
+                userAnswerType: typeof question.userAnswer,
+                correctAnswerType: typeof question.correctAnswer,
+                isCorrect: userAnswerLetter === question.correctAnswer
+              });
+              
+              return (
               <div key={index} className={`p-4 rounded-lg border ${
-                question.userAnswer === question.correctAnswer 
+                userAnswerLetter === question.correctAnswer 
                   ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20' 
                   : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
               }`}>
                 <div className="flex items-start gap-2 mb-2">
-                  {question.userAnswer === question.correctAnswer ? (
+                  {userAnswerLetter === question.correctAnswer ? (
                     <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                   ) : (
                     <XCircle className="w-5 h-5 text-red-500 mt-0.5" />
@@ -2033,7 +2046,7 @@ function StudySessionContent() {
                   <div className="flex-1">
                     <p className="font-medium text-gray-900 dark:text-white">{question.question}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      Your answer: <span className="font-semibold">{question.userAnswer}</span>
+                      Your answer: <span className="font-semibold">{userAnswerLetter || 'Not answered'}</span>
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Correct answer: <span className="font-semibold text-green-600 dark:text-green-400">{question.correctAnswer}</span>
@@ -2046,7 +2059,8 @@ function StudySessionContent() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
 
           <div className="mt-6">
             <button
