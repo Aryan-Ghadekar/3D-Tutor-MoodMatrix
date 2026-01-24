@@ -1,0 +1,4322 @@
+[
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "10300af5-d2b8-4b16-8e83-2e22c4e3d81a",
+    "score": 0.0,
+    "correct": 0,
+    "total": 9,
+    "questions": [
+      {
+        "id": "quiz-1769248954526-0",
+        "question": "Which type of microorganism is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria, while bacteria cause illnesses such as typhoid and tuberculosis.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248954526-1",
+        "question": "Which of the following is true about microscopic organisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All microorganisms are harmful and cause diseases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa can lead to diseases like dysentery and malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria are only beneficial for environmental cleanup",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi are solely responsible for illnesses like typhoid and tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa can indeed lead to diseases like dysentery and malaria, highlighting the fact that different microorganisms cause different diseases. Bacteria and fungi have their roles, including beneficial ones like food production and environmental cleanup.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248954526-2",
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Bacteria are responsible for causing diseases such as typhoid and tuberculosis, while protozoa are known to cause dysentery and malaria. Fungi and viruses have different roles and are not the primary causes of these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248954526-3",
+        "question": "In a learning session, a student completes 5 out of 6 topics and spends approximately 1 minute learning. How many topics did the student not complete?",
+        "options": [
+          {
+            "id": "A",
+            "text": "1 topic",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "2 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "3 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "4 topics",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Since the student completed 5 out of 6 topics, the number of topics not completed would be 1 (6 - 5 = 1).",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248954526-4",
+        "question": "How many topics did the learner complete in the learning session?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All 6 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "5 out of 6 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "4 out of 6 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "3 out of 6 topics",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "The learner completed 5 out of 6 topics, as mentioned in the key points.",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for causing dysentery, a gastrointestinal infection. Bacteria, on the other hand, are known to cause diseases like typhoid and tuberculosis.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248900150
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses can cause different types of illnesses, but in this case, it's specifically protozoa.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248904102
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "correctAnswer": "C",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Amoeba",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are the microorganisms responsible for causing diseases like dysentery and malaria. Bacteria, amoeba, and fungi have different roles and are not directly linked to these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248906662
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa cause illnesses like dysentery and malaria. Fungi and viruses are not typically associated with these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248910784
+      },
+      {
+        "questionIndex": 4,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "How many topics did the learner complete in the learning session?",
+        "correctAnswer": "D",
+        "questionText": "How many topics did the learner complete in the learning session?",
+        "options": [
+          {
+            "id": "A",
+            "text": "2 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "4 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "6 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "5 topics",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The learner completed 5 out of 6 topics in the learning session, not all 6 topics.",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769248914036
+      },
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for causing dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria, while bacteria cause illnesses such as typhoid and tuberculosis.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248965389
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following is true about microscopic organisms?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following is true about microscopic organisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All microorganisms are harmful and cause diseases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa can lead to diseases like dysentery and malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria are only beneficial for environmental cleanup",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi are solely responsible for illnesses like typhoid and tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa can indeed lead to diseases like dysentery and malaria, highlighting the fact that different microorganisms cause different diseases. Bacteria and fungi have their roles, including beneficial ones like food production and environmental cleanup.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248968242
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria are responsible for causing diseases such as typhoid and tuberculosis, while protozoa are known to cause dysentery and malaria. Fungi and viruses have different roles and are not the primary causes of these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248970523
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "In a learning session, a student completes 5 out of 6 topics and spends approximately 1 minute learning. How many topics did the student not complete?",
+        "correctAnswer": "A",
+        "questionText": "In a learning session, a student completes 5 out of 6 topics and spends approximately 1 minute learning. How many topics did the student not complete?",
+        "options": [
+          {
+            "id": "A",
+            "text": "1 topic",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "2 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "3 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "4 topics",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Since the student completed 5 out of 6 topics, the number of topics not completed would be 1 (6 - 5 = 1).",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769248973105
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which type of microorganism is responsible for causing dysentery and malaria?",
+        "question": "Which type of microorganism is responsible for causing dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria, while bacteria cause illnesses such as typhoid and tuberculosis.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which of the following is true about microscopic organisms?",
+        "question": "Which of the following is true about microscopic organisms?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa can indeed lead to diseases like dysentery and malaria, highlighting the fact that different microorganisms cause different diseases. Bacteria and fungi have their roles, including beneficial ones like food production and environmental cleanup.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Bacteria are responsible for causing diseases such as typhoid and tuberculosis, while protozoa are known to cause dysentery and malaria. Fungi and viruses have different roles and are not the primary causes of these specific diseases.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Learning Session Complete!",
+        "concept": "In a learning session, a student completes 5 out of 6 topics and spends approximately 1 minute learning. How many topics did the student not complete?",
+        "question": "In a learning session, a student completes 5 out of 6 topics and spends approximately 1 minute learning. How many topics did the student not complete?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Since the student completed 5 out of 6 topics, the number of topics not completed would be 1 (6 - 5 = 1).",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+      "Learning Session Complete!"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T15:32:57.358085",
+    "saved_at": "2026-01-24T15:32:57.363079"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "10300af5-d2b8-4b16-8e83-2e22c4e3d81a",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769248894521-0",
+        "question": "Which of the following microorganisms is responsible for causing dysentery?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa are responsible for causing dysentery, a gastrointestinal infection. Bacteria, on the other hand, are known to cause diseases like typhoid and tuberculosis.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248894521-1",
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses can cause different types of illnesses, but in this case, it's specifically protozoa.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248894521-2",
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Amoeba",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Protozoa are the microorganisms responsible for causing diseases like dysentery and malaria. Bacteria, amoeba, and fungi have different roles and are not directly linked to these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248894521-3",
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa cause illnesses like dysentery and malaria. Fungi and viruses are not typically associated with these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248894521-4",
+        "question": "How many topics did the learner complete in the learning session?",
+        "options": [
+          {
+            "id": "A",
+            "text": "2 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "4 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "6 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "5 topics",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "The learner completed 5 out of 6 topics in the learning session, not all 6 topics.",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for causing dysentery, a gastrointestinal infection. Bacteria, on the other hand, are known to cause diseases like typhoid and tuberculosis.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248900150
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses can cause different types of illnesses, but in this case, it's specifically protozoa.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248904102
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "correctAnswer": "C",
+        "questionText": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Amoeba",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are the microorganisms responsible for causing diseases like dysentery and malaria. Bacteria, amoeba, and fungi have different roles and are not directly linked to these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248906662
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa cause illnesses like dysentery and malaria. Fungi and viruses are not typically associated with these specific diseases.",
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "difficulty": "medium",
+        "timestamp": 1769248910784
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which of the following microorganisms is responsible for causing dysentery?",
+        "question": "Which of the following microorganisms is responsible for causing dysentery?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa are responsible for causing dysentery, a gastrointestinal infection. Bacteria, on the other hand, are known to cause diseases like typhoid and tuberculosis.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa are responsible for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses can cause different types of illnesses, but in this case, it's specifically protozoa.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "question": "Which of the following microorganisms is responsible for causing dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Protozoa are the microorganisms responsible for causing diseases like dysentery and malaria. Bacteria, amoeba, and fungi have different roles and are not directly linked to these specific diseases.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microscopic Organisms: Bacteria, Protozoa, and Fungi",
+        "concept": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "question": "Which type of microorganism is responsible for causing typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa cause illnesses like dysentery and malaria. Fungi and viruses are not typically associated with these specific diseases.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microscopic Organisms: Bacteria, Protozoa, and Fungi"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T15:31:55.864761",
+    "saved_at": "2026-01-24T15:31:55.869576"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "0710f656-17de-4615-8fc2-ca69633bab54",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769248245760-0",
+        "question": "Which of the following microorganisms is commonly involved in making curd and bread?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Streptococcus (bacteria)",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Plasmodium (protozoa)",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Candida (fungi)",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Escherichia coli (bacteria)",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Streptococcus is a type of bacteria commonly used in the production of curd and bread through fermentation processes.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248245760-1",
+        "question": "Which of the following is NOT a disease caused by bacteria, protozoa, or fungi?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Yeast infection",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Dysentery",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Yeast infection is caused by a type of fungus called Candida, not by bacteria or protozoa. Malaria, tuberculosis, and dysentery are diseases caused by protozoa and bacteria.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248245760-2",
+        "question": "Which microorganism is responsible for causing malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Streptococcus bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Escherichia coli bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Plasmodium protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Candida fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Malaria is caused by the Plasmodium protozoa, not by bacteria or fungi. Understanding the specific microorganism responsible for a disease is crucial for accurate diagnosis and treatment.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248245760-3",
+        "question": "Which of the following is NOT a common bacterial disease?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Dysentery",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "Malaria is caused by protozoa, specifically Plasmodium parasites. The other options, Tuberculosis, Typhoid, and Dysentery, are bacterial diseases.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Plant Diseases Caused by Microorganisms: Overview and Control",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769248245760-4",
+        "question": "Which of the following microorganisms can cause diseases in plants like wheat, leading to reduced crop yields?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Nematodes",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Earthworms",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Ladybugs",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Fungi, along with bacteria and viruses, are common microorganisms that can cause diseases in plants like wheat, resulting in wilting and reduced crop yields.",
+        "topic": "Plant Diseases Caused by Microorganisms: Overview and Control",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is commonly involved in making curd and bread?",
+        "correctAnswer": "A",
+        "questionText": "Which of the following microorganisms is commonly involved in making curd and bread?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Streptococcus (bacteria)",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Plasmodium (protozoa)",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Candida (fungi)",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Escherichia coli (bacteria)",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Streptococcus is a type of bacteria commonly used in the production of curd and bread through fermentation processes.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769248290478
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following is NOT a disease caused by bacteria, protozoa, or fungi?",
+        "correctAnswer": "C",
+        "questionText": "Which of the following is NOT a disease caused by bacteria, protozoa, or fungi?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Yeast infection",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Dysentery",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Yeast infection is caused by a type of fungus called Candida, not by bacteria or protozoa. Malaria, tuberculosis, and dysentery are diseases caused by protozoa and bacteria.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769248322055
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which microorganism is responsible for causing malaria?",
+        "correctAnswer": "C",
+        "questionText": "Which microorganism is responsible for causing malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Streptococcus bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Escherichia coli bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Plasmodium protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Candida fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Malaria is caused by the Plasmodium protozoa, not by bacteria or fungi. Understanding the specific microorganism responsible for a disease is crucial for accurate diagnosis and treatment.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769248328670
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which of the following is NOT a common bacterial disease?",
+        "correctAnswer": "D",
+        "questionText": "Which of the following is NOT a common bacterial disease?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Dysentery",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Malaria is caused by protozoa, specifically Plasmodium parasites. The other options, Tuberculosis, Typhoid, and Dysentery, are bacterial diseases.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769248335861
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which of the following microorganisms is commonly involved in making curd and bread?",
+        "question": "Which of the following microorganisms is commonly involved in making curd and bread?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Streptococcus is a type of bacteria commonly used in the production of curd and bread through fermentation processes.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which of the following is NOT a disease caused by bacteria, protozoa, or fungi?",
+        "question": "Which of the following is NOT a disease caused by bacteria, protozoa, or fungi?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Yeast infection is caused by a type of fungus called Candida, not by bacteria or protozoa. Malaria, tuberculosis, and dysentery are diseases caused by protozoa and bacteria.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which microorganism is responsible for causing malaria?",
+        "question": "Which microorganism is responsible for causing malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Malaria is caused by the Plasmodium protozoa, not by bacteria or fungi. Understanding the specific microorganism responsible for a disease is crucial for accurate diagnosis and treatment.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which of the following is NOT a common bacterial disease?",
+        "question": "Which of the following is NOT a common bacterial disease?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option D1",
+        "explanation": "Malaria is caused by protozoa, specifically Plasmodium parasites. The other options, Tuberculosis, Typhoid, and Dysentery, are bacterial diseases.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T15:22:22.981223",
+    "saved_at": "2026-01-24T15:22:23.006168"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "cc225a91-4ec6-42f5-a85a-7fdcb50e72b8",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769247719714-0",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Protozoa are responsible for diseases like dysentery and malaria, while bacteria can cause illnesses like typhoid and tuberculosis. Fungi and viruses have different roles in causing diseases.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Understanding Microorganisms: Types, Characteristics, and Applications",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769247719714-1",
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Algae",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Protozoa are the type of microorganisms responsible for diseases such as dysentery and malaria. Bacteria, fungi, and algae have different roles and characteristics.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Types, Characteristics, and Applications",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769247719714-2",
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Protozoa are responsible for diseases such as dysentery and malaria. Bacteria, on the other hand, can cause illnesses like typhoid and tuberculosis.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Understanding Microorganisms: Types, Characteristics, and Applications",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769247719715-3",
+        "question": "Which of the following statements is true regarding microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All microorganisms are harmful and cause diseases like dysentery and typhoid.",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa contribute to the production of curd and bacteria help decompose organic waste.",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Microorganisms have no impact on human health or the environment.",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa and bacteria have the same functions in nature.",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "The statement in option B is correct. Protozoa play a role in food production (such as curd) while bacteria are involved in decomposing organic waste, highlighting the diverse applications and functions of microorganisms.",
+        "topic": "Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Types, Characteristics, and Applications",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769247719715-4",
+        "question": "Which of the following is true about microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All microorganisms are harmful to humans",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa can cause diseases like dysentery and malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria are only beneficial in food production",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Microorganisms have no impact on the environment",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa can indeed lead to diseases like dysentery and malaria, while bacteria can cause illnesses such as typhoid and tuberculosis. This highlights the harmful effects some microorganisms can have on human health.",
+        "topic": "Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Understanding Microorganisms: Types, Characteristics, and Applications",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for diseases like dysentery and malaria, while bacteria can cause illnesses like typhoid and tuberculosis. Fungi and viruses have different roles in causing diseases.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "timestamp": 1769247724167
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Algae",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are the type of microorganisms responsible for diseases such as dysentery and malaria. Bacteria, fungi, and algae have different roles and characteristics.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "timestamp": 1769247730028
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are responsible for diseases such as dysentery and malaria. Bacteria, on the other hand, can cause illnesses like typhoid and tuberculosis.",
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "timestamp": 1769247733171
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following statements is true regarding microorganisms?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following statements is true regarding microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "All microorganisms are harmful and cause diseases like dysentery and typhoid.",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa contribute to the production of curd and bacteria help decompose organic waste.",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Microorganisms have no impact on human health or the environment.",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa and bacteria have the same functions in nature.",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The statement in option B is correct. Protozoa play a role in food production (such as curd) while bacteria are involved in decomposing organic waste, highlighting the diverse applications and functions of microorganisms.",
+        "topic": "Microorganisms: Types, Characteristics, and Applications",
+        "difficulty": "medium",
+        "timestamp": 1769247738858
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "concept": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Protozoa are responsible for diseases like dysentery and malaria, while bacteria can cause illnesses like typhoid and tuberculosis. Fungi and viruses have different roles in causing diseases.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "concept": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Protozoa are the type of microorganisms responsible for diseases such as dysentery and malaria. Bacteria, fungi, and algae have different roles and characteristics.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Understanding Microorganisms: Types, Characteristics, and Applications",
+        "concept": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "question": "Which type of microorganism is responsible for diseases such as dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Protozoa are responsible for diseases such as dysentery and malaria. Bacteria, on the other hand, can cause illnesses like typhoid and tuberculosis.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Types, Characteristics, and Applications",
+        "concept": "Which of the following statements is true regarding microorganisms?",
+        "question": "Which of the following statements is true regarding microorganisms?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "The statement in option B is correct. Protozoa play a role in food production (such as curd) while bacteria are involved in decomposing organic waste, highlighting the diverse applications and functions of microorganisms.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Understanding Microorganisms: Types, Characteristics, and Applications",
+      "Microorganisms: Types, Characteristics, and Applications"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T15:12:24.248290",
+    "saved_at": "2026-01-24T15:12:24.273860"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "74dc53a6-4cfc-4c9e-8e9b-7230960174dc",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769246933255-0",
+        "question": "Which type of microorganism is responsible for diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Bacteria, not protozoa, are responsible for diseases like typhoid and tuberculosis. Protozoa generally cause diseases like dysentery and malaria.",
+        "topic": "Microorganisms and Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms and Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246933256-1",
+        "question": "Which of the following microorganisms is responsible for diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa are associated with diseases such as dysentery and malaria. Algae and fungi have different roles and are not the primary causative agents of these specific diseases.",
+        "topic": "Microorganisms and Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246933256-2",
+        "question": "Which of the following microorganisms are key culprits behind diseases like dysentery, malaria, typhoid, and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, and bacteria, like the ones causing typhoid and tuberculosis, are key culprits behind these diseases.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microbial Plant Diseases: Causes and Control",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246933256-3",
+        "question": "Which microorganisms are key culprits behind diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, are key culprits behind these diseases. Bacteria, fungi, and viruses can also cause diseases, but in this context, protozoa are the correct answer.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms and Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246933256-4",
+        "question": "Which of the following microorganisms can cause diseases in plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Nematodes",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacteria, fungi, and viruses are common microorganisms that can cause diseases in plants. Protozoa, algae, and nematodes are not typically known to cause plant diseases.",
+        "topic": "Microbial Plant Diseases: Causes and Control",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which type of microorganism is responsible for diseases like typhoid and tuberculosis?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is responsible for diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria, not protozoa, are responsible for diseases like typhoid and tuberculosis. Protozoa generally cause diseases like dysentery and malaria.",
+        "topic": "Microorganisms and Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246957505
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is responsible for diseases like typhoid and tuberculosis?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is responsible for diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa are associated with diseases such as dysentery and malaria. Algae and fungi have different roles and are not the primary causative agents of these specific diseases.",
+        "topic": "Microorganisms and Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246964457
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms are key culprits behind diseases like dysentery, malaria, typhoid, and tuberculosis?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms are key culprits behind diseases like dysentery, malaria, typhoid, and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, and bacteria, like the ones causing typhoid and tuberculosis, are key culprits behind these diseases.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246971219
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which microorganisms are key culprits behind diseases like dysentery and malaria?",
+        "correctAnswer": "C",
+        "questionText": "Which microorganisms are key culprits behind diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, are key culprits behind these diseases. Bacteria, fungi, and viruses can also cause diseases, but in this context, protozoa are the correct answer.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246979135
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microorganisms and Disease Transmission",
+        "concept": "Which type of microorganism is responsible for diseases like typhoid and tuberculosis?",
+        "question": "Which type of microorganism is responsible for diseases like typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Bacteria, not protozoa, are responsible for diseases like typhoid and tuberculosis. Protozoa generally cause diseases like dysentery and malaria.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms and Disease Transmission",
+        "concept": "Which of the following microorganisms is responsible for diseases like typhoid and tuberculosis?",
+        "question": "Which of the following microorganisms is responsible for diseases like typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Bacteria are responsible for diseases like typhoid and tuberculosis, while protozoa are associated with diseases such as dysentery and malaria. Algae and fungi have different roles and are not the primary causative agents of these specific diseases.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which of the following microorganisms are key culprits behind diseases like dysentery, malaria, typhoid, and tuberculosis?",
+        "question": "Which of the following microorganisms are key culprits behind diseases like dysentery, malaria, typhoid, and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, and bacteria, like the ones causing typhoid and tuberculosis, are key culprits behind these diseases.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which microorganisms are key culprits behind diseases like dysentery and malaria?",
+        "question": "Which microorganisms are key culprits behind diseases like dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Protozoa, such as those responsible for dysentery and malaria, are key culprits behind these diseases. Bacteria, fungi, and viruses can also cause diseases, but in this context, protozoa are the correct answer.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microorganisms and Disease Transmission",
+      "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:59:46.316134",
+    "saved_at": "2026-01-24T14:59:46.327443"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "8a308598-1421-4931-ae7a-22ad798e0bb7",
+    "score": 0.0,
+    "correct": 0,
+    "total": 9,
+    "questions": [
+      {
+        "id": "quiz-1769246277213-0",
+        "question": "Which of the following microorganisms is commonly responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Virus",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa are commonly responsible for causing dysentery and malaria, not viruses, bacteria, or fungi. Understanding the differences between these microorganisms is crucial in identifying and treating diseases effectively.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246277213-1",
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Escherichia coli",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Streptococcus pneumoniae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Salmonella enterica",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Bacillus anthracis is the microorganism responsible for causing anthrax in animals. It is a significant pathogen that can also affect humans.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Plant Diseases Caused by Microorganisms",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246277213-2",
+        "question": "What is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Regular handwashing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Avoiding crowded places",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Eating raw fruits and vegetables",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Using public transportation frequently",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Regular handwashing is a critical preventive measure as it helps reduce the spread of microorganisms that cause diseases like tuberculosis, measles, and cholera.",
+        "topic": "Preventive Measures for Microorganism Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Preventive Measures for Microorganism Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246277213-3",
+        "question": "Which type of microorganism is commonly known for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa are specifically known for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses are associated with other diseases but not commonly linked to dysentery and malaria.",
+        "topic": "Understanding Microorganisms and Disease Causation",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Understanding Microorganisms and Disease Causation",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246277213-4",
+        "question": "Which type of microorganism is commonly responsible for diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacteria are the microorganisms commonly responsible for diseases like typhoid and tuberculosis. Protozoa cause diseases such as dysentery and malaria, while viruses are also significant disease-causing agents.",
+        "topic": "Feedback on Microorganism Disease Quiz Mistake",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Feedback on Microorganism Disease Quiz Mistake",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa like those causing dysentery and malaria are common disease-causing microorganisms. Bacteria, fungi, and viruses can also cause diseases, but in this case, protozoa are specifically mentioned.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "timestamp": 1769246154176
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "correctAnswer": "C",
+        "questionText": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria like those causing typhoid and tuberculosis are common disease-causing microorganisms. Protozoa are responsible for diseases like dysentery and malaria, while viruses also play a significant role in causing various illnesses.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "timestamp": 1769246160354
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "correctAnswer": "A",
+        "questionText": "Which microorganism is known to cause anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Aspergillus niger",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Candida albicans",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Streptococcus pyogenes",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacillus anthracis is the microorganism that causes anthrax in animals. It is a well-known pathogen that can have devastating effects on both animals and humans.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "timestamp": 1769246168006
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which microorganism is responsible for causing anthrax in animals?",
+        "correctAnswer": "A",
+        "questionText": "Which microorganism is responsible for causing anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacillus anthracis, the microorganism responsible for causing anthrax in animals, is a bacteria. It is important to understand the different types of microorganisms that can cause diseases in plants and animals to effectively combat these harmful agents.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "timestamp": 1769246172245
+      },
+      {
+        "questionIndex": 4,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which of the following is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "correctAnswer": "A",
+        "questionText": "Which of the following is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Regular handwashing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Consuming raw meat",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Avoiding sunlight exposure",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Smoking cigarettes",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Regular handwashing is a critical preventive measure as it helps reduce the spread of microorganisms that cause diseases like tuberculosis, measles, and cholera.",
+        "topic": "Preventive Measures for Microorganism Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246181392
+      },
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms is commonly responsible for causing dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms is commonly responsible for causing dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Virus",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are commonly responsible for causing dysentery and malaria, not viruses, bacteria, or fungi. Understanding the differences between these microorganisms is crucial in identifying and treating diseases effectively.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "timestamp": 1769246339760
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "correctAnswer": "B",
+        "questionText": "Which microorganism is known to cause anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Escherichia coli",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Streptococcus pneumoniae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Salmonella enterica",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacillus anthracis is the microorganism responsible for causing anthrax in animals. It is a significant pathogen that can also affect humans.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "timestamp": 1769246355523
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "What is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "correctAnswer": "A",
+        "questionText": "What is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Regular handwashing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Avoiding crowded places",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Eating raw fruits and vegetables",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Using public transportation frequently",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Regular handwashing is a critical preventive measure as it helps reduce the spread of microorganisms that cause diseases like tuberculosis, measles, and cholera.",
+        "topic": "Preventive Measures for Microorganism Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769246370831
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is commonly known for causing diseases like dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is commonly known for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa are specifically known for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses are associated with other diseases but not commonly linked to dysentery and malaria.",
+        "topic": "Understanding Microorganisms and Disease Causation",
+        "difficulty": "medium",
+        "timestamp": 1769246376499
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "concept": "Which of the following microorganisms is commonly responsible for causing dysentery and malaria?",
+        "question": "Which of the following microorganisms is commonly responsible for causing dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa are commonly responsible for causing dysentery and malaria, not viruses, bacteria, or fungi. Understanding the differences between these microorganisms is crucial in identifying and treating diseases effectively.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "concept": "Which microorganism is known to cause anthrax in animals?",
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Bacillus anthracis is the microorganism responsible for causing anthrax in animals. It is a significant pathogen that can also affect humans.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Preventive Measures for Microorganism Transmission",
+        "concept": "What is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "question": "What is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Regular handwashing is a critical preventive measure as it helps reduce the spread of microorganisms that cause diseases like tuberculosis, measles, and cholera.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Understanding Microorganisms and Disease Causation",
+        "concept": "Which type of microorganism is commonly known for causing diseases like dysentery and malaria?",
+        "question": "Which type of microorganism is commonly known for causing diseases like dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa are specifically known for causing diseases like dysentery and malaria. Bacteria, fungi, and viruses are associated with other diseases but not commonly linked to dysentery and malaria.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+      "Plant Diseases Caused by Microorganisms",
+      "Preventive Measures for Microorganism Transmission",
+      "Understanding Microorganisms and Disease Causation"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:49:52.936108",
+    "saved_at": "2026-01-24T14:49:52.950844"
+  },
+  {
+    "session_id": "intelligent_1769246071745_lqdvvgmqp",
+    "lecture_id": "8a308598-1421-4931-ae7a-22ad798e0bb7",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769246148939-0",
+        "question": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Protozoa like those causing dysentery and malaria are common disease-causing microorganisms. Bacteria, fungi, and viruses can also cause diseases, but in this case, protozoa are specifically mentioned.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246148939-1",
+        "question": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Bacteria like those causing typhoid and tuberculosis are common disease-causing microorganisms. Protozoa are responsible for diseases like dysentery and malaria, while viruses also play a significant role in causing various illnesses.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Plant Diseases Caused by Microorganisms",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246148939-2",
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Aspergillus niger",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Candida albicans",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Streptococcus pyogenes",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacillus anthracis is the microorganism that causes anthrax in animals. It is a well-known pathogen that can have devastating effects on both animals and humans.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Preventive Measures for Microorganism Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246148939-3",
+        "question": "Which microorganism is responsible for causing anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacillus anthracis, the microorganism responsible for causing anthrax in animals, is a bacteria. It is important to understand the different types of microorganisms that can cause diseases in plants and animals to effectively combat these harmful agents.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769246148939-4",
+        "question": "Which of the following is a key preventive measure for controlling the transmission of microorganisms in common diseases like tuberculosis, measles, and cholera?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Regular handwashing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Consuming raw meat",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Avoiding sunlight exposure",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Smoking cigarettes",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Regular handwashing is a critical preventive measure as it helps reduce the spread of microorganisms that cause diseases like tuberculosis, measles, and cholera.",
+        "topic": "Preventive Measures for Microorganism Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Plant Diseases Caused by Microorganisms",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Protozoa like those causing dysentery and malaria are common disease-causing microorganisms. Bacteria, fungi, and viruses can also cause diseases, but in this case, protozoa are specifically mentioned.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "timestamp": 1769246154176
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "correctAnswer": "C",
+        "questionText": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria like those causing typhoid and tuberculosis are common disease-causing microorganisms. Protozoa are responsible for diseases like dysentery and malaria, while viruses also play a significant role in causing various illnesses.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "difficulty": "medium",
+        "timestamp": 1769246160354
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "correctAnswer": "A",
+        "questionText": "Which microorganism is known to cause anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Aspergillus niger",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Candida albicans",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Streptococcus pyogenes",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacillus anthracis is the microorganism that causes anthrax in animals. It is a well-known pathogen that can have devastating effects on both animals and humans.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "timestamp": 1769246168006
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which microorganism is responsible for causing anthrax in animals?",
+        "correctAnswer": "A",
+        "questionText": "Which microorganism is responsible for causing anthrax in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacillus anthracis, the microorganism responsible for causing anthrax in animals, is a bacteria. It is important to understand the different types of microorganisms that can cause diseases in plants and animals to effectively combat these harmful agents.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "timestamp": 1769246172245
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "concept": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "question": "Which type of microorganism is commonly responsible for causing diseases like dysentery and malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "Protozoa like those causing dysentery and malaria are common disease-causing microorganisms. Bacteria, fungi, and viruses can also cause diseases, but in this case, protozoa are specifically mentioned.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+        "concept": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "question": "Which type of microorganism is commonly responsible for diseases such as typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Bacteria like those causing typhoid and tuberculosis are common disease-causing microorganisms. Protozoa are responsible for diseases like dysentery and malaria, while viruses also play a significant role in causing various illnesses.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "concept": "Which microorganism is known to cause anthrax in animals?",
+        "question": "Which microorganism is known to cause anthrax in animals?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Bacillus anthracis is the microorganism that causes anthrax in animals. It is a well-known pathogen that can have devastating effects on both animals and humans.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "concept": "Which microorganism is responsible for causing anthrax in animals?",
+        "question": "Which microorganism is responsible for causing anthrax in animals?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Bacillus anthracis, the microorganism responsible for causing anthrax in animals, is a bacteria. It is important to understand the different types of microorganisms that can cause diseases in plants and animals to effectively combat these harmful agents.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microorganisms: Bacteria, Protozoa, and Fungi in Disease and Industry",
+      "Plant Diseases Caused by Microorganisms"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:46:23.222888",
+    "saved_at": "2026-01-24T14:46:23.233231"
+  },
+  {
+    "session_id": "intelligent_1769244529082_i6vt4i6y1",
+    "lecture_id": "1223423a-9ad2-4a16-a148-abeabad3e945",
+    "score": 0.0,
+    "correct": 0,
+    "total": 9,
+    "questions": [
+      {
+        "id": "quiz-1769244630207-0",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Welcome to Adaptive Learning",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244630207-1",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244630207-2",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244630207-3",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Welcome to Adaptive Learning",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244630207-4",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "D",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244538162
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "D",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244542049
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "A",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244544705
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "C",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244546997
+      },
+      {
+        "questionIndex": 4,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "A",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244549485
+      },
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "D",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244631315
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "C",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244633394
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "A",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244636030
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "A",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244638034
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Welcome to Adaptive Learning",
+        "concept": "Which statement best describes Welcome to Adaptive Learning?",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option D1",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Welcome to Adaptive Learning",
+        "concept": "Which statement best describes Welcome to Adaptive Learning?",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Learning Session Complete!",
+        "concept": "Which statement best describes Learning Session Complete!?",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Learning Session Complete!",
+        "concept": "Which statement best describes Learning Session Complete!?",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Welcome to Adaptive Learning",
+      "Learning Session Complete!"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:20:41.834120",
+    "saved_at": "2026-01-24T14:20:41.837649"
+  },
+  {
+    "session_id": "intelligent_1769244529082_i6vt4i6y1",
+    "lecture_id": "1223423a-9ad2-4a16-a148-abeabad3e945",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769244537157-0",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Welcome to Adaptive Learning",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244537157-1",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244537157-2",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244537157-3",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Welcome to Adaptive Learning",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769244537157-4",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Learning Session Complete!",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "D",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244538162
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "correctAnswer": "D",
+        "questionText": "Which statement best describes Welcome to Adaptive Learning?",
+        "options": [
+          {
+            "id": "A",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Personalized learning experience",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "topic": "Welcome to Adaptive Learning",
+        "difficulty": "medium",
+        "timestamp": 1769244542049
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "A",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244544705
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which statement best describes Learning Session Complete!?",
+        "correctAnswer": "C",
+        "questionText": "Which statement best describes Learning Session Complete!?",
+        "options": [
+          {
+            "id": "A",
+            "text": "This approach is primarily used in different contexts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "The opposite principle applies in most cases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Completed 0 out of 1 topics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "There is insufficient evidence to support this theory",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "topic": "Learning Session Complete!",
+        "difficulty": "medium",
+        "timestamp": 1769244546997
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Welcome to Adaptive Learning",
+        "concept": "Which statement best describes Welcome to Adaptive Learning?",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option D1",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Welcome to Adaptive Learning",
+        "concept": "Which statement best describes Welcome to Adaptive Learning?",
+        "question": "Which statement best describes Welcome to Adaptive Learning?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option D1",
+        "explanation": "The correct answer relates to: Personalized learning experience",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Learning Session Complete!",
+        "concept": "Which statement best describes Learning Session Complete!?",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Learning Session Complete!",
+        "concept": "Which statement best describes Learning Session Complete!?",
+        "question": "Which statement best describes Learning Session Complete!?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "The correct answer relates to: Completed 0 out of 1 topics",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Welcome to Adaptive Learning",
+      "Learning Session Complete!"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:19:11.304467",
+    "saved_at": "2026-01-24T14:19:11.312494"
+  },
+  {
+    "session_id": "intelligent_1769242508199_of9tgmktg",
+    "lecture_id": "2635df5c-1867-4a30-a176-add350142b3d",
+    "score": 0.0,
+    "correct": 0,
+    "total": 4,
+    "questions": [
+      {
+        "id": "quiz-1769243893829-0",
+        "question": "Which type of microorganism can cause diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "explanation": "Bacteria are single-celled organisms that can cause diseases like typhoid and tuberculosis. Protozoa, on the other hand, can lead to illnesses such as dysentery and malaria.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769243893829-1",
+        "question": "Which of the following diseases is commonly caused by bacteria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Dysentery",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "explanation": "Typhoid is a disease commonly caused by bacteria. It is important to differentiate between bacterial and protozoal diseases for effective disease management.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769243893829-2",
+        "question": "Which of the following microorganisms can cause malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "The correct answer is B. Protozoa like Plasmodium spp. are responsible for causing malaria in humans. Bacteria, fungi, and viruses are not the primary microorganisms associated with malaria transmission.",
+        "topic": "Microorganisms in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Plant Diseases Caused by Microorganisms",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769243893829-3",
+        "question": "Which of the following diseases is caused by a protozoa?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Dysentery",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Malaria",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "D",
+        "explanation": "Malaria is a disease caused by the protozoa Plasmodium, transmitted through the bite of infected mosquitoes. Typhoid is caused by the bacterium Salmonella typhi, tuberculosis is caused by the bacterium Mycobacterium tuberculosis, and dysentery can be caused by bacteria or protozoa.",
+        "topic": "Microorganisms in Disease Transmission",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      },
+      {
+        "id": "quiz-1769243893829-4",
+        "question": "Which microorganism is responsible for anthrax disease in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Streptococcus pyogenes",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacillus anthracis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Escherichia coli",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Mycobacterium tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "explanation": "Bacillus anthracis is the bacterium responsible for causing anthrax disease in animals. It was identified by Robert Köch in 1876.",
+        "topic": "Plant Diseases Caused by Microorganisms",
+        "difficulty": "medium",
+        "type": "knowledge_verification",
+        "misconceptions": [],
+        "keyInsights": [
+          "Key concept from Microorganisms in Disease Transmission",
+          "Understanding this concept is crucial for the exam",
+          "Review the slide content for detailed explanation"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionIndex": 0,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which type of microorganism can cause diseases like typhoid and tuberculosis?",
+        "correctAnswer": "A",
+        "questionText": "Which type of microorganism can cause diseases like typhoid and tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Bacteria are single-celled organisms that can cause diseases like typhoid and tuberculosis. Protozoa, on the other hand, can lead to illnesses such as dysentery and malaria.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769243896271
+      },
+      {
+        "questionIndex": 1,
+        "selectedAnswer": 1,
+        "isCorrect": false,
+        "question": "Which of the following diseases is commonly caused by bacteria?",
+        "correctAnswer": "C",
+        "questionText": "Which of the following diseases is commonly caused by bacteria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Dysentery",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Typhoid is a disease commonly caused by bacteria. It is important to differentiate between bacterial and protozoal diseases for effective disease management.",
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769243900495
+      },
+      {
+        "questionIndex": 2,
+        "selectedAnswer": 2,
+        "isCorrect": false,
+        "question": "Which of the following microorganisms can cause malaria?",
+        "correctAnswer": "B",
+        "questionText": "Which of the following microorganisms can cause malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "The correct answer is B. Protozoa like Plasmodium spp. are responsible for causing malaria in humans. Bacteria, fungi, and viruses are not the primary microorganisms associated with malaria transmission.",
+        "topic": "Microorganisms in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769243903764
+      },
+      {
+        "questionIndex": 3,
+        "selectedAnswer": 0,
+        "isCorrect": false,
+        "question": "Which of the following diseases is caused by a protozoa?",
+        "correctAnswer": "D",
+        "questionText": "Which of the following diseases is caused by a protozoa?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Typhoid",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Dysentery",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Malaria",
+            "isCorrect": false
+          }
+        ],
+        "explanation": "Malaria is a disease caused by the protozoa Plasmodium, transmitted through the bite of infected mosquitoes. Typhoid is caused by the bacterium Salmonella typhi, tuberculosis is caused by the bacterium Mycobacterium tuberculosis, and dysentery can be caused by bacteria or protozoa.",
+        "topic": "Microorganisms in Disease Transmission",
+        "difficulty": "medium",
+        "timestamp": 1769243907251
+      }
+    ],
+    "misconceptions": [
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which type of microorganism can cause diseases like typhoid and tuberculosis?",
+        "question": "Which type of microorganism can cause diseases like typhoid and tuberculosis?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option A1",
+        "explanation": "Bacteria are single-celled organisms that can cause diseases like typhoid and tuberculosis. Protozoa, on the other hand, can lead to illnesses such as dysentery and malaria.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+        "concept": "Which of the following diseases is commonly caused by bacteria?",
+        "question": "Which of the following diseases is commonly caused by bacteria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option C1",
+        "explanation": "Typhoid is a disease commonly caused by bacteria. It is important to differentiate between bacterial and protozoal diseases for effective disease management.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms in Disease Transmission",
+        "concept": "Which of the following microorganisms can cause malaria?",
+        "question": "Which of the following microorganisms can cause malaria?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option B1",
+        "explanation": "The correct answer is B. Protozoa like Plasmodium spp. are responsible for causing malaria in humans. Bacteria, fungi, and viruses are not the primary microorganisms associated with malaria transmission.",
+        "type": "quiz_error"
+      },
+      {
+        "topic": "Microorganisms in Disease Transmission",
+        "concept": "Which of the following diseases is caused by a protozoa?",
+        "question": "Which of the following diseases is caused by a protozoa?",
+        "wrongAnswer": "Option 1",
+        "correctAnswer": "Option D1",
+        "explanation": "Malaria is a disease caused by the protozoa Plasmodium, transmitted through the bite of infected mosquitoes. Typhoid is caused by the bacterium Salmonella typhi, tuberculosis is caused by the bacterium Mycobacterium tuberculosis, and dysentery can be caused by bacteria or protozoa.",
+        "type": "quiz_error"
+      }
+    ],
+    "weak_topics": [
+      "Microorganisms: Bacteria, Protozoa, and Fungi in Disease Transmission",
+      "Microorganisms in Disease Transmission"
+    ],
+    "recommendations": [
+      "Review fundamental concepts",
+      "Practice more problems",
+      "Focus on weak areas"
+    ],
+    "timestamp": "2026-01-24T14:08:32.558985",
+    "saved_at": "2026-01-24T14:08:32.564990"
+  }
+]
