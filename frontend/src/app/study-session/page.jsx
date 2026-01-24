@@ -596,6 +596,30 @@ function StudySessionContent() {
     const totalQuestions = quizHistory.length;
     const score = Math.round((correctAnswers / totalQuestions) * 100);
     
+    // Update quiz questions with user answers for results display
+    console.log('Quiz History before mapping:', quizHistory);
+    
+    const updatedQuizData = { ...quizData };
+    updatedQuizData.questions = quizData.questions.map((question, index) => {
+      const userAnswer = quizHistory.find(q => q.questionIndex === index);
+      console.log(`Mapping question ${index}:`, {
+        userAnswer: userAnswer,
+        selectedAnswer: userAnswer ? userAnswer.selectedAnswer : 'not found'
+      });
+      
+      return {
+        ...question,
+        userAnswer: userAnswer ? userAnswer.selectedAnswer : null
+      };
+    });
+    
+    console.log('Updated Quiz Data:', updatedQuizData.questions.map((q, i) => ({
+      index: i,
+      userAnswer: q.userAnswer,
+      correctAnswer: q.correctAnswer
+    })));
+    
+    setQuizData(updatedQuizData);
     setQuizScore(score);
     setQuizCompleted(true);
     
@@ -2023,7 +2047,6 @@ function StudySessionContent() {
                 </div>
               </div>
             ))}
-          </div>
 
           <div className="mt-6">
             <button
@@ -2035,6 +2058,7 @@ function StudySessionContent() {
           </div>
         </div>
       </div>
+    </div>
     );
   };
 

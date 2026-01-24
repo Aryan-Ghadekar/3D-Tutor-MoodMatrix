@@ -922,6 +922,14 @@ For {student_goal.upper()} exam preparation at {knowledge_level} level."""
         
         return slide_content
         
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            print(f"⚠️ Model {OPENROUTER_MODEL} not found, using fallback content")
+        elif e.response.status_code == 402:
+            print(f"⚠️ API payment required, using fallback content")
+        else:
+            print(f"🚨 HTTP error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI model unavailable: {str(e)}")
     except json.JSONDecodeError as e:
         print(f"JSON parsing error: {e}")
         print(f"Raw content: {content[:200]}")
