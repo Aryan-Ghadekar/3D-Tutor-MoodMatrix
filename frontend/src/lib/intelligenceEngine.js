@@ -121,8 +121,9 @@ export default class IntelligenceEngine {
         
         if (response.ok) {
           const data = await response.json();
-          if (data.success && data.lecturePlan) {
-            lecturePlan = data.lecturePlan;
+          // Backend returns lecture plan directly, not wrapped in response object
+          if (data && (data.lecturePlan || data.impTopics)) {
+            lecturePlan = data.lecturePlan || data;
             console.log('Loaded lecture plan by session ID:', lecturePlan.topic);
           }
         }
@@ -137,8 +138,9 @@ export default class IntelligenceEngine {
         
         if (response.ok) {
           const data = await response.json();
-          if (data.success && data.lecturePlan) {
-            lecturePlan = data.lecturePlan;
+          // Backend returns lecture plan directly, not wrapped in response object
+          if (data && (data.lecturePlan || data.impTopics)) {
+            lecturePlan = data.lecturePlan || data;
             console.log('Loaded latest lecture plan:', lecturePlan.topic);
           }
         }
@@ -184,7 +186,7 @@ export default class IntelligenceEngine {
     // Clean each topic
     plan.impTopics = plan.impTopics.map((topic, index) => {
       if (!topic || typeof topic !== 'object') {
-        return this.createDefaultTopic(index);
+        return this.createDefaultTopic(index, plan);
       }
       
       // Ensure required fields
@@ -287,17 +289,38 @@ export default class IntelligenceEngine {
     return clean || 'Important Concept';
   }
 
-  createDefaultTopic(index) {
-    const defaultTopics = [
-      "Process Synchronization in Operating Systems",
-      "Memory Management Techniques",
-      "CPU Scheduling Algorithms",
-      "File System Organization",
-      "Deadlock Detection and Prevention",
-      "Virtual Memory Concepts"
+  async createDefaultTopic(index, actualPlan = null) {
+    // Try to use actual lecture plan content first
+    if (actualPlan && actualPlan.impTopics && actualPlan.impTopics[index]) {
+      const topic = actualPlan.impTopics[index];
+      return {
+        id: topic.id || `topic-${index + 1}`,
+        title: topic.title || `Topic ${index + 1}`,
+        description: topic.description || `This topic covers important concepts related to ${topic.title || 'this topic'}.`,
+        importance: topic.importance || 'medium',
+        weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
+        difficulty: topic.difficulty || 'medium',
+        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights : [],
+        commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions : [],
+        realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications : [],
+        prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
+        estimatedTime: topic.estimatedTime || topic.estimated_time || '25-35 minutes',
+        educationalValue: topic.educationalValue || topic.educational_value || {},
+        isDefault: true
+      };
+    }
+    
+    // Only use generic fallback if no actual plan available
+    const genericTopics = [
+      "Computer Architecture Fundamentals",
+      "Processor Design and Organization",
+      "Memory Systems and Hierarchy",
+      "Instruction Set Architecture",
+      "Pipelining and Parallel Processing",
+      "Hardware-Software Interface"
     ];
     
-    const title = index < defaultTopics.length ? defaultTopics[index] : `Topic ${index + 1}`;
+    const title = index < genericTopics.length ? genericTopics[index] : `Topic ${index + 1}`;
     
     return {
       id: `topic-${index + 1}`,
@@ -317,121 +340,120 @@ export default class IntelligenceEngine {
   }
 
   async createEducationalMockPlan() {
-    console.log('Creating educational mock plan...');
+    console.log('Creating educational mock plan from actual lecture data...');
     
-    // Create meaningful educational topics (not generic!)
-    const educationalTopics = [
+    // Try to load the latest actual lecture plan first
+    let actualPlan = null;
+    try {
+      const response = await fetch(
+        `${this.config.backendUrl}/get-lecture-plan?latest=true`,
+        { signal: AbortSignal.timeout(10000) }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Backend returns lecture plan directly, not wrapped in response object
+        if (data && (data.lecturePlan || data.impTopics)) {
+          actualPlan = data.lecturePlan || data;
+          console.log('Using actual lecture plan for mock:', actualPlan.topic);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load actual plan for mock:', error);
+    }
+    
+    // If we have actual plan content, use it
+    if (actualPlan && actualPlan.impTopics && actualPlan.impTopics.length > 0) {
+      const educationalTopics = actualPlan.impTopics.map((topic, index) => ({
+        id: topic.id || `topic-${index + 1}`,
+        title: topic.title || `Topic ${index + 1}`,
+        description: topic.description || `This topic covers important concepts related to ${topic.title || 'this topic'}.`,
+        importance: topic.importance || 'medium',
+        weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
+        difficulty: topic.difficulty || 'medium',
+        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights : [],
+        commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions : [],
+        realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications : [],
+        prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
+        estimatedTime: topic.estimatedTime || topic.estimated_time || '25-35 minutes',
+        educationalValue: topic.educationalValue || topic.educational_value || {
+          conceptualDepth: 0.7,
+          practicalRelevance: 0.8,
+          examImportance: 0.85
+        },
+        isMock: true
+      }));
+      
+      return {
+        sessionId: this.sessionId,
+        lectureId: `mock_lecture_${Date.now()}`,
+        topic: actualPlan.topic || "Computer Science Topics",
+        duration: actualPlan.duration || "90 minutes",
+        date: new Date().toISOString().split('T')[0],
+        instructor: actualPlan.instructor || "AI Learning Assistant",
+        studentGoal: this.studentGoal,
+        impTopics: educationalTopics,
+        totalTopics: educationalTopics.length,
+        metadata: {
+          isMock: true,
+          basedOnActualPlan: true,
+          originalTopic: actualPlan.topic,
+          generatedAt: new Date().toISOString()
+        }
+      };
+    }
+    
+    // Only use generic fallback if no actual plan available
+    console.log('No actual plan found, using generic educational topics');
+    const genericTopics = [
       {
         id: "topic-1",
-        title: "Process Synchronization in Operating Systems",
-        description: "Mechanisms for coordinating access to shared resources among multiple processes. Essential for preventing race conditions and ensuring data consistency in concurrent systems.",
+        title: "Computer Architecture Fundamentals",
+        description: "Fundamental concepts of computer organization, including CPU structure, memory hierarchy, and instruction execution.",
         importance: "high",
-        weightage: 95,
+        weightage: 90,
         difficulty: "medium",
         keyInsights: [
-          "Critical section problem and solutions",
-          "Semaphore operations and implementation",
-          "Monitor concepts and usage",
-          "Deadlock conditions and avoidance"
+          "CPU components and their functions",
+          "Memory hierarchy and performance",
+          "Instruction cycle and execution flow",
+          "Hardware-software interaction"
         ],
         commonMisconceptions: [
-          "Thinking mutex and semaphore are interchangeable",
-          "Believing deadlock avoidance guarantees no deadlocks",
-          "Confusing race condition with deadlock"
+          "Confusing RAM with cache memory",
+          "Thinking clock speed alone determines performance",
+          "Believing all instructions take same time"
         ],
         realWorldApplications: [
-          "Database transaction management",
-          "Multi-threaded web servers",
-          "Real-time system coordination"
+          "Processor design optimization",
+          "System performance tuning",
+          "Embedded system development"
         ],
-        prerequisites: ["Process Management", "Thread Basics"],
+        prerequisites: ["Basic Computing Concepts"],
         estimatedTime: "35-45 minutes",
         educationalValue: {
           conceptualDepth: 0.8,
           practicalRelevance: 0.9,
           examImportance: 0.95
-        }
-      },
-      {
-        id: "topic-2",
-        title: "Memory Management Techniques",
-        description: "Methods for managing computer memory allocation, protection, and optimization. Includes paging, segmentation, and virtual memory concepts.",
-        importance: "high",
-        weightage: 90,
-        difficulty: "medium",
-        keyInsights: [
-          "Paging concepts and page tables",
-          "Segmentation and its advantages",
-          "Virtual memory implementation",
-          "Page replacement algorithms"
-        ],
-        commonMisconceptions: [
-          "Confusing physical and virtual addresses",
-          "Thinking all page replacement algorithms are equally efficient",
-          "Believing segmentation eliminates external fragmentation"
-        ],
-        realWorldApplications: [
-          "Operating system memory allocation",
-          "Database buffer management",
-          "Web browser tab isolation"
-        ],
-        prerequisites: ["Computer Architecture", "Basic OS Concepts"],
-        estimatedTime: "30-40 minutes",
-        educationalValue: {
-          conceptualDepth: 0.7,
-          practicalRelevance: 0.8,
-          examImportance: 0.9
-        }
-      },
-      {
-        id: "topic-3",
-        title: "CPU Scheduling Algorithms",
-        description: "Algorithms used by operating systems to decide which processes run when. Includes FCFS, SJF, Round Robin, and priority scheduling.",
-        importance: "medium",
-        weightage: 85,
-        difficulty: "easy",
-        keyInsights: [
-          "Preemptive vs non-preemptive scheduling",
-          "CPU utilization and throughput metrics",
-          "Response time and waiting time calculations",
-          "Algorithm trade-offs and selection criteria"
-        ],
-        commonMisconceptions: [
-          "Thinking SJF always gives optimal average waiting time",
-          "Confusing turnaround time with response time",
-          "Believing Round Robin has no starvation"
-        ],
-        realWorldApplications: [
-          "Operating system process scheduling",
-          "Real-time system task management",
-          "Cloud computing resource allocation"
-        ],
-        prerequisites: ["Process Concepts", "Basic Algorithms"],
-        estimatedTime: "25-35 minutes",
-        educationalValue: {
-          conceptualDepth: 0.6,
-          practicalRelevance: 0.8,
-          examImportance: 0.85
-        }
+        },
+        isMock: true
       }
     ];
     
     return {
       sessionId: this.sessionId,
       lectureId: `mock_lecture_${Date.now()}`,
-      topic: "Operating Systems Core Concepts",
+      topic: "Computer Science Fundamentals",
       duration: "90 minutes",
       date: new Date().toISOString().split('T')[0],
       instructor: "AI Learning Assistant",
       studentGoal: this.studentGoal,
-      impTopics: educationalTopics,
-      totalTopics: educationalTopics.length,
+      impTopics: genericTopics,
+      totalTopics: genericTopics.length,
       metadata: {
-        analysisDepth: "educational_mock",
-        confidenceScore: 0.75,
-        generatedAt: new Date().toISOString(),
         isMock: true,
-        version: "3.0"
+        basedOnActualPlan: false,
+        generatedAt: new Date().toISOString()
       }
     };
   }

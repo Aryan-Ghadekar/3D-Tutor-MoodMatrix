@@ -12,10 +12,10 @@ import pdfplumber
 import whisper
 import os
 import requests
+import json
 from sentence_transformers import SentenceTransformer, util
 from datetime import date, datetime
 from dotenv import load_dotenv
-import json
 from pathlib import Path
 from pptx import Presentation
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -25,7 +25,8 @@ import random
 # =========================================================
 # ENV
 # =========================================================
-load_dotenv()
+# Load from .env file in the same directory as main.py
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 # =========================================================
 # APP INIT
@@ -34,7 +35,7 @@ app = FastAPI(title="Study Plan Generator API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,6 +79,14 @@ semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_MODEL = "openai/gpt-3.5-turbo"
+
+# Validate API key on startup
+if not OPENROUTER_API_KEY:
+    print("⚠️  WARNING: OPENROUTER_API_KEY not found in environment!")
+    print("   Please ensure .env file exists in:", os.path.join(os.path.dirname(__file__), '.env'))
+    print("   And contains: OPENROUTER_API_KEY=your_key_here")
+else:
+    print(f"✅ OpenRouter API Key loaded: {OPENROUTER_API_KEY[:20]}...{OPENROUTER_API_KEY[-4:]}")
 
 # =========================================================
 # CONSTANTS
@@ -248,6 +257,48 @@ def label_importance(score):
     return "low"
 
 # =========================================================
+# API VALIDATION HELPERS
+# =========================================================
+def validate_api_key():
+    """Validate that API key is set and non-empty"""
+    if not OPENROUTER_API_KEY or OPENROUTER_API_KEY.strip() == "":
+        raise Exception(
+            "OPENROUTER_API_KEY is not configured. "
+            "Please set it in backend/fastapi-service/.env file. "
+            "Format: OPENROUTER_API_KEY=sk-or-v1-xxxxx"
+        )
+    return True
+
+def make_openrouter_request(payload, timeout=15):
+    """Make OpenRouter API request with proper error handling"""
+    validate_api_key()
+    
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "http://localhost:3000",
+        "X-Title": "Study Session AI"
+    }
+    
+    try:
+        response = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=timeout)
+        
+        if response.status_code == 401:
+            raise Exception(
+                f"OpenRouter API returned 401 Unauthorized. "
+                f"Please verify your API key is correct and active. "
+                f"Current key: {OPENROUTER_API_KEY[:20]}..."
+            )
+        
+        response.raise_for_status()
+        return response.json()
+        
+    except requests.exceptions.Timeout:
+        raise Exception(f"OpenRouter API request timed out after {timeout}s. Try again.")
+    except requests.exceptions.ConnectionError as e:
+        raise Exception(f"Cannot connect to OpenRouter API: {str(e)}")
+
+# =========================================================
 # LLM GENERATION HELPERS
 # =========================================================
 def generate_topic_title(text):
@@ -262,15 +313,9 @@ def generate_topic_title(text):
         "max_tokens": 40
     }
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        r = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=15)
-        r.raise_for_status()
-        title = r.json()["choices"][0]["message"]["content"].strip()
+        result = make_openrouter_request(payload)
+        title = result["choices"][0]["message"]["content"].strip()
         title = title.replace('"', '').replace("'", '').strip()
         return title[:100]
     except Exception as e:
@@ -290,15 +335,9 @@ def generate_summary(text):
         "max_tokens": 150
     }
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        r = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=15)
-        r.raise_for_status()
-        return r.json()["choices"][0]["message"]["content"].strip()
+        result = make_openrouter_request(payload)
+        return result["choices"][0]["message"]["content"].strip()
     except Exception as e:
         print(f"Summary generation failed: {e}")
         return text[:300] + "..."
@@ -315,15 +354,9 @@ def generate_structured_content(prompt, text, expected_format="list"):
         "max_tokens": 200
     }
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        r = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=15)
-        r.raise_for_status()
-        content = r.json()["choices"][0]["message"]["content"].strip()
+        result = make_openrouter_request(payload)
+        content = result["choices"][0]["message"]["content"].strip()
         
         try:
             content = content.replace("```json", "").replace("```", "").strip()
@@ -651,6 +684,8 @@ def generate_slide_with_ai(
     3. Lecture Plan Content
     """
     
+    import json  # Ensure json is available in this scope
+    
     knowledge_level = knowledge_state.get('knowledgeLevel', 'intermediate')
     avg_score = knowledge_state.get('averageScore', 0)
     weak_topics = knowledge_state.get('weakTopics', [])
@@ -801,6 +836,47 @@ Create a slide that:
 
 Be honest but supportive. Focus on growth opportunities."""
 
+    elif action_type == 'quiz-feedback':
+        # Parse context if it's JSON
+        context_data = {}
+        if context:
+            try:
+                import json
+                context_data = json.loads(context) if isinstance(context, str) else context
+            except:
+                context_data = {}
+        
+        wrong_answer = context_data.get('wrongAnswer', {})
+        student_performance = context_data.get('studentPerformance', {})
+        
+        user_prompt = f"""Create a WRONG ANSWER FEEDBACK slide for this quiz mistake:
+
+QUESTION: "{wrong_answer.get('question', 'Unknown question')}"
+
+STUDENT'S ANSWER: "{wrong_answer.get('selectedAnswer', {}).get('text', 'Unknown answer')}"
+
+CORRECT ANSWER: "{wrong_answer.get('correctAnswer', {}).get('text', 'Unknown correct answer')}"
+
+EXPLANATION: "{wrong_answer.get('explanation', 'No explanation available')}"
+
+STUDENT PERFORMANCE:
+- Current score: {avg_score}%
+- Total wrong answers: {student_performance.get('wrongAnswersCount', 0)}
+
+STUDENT CONTEXT:
+- Knowledge level: {knowledge_level}
+- Preparing for: {student_goal.upper()}
+
+Create a slide that:
+1. Clearly explains WHY the student's answer was wrong
+2. Provides the CORRECT answer with detailed explanation
+3. Addresses the underlying misconception or knowledge gap
+4. Connects to the original slide content they studied
+5. Offers strategies to avoid similar mistakes
+6. Includes exam-relevant tips for {student_goal.upper()}
+
+Be supportive but clear. Focus on learning from the mistake."""
+
     else:
         user_prompt = f"""Create an educational slide about: {topic.get('title', 'Topic')}
 
@@ -818,19 +894,24 @@ For {student_goal.upper()} exam preparation at {knowledge_level} level."""
             "max_tokens": 2000
         }
 
-        headers = {
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "http://localhost:3000",
-            "X-Title": "Study Session AI"
-        }
-
         print(f"Calling AI for {action_type}...")
         
-        response = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json=payload,
+            timeout=30
+        )
         
+        response.raise_for_status()
         result = response.json()
+        
+        if not result.get("choices") or not result["choices"][0].get("message"):
+            raise Exception("Invalid API response format")
+            
         content = result["choices"][0]["message"]["content"].strip()
         
         # Clean and parse JSON
@@ -841,9 +922,6 @@ For {student_goal.upper()} exam preparation at {knowledge_level} level."""
         
         return slide_content
         
-    except requests.exceptions.RequestException as e:
-        print(f"OpenRouter API error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
     except json.JSONDecodeError as e:
         print(f"JSON parsing error: {e}")
         print(f"Raw content: {content[:200]}")
@@ -888,10 +966,18 @@ async def generate_dynamic_slide(
 
         # Extract current topic
         topics = lecture_plan.get('impTopics', [])
-        if current_topic_index >= len(topics):
-            raise HTTPException(status_code=400, detail="Invalid topic index")
         
+        if not topics:
+            raise HTTPException(status_code=400, detail="Lecture plan has no topics")
+
+        if current_topic_index < 0 or current_topic_index >= len(topics):
+            # Instead of defaulting silently, raise error or use first topic intentionally
+            raise HTTPException(status_code=400, detail=f"Invalid topic index: {current_topic_index}")
+
         current_topic = topics[current_topic_index]
+
+        print("DEBUG: Generating slide for topic:", current_topic.get('title'))
+
         
         # Generate slide content with AI
         slide_content = generate_slide_with_ai(

@@ -38,7 +38,7 @@ export async function POST(request) {
         lecture_plan: data.lecturePlan,
         student_goal: data.goal || 'gate',
         knowledge_state: data.knowledgeState || {},
-        current_topic_index: data.currentTopicIndex || 0,
+        current_topic_index: Number(data.currentTopicIndex),
         action_type: data.actionType || 'concept_explanation',
         user_question: data.userQuestion || null,
         context: data.context || ''

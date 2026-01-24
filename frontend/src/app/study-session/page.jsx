@@ -74,6 +74,8 @@ function StudySessionContent() {
   const [quizScore, setQuizScore] = useState(null);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizHistory, setQuizHistory] = useState([]);
+  const [quizDifficulty, setQuizDifficulty] = useState('medium'); // Track current quiz difficulty
+  const [wrongAnswers, setWrongAnswers] = useState([]); // Track wrong answers for feedback slides
   
   // Learning Services
   const [misconceptionTracker, setMisconceptionTracker] = useState(null);
@@ -261,7 +263,7 @@ function StudySessionContent() {
   // DYNAMIC SLIDE GENERATION WITH THREE INPUT STREAMS
   // =========================================================
   
-  const generateDynamicSlide = async (actionType = 'concept_explanation', userQuestion = '', engine = null) => {
+  const generateDynamicSlide = async (actionType = 'concept_explanation', userQuestion = '', engine = null, context = '') => {
     const activeEngine = engine || intelligenceEngine;
     const activeSessionId = sessionId;
     
@@ -297,6 +299,7 @@ function StudySessionContent() {
         goal: studentGoal,
         knowledgeLevel: knowledgeState.knowledgeLevel,
         hasQuestion: !!userQuestion,
+        hasContext: !!context,
         sessionId: finalSessionId // Log the actual session ID being used
       });
       
@@ -311,18 +314,21 @@ function StudySessionContent() {
           currentTopicIndex: currentTopicIndex,
           actionType: actionType,
           userQuestion: userQuestion,
-          context: ''
+          context: context
         })
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('API Error:', {
+        console.warn('API Error handled gracefully:', {
           status: response.status,
           error: errorData.error || 'Unknown error',
-          sessionId: finalSessionId // Log finalSessionId in errors too
+          sessionId: finalSessionId
         });
-        throw new Error(errorData.error || `AI generation failed: ${response.status}`);
+        
+        // Don't throw error, just show warning and continue
+        setError(`Using fallback content due to API limitations`);
+        return;
       }
       
       const result = await response.json();
@@ -429,46 +435,70 @@ function StudySessionContent() {
       return;
     }
     
-    // Check cognitive load
-    if (cognitiveLoad === 'high') {
-      setError('Cognitive load is high. Please review the material or take a break before attempting a quiz.');
-      setShowHelpOffer(true);
-      return;
-    }
-    
     try {
       setLoading(true);
-      setLoadingMessage('Generating adaptive quiz...');
+      setLoadingMessage('Generating quiz based on covered slides...');
       
-      // Get current topic
-      const currentTopic = intelligenceEngine.enhancedTopics?.[currentTopicIndex];
-      if (!currentTopic) {
-        throw new Error('No current topic found');
+      // Get content from all covered slides
+      const coveredSlidesContent = slides.map(slide => ({
+        title: slide.title || slide.content?.title || 'Slide Content',
+        content: slide.content?.narrative || slide.content?.title || slide.title || '',
+        keyInsights: slide.content?.keyInsights || [],
+        topicTitle: slide.metadata?.topicTitle || slide.title || 'Unknown Topic'
+      }));
+      
+      if (coveredSlidesContent.length === 0) {
+        throw new Error('No slide content available for quiz generation');
       }
       
-      // Determine quiz difficulty based on cognitive load and performance
-      const difficulty = getAdaptiveQuizDifficulty();
+      console.log('Generating quiz from covered slides:', {
+        slideCount: coveredSlidesContent.length,
+        difficulty: quizDifficulty,
+        topics: coveredSlidesContent.map(s => s.topicTitle)
+      });
       
-      // Generate quiz using Intelligence Engine
-      const quizResult = await intelligenceEngine.generateQuiz(currentTopic, difficulty);
+      // Generate quiz based on covered slides content
+      const quizResponse = await fetch('/api/generate-quiz-from-slides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slidesContent: coveredSlidesContent,
+          difficulty: quizDifficulty,
+          studentGoal: studentGoal,
+          knowledgeLevel: knowledgeLevel,
+          questionCount: 5
+        })
+      });
       
-      if (!quizResult.success || !quizResult.quiz) {
-        throw new Error(quizResult.error || 'Failed to generate quiz');
+      if (!quizResponse.ok) {
+        throw new Error('Failed to generate quiz from slides');
+      }
+      
+      const quizResult = await quizResponse.json();
+      
+      if (!quizResult.success || !quizResult.questions) {
+        throw new Error(quizResult.error || 'Failed to generate quiz questions');
       }
       
       // Set quiz state
-      setQuizData(quizResult.quiz.questions);
+      setQuizData({
+        questions: quizResult.questions,
+        source: 'covered_slides',
+        slideCount: coveredSlidesContent.length,
+        difficulty: quizDifficulty
+      });
       setActiveView('quiz');
       setQuizStarted(true);
       setCurrentQuestionIndex(0);
       setSelectedAnswer(null);
       setQuizScore(null);
       setQuizCompleted(false);
+      setWrongAnswers([]); // Reset wrong answers for new quiz
       
-      console.log('Quiz loaded:', {
-        topic: currentTopic.title,
-        difficulty,
-        questions: quizResult.quiz.questions.length
+      console.log('Quiz generated from slides:', {
+        questionCount: quizResult.questions.length,
+        difficulty: quizDifficulty,
+        source: 'covered_slides'
       });
       
     } catch (err) {
@@ -496,19 +526,38 @@ function StudySessionContent() {
       isCorrect: isCorrect,
       question: currentQuestion.question,
       correctAnswer: currentQuestion.correctAnswer,
+      questionText: currentQuestion.question,
+      options: currentQuestion.options,
+      explanation: currentQuestion.explanation || '',
+      topic: currentQuestion.topic || 'General',
+      difficulty: quizDifficulty,
       timestamp: Date.now()
     };
     
     setQuizHistory(prev => [...prev, answerData]);
     
-    // Update misconception tracker if wrong answer
-    if (!isCorrect && misconceptionTracker) {
-      misconceptionTracker.addMisconception(
-        currentQuestion.topic || currentTopic,
-        currentQuestion.misconception || 'Incorrect understanding',
-        currentQuestion.explanation || 'Review needed'
-      );
-      updateMisconceptionData(misconceptionTracker);
+    // Track wrong answers for feedback slides
+    if (!isCorrect) {
+      const wrongAnswerData = {
+        question: currentQuestion.question,
+        selectedAnswer: currentQuestion.options[answerIndex],
+        correctAnswer: currentQuestion.options[currentQuestion.correctAnswer],
+        explanation: currentQuestion.explanation || '',
+        topic: currentQuestion.topic || 'General',
+        misconceptions: currentQuestion.misconceptions || [],
+        keyInsights: currentQuestion.keyInsights || []
+      };
+      setWrongAnswers(prev => [...prev, wrongAnswerData]);
+      
+      // Update misconception tracker if wrong answer
+      if (misconceptionTracker) {
+        misconceptionTracker.addMisconception(
+          currentQuestion.topic || 'Unknown Topic',
+          currentQuestion.misconception || 'Incorrect understanding',
+          currentQuestion.explanation || 'Review needed'
+        );
+        updateMisconceptionData(misconceptionTracker);
+      }
     }
     
     // Move to next question or show results
@@ -530,35 +579,35 @@ function StudySessionContent() {
     setQuizScore(score);
     setQuizCompleted(true);
     
-    const currentTopic = intelligenceEngine?.enhancedTopics?.[currentTopicIndex];
+    console.log('Quiz completed:', {
+      score,
+      correct: correctAnswers,
+      total: totalQuestions,
+      wrongAnswers: wrongAnswers.length,
+      difficulty: quizDifficulty
+    });
     
     // Prepare quiz results
     const quizResults = {
       session_id: sessionId,
       lecture_id: lecturePlan?.lectureId || 'unknown',
-      topic: currentTopic?.title || 'Unknown',
+      topic: 'Covered Slides Quiz',
       score: score,
       correct: correctAnswers,
       total: totalQuestions,
-      questions: quizData,
+      difficulty: quizDifficulty,
+      questions: quizData.questions,
       answers: quizHistory,
-      misconceptions: quizHistory
-        .filter(q => !q.isCorrect)
-        .map(q => ({
-          topic: currentTopic?.title || 'Unknown',
-          concept: q.concept || 'general',
-          question: q.question,
-          wrongAnswer: q.selectedAnswer,
-          correctAnswer: q.correctAnswer,
-          type: 'quiz_error'
-        })),
-      weak_topics: [
-        ...new Set(
-          quizHistory
-            .filter(q => !q.isCorrect)
-            .map(q => q.topic || currentTopic?.title || 'Unknown')
-        )
-      ],
+      misconceptions: wrongAnswers.map(wa => ({
+        topic: wa.topic,
+        concept: wa.question,
+        question: wa.question,
+        wrongAnswer: wa.selectedAnswer.text,
+        correctAnswer: wa.correctAnswer.text,
+        explanation: wa.explanation,
+        type: 'quiz_error'
+      })),
+      weak_topics: [...new Set(wrongAnswers.map(wa => wa.topic))],
       recommendations: score < 60 
         ? ['Review fundamental concepts', 'Practice more problems', 'Focus on weak areas']
         : score < 80
@@ -581,22 +630,55 @@ function StudySessionContent() {
       console.warn('Backend save failed (local storage used):', err);
     }
 
-    // Generate AI analysis slide if there were mistakes
-    const mistakes = quizHistory.filter(q => !q.isCorrect);
-    if (mistakes.length > 0) {
-      const context = `Quiz completed: ${correctAnswers}/${totalQuestions} correct. Mistakes in: ${mistakes.map(m => m.question?.substring(0, 40)).join(', ')}`;
-      try {
-        await generateDynamicSlide('quiz-results', '');
-      } catch (error) {
-        console.error('Failed to generate quiz analysis slide:', error);
+    // Handle wrong answers - generate feedback slides
+    if (wrongAnswers.length > 0) {
+      console.log('Generating feedback slides for wrong answers...');
+      
+      for (const wrongAnswer of wrongAnswers) {
+        try {
+          const contextData = {
+            wrongAnswer: wrongAnswer,
+            quizContext: `Question: ${wrongAnswer.question.substring(0, 100)}...`,
+            studentPerformance: {
+              score: score,
+              totalQuestions: totalQuestions,
+              wrongAnswersCount: wrongAnswers.length
+            }
+          };
+          await generateDynamicSlide('quiz-feedback', '', null, JSON.stringify(contextData));
+        } catch (error) {
+          console.error('Failed to generate feedback slide for wrong answer:', error);
+        }
       }
+    } else {
+      // All answers correct - offer harder quiz
+      console.log('All answers correct! Offering harder quiz...');
+      setTimeout(() => {
+        const offerHarderQuiz = window.confirm(
+          `Excellent! You got ${correctAnswers}/${totalQuestions} correct!\n\nWould you like to try a harder quiz with more challenging questions?`
+        );
+        
+        if (offerHarderQuiz) {
+          // Increase difficulty and start new quiz
+          const newDifficulty = quizDifficulty === 'easy' ? 'medium' : 
+                               quizDifficulty === 'medium' ? 'hard' : 'expert';
+          setQuizDifficulty(newDifficulty);
+          setQuizStarted(false);
+          setQuizCompleted(false);
+          setCurrentQuestionIndex(0);
+          setSelectedAnswer(null);
+          setWrongAnswers([]);
+          
+          // Auto-start the harder quiz
+          setTimeout(() => {
+            handleTakeQuiz();
+          }, 500);
+        } else {
+          // Return to slides
+          setActiveView('slides');
+        }
+      }, 2000);
     }
-    console.log('Quiz completed:', {
-      score,
-      correct: correctAnswers,
-      total: totalQuestions,
-      mistakes: mistakes.length
-    });
   };
 
   
@@ -1793,7 +1875,7 @@ function StudySessionContent() {
   };
 
   const renderQuizContent = () => {
-    if (!quizData || quizData.length === 0) {
+    if (!quizData || !quizData.questions || quizData.questions.length === 0) {
       return (
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <div className="text-center">
@@ -1812,7 +1894,7 @@ function StudySessionContent() {
   };
 
   const renderCurrentQuestion = () => {
-    const currentQuestion = quizData[currentQuestionIndex];
+    const currentQuestion = quizData.questions[currentQuestionIndex];
     if (!currentQuestion) return null;
     
     return (
@@ -1822,13 +1904,13 @@ function StudySessionContent() {
             <div className="flex items-center gap-2">
               <FileQuestion className="w-5 h-5 text-amber-500" />
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Question {currentQuestionIndex + 1} of {quizData.length}
+                Question {currentQuestionIndex + 1} of {quizData.questions.length}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
               <span className="text-xs text-gray-600 dark:text-gray-400">
-                Adaptive difficulty: {getAdaptiveQuizDifficulty()}
+                Difficulty: {quizDifficulty.toUpperCase()}
               </span>
             </div>
           </div>
@@ -1840,54 +1922,30 @@ function StudySessionContent() {
             
             <div className="space-y-3">
               {currentQuestion.options.map((option, index) => {
-                const isSelected = selectedAnswer === option.id;
-                const isAnswered = currentQuestion.userAnswer;
-                const isCorrect = option.isCorrect;
+                const isSelected = selectedAnswer === index;
+                const isCorrect = index === currentQuestion.correctAnswer;
                 
                 return (
                   <button
                     key={index}
-                    onClick={() => !isAnswered && handleAnswerSelect(option.id)}
+                    onClick={() => handleQuizAnswer(index)}
                     className={`w-full text-left p-4 rounded-lg transition-all border ${
-                      isAnswered
-                        ? isCorrect
-                          ? 'border-green-500 bg-green-50 dark:border-green-600 dark:bg-green-900/30'
-                          : isSelected
-                            ? 'border-red-500 bg-red-50 dark:border-red-600 dark:bg-red-900/30'
-                            : 'border-gray-300 dark:border-gray-600'
-                        : isSelected
-                          ? 'border-blue-500 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/30'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                     }`}
-                    disabled={isAnswered}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`font-medium ${
-                        isAnswered
-                          ? isCorrect
-                            ? 'text-green-700 dark:text-green-300'
-                            : isSelected
-                              ? 'text-red-700 dark:text-red-300'
-                              : 'text-gray-700 dark:text-gray-300'
-                          : isSelected
-                            ? 'text-gray-900 dark:text-white'
-                            : 'text-gray-700 dark:text-gray-300'
+                        isSelected
+                          ? 'text-gray-900 dark:text-white'
+                          : 'text-gray-700 dark:text-gray-300'
                       }`}>
                         {option.text}
                       </span>
-                      {isSelected && !isAnswered && (
+                      {isSelected && (
                         <div className="p-1 rounded bg-blue-100 dark:bg-blue-800">
                           <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        </div>
-                      )}
-                      {isAnswered && isCorrect && (
-                        <div className="p-1 rounded bg-green-100 dark:bg-green-800">
-                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        </div>
-                      )}
-                      {isAnswered && isSelected && !isCorrect && (
-                        <div className="p-1 rounded bg-red-100 dark:bg-red-800">
-                          <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                         </div>
                       )}
                     </div>
@@ -1896,43 +1954,14 @@ function StudySessionContent() {
               })}
             </div>
           </div>
-
-          {currentQuestion.userAnswer && currentQuestion.explanation && (
-            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-              <div className="flex items-start gap-2">
-                <Lightbulb className="w-5 h-5 text-blue-500 mt-0.5" />
-                <div>
-                  <p className="font-medium text-blue-700 dark:text-blue-300 mb-1">Explanation</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{currentQuestion.explanation}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="p-6 border-t border-gray-300 dark:border-gray-700 flex-shrink-0">
-          <button
-            onClick={currentQuestion.userAnswer ? handleNextQuestion : handleSubmitAnswer}
-            disabled={!selectedAnswer && !currentQuestion.userAnswer}
-            className={`w-full py-3 rounded-lg font-semibold transition ${
-              !selectedAnswer && !currentQuestion.userAnswer
-                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:opacity-90'
-            }`}
-          >
-            {currentQuestion.userAnswer 
-              ? (currentQuestionIndex < quizData.length - 1 ? 'Next Question' : 'See Results')
-              : 'Submit Answer'}
-          </button>
         </div>
       </div>
     );
   };
 
   const renderQuizResults = () => {
-    const currentQuiz = quizData;
-    const correctAnswers = currentQuiz.filter(q => q.userAnswer === q.correctAnswer).length;
-    const totalQuestions = currentQuiz.length;
+    const correctAnswers = quizHistory.filter(q => q.isCorrect).length;
+    const totalQuestions = quizHistory.length;
     const score = Math.round((correctAnswers / totalQuestions) * 100);
     
     return (
@@ -2596,6 +2625,9 @@ function StudySessionContent() {
                   >
                     <FileQuestion className="w-5 h-5" />
                     <span className="text-xs font-semibold">Take Quiz</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                      {quizDifficulty.toUpperCase()}
+                    </span>
                   </button>
                   <button
                     onClick={handleExplainMore}
@@ -2641,14 +2673,14 @@ function StudySessionContent() {
 
         {/* Active View Panel (Quiz, Ask Questions, etc.) */}
         {activeView && (
-          <div className={`w-96 flex-shrink-0 ${theme === 'light' ? 'bg-white' : 'bg-gray-800'} border-l ${theme === 'light' ? 'border-gray-300' : 'border-gray-700'} flex flex-col overflow-hidden`}>
+          <div className={`w-[400px] lg:w-[450px] flex-shrink-0 ${theme === 'light' ? 'bg-white' : 'bg-gray-800'} border-l ${theme === 'light' ? 'border-gray-300' : 'border-gray-700'} flex flex-col overflow-hidden`}>
             {activeView === 'quiz' ? (
               <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex-shrink-0 p-6 border-b border-gray-300 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <FileQuestion className="w-5 h-5 text-amber-500" />
-                      <h3 className="text-base font-bold text-gray-900 dark:text-white">Adaptive Quiz</h3>
+                      <h3 className="text-base font-bold text-gray-900 dark:text-white">Dynamic Quiz</h3>
                     </div>
                     <button
                       onClick={handleClosePane}
@@ -2658,9 +2690,9 @@ function StudySessionContent() {
                     </button>
                   </div>
                   {!quizCompleted && (
-                    <div className={`p-3 rounded-lg ${theme === 'light' ? 'bg-amber-50 border border-amber-300' : 'bg-amber-900 border border-amber-700'}`}>
+                    <div className={`p-3 rounded-lg ${theme === 'light' ? 'bg-blue-50 border border-blue-300' : 'bg-blue-900 border border-blue-700'}`}>
                       <p className="text-sm text-gray-800 dark:text-gray-300">
-                        Quiz adapted to {cognitiveLoad} cognitive load
+                        Quiz based on covered slides • {quizDifficulty.toUpperCase()} difficulty
                       </p>
                     </div>
                   )}
