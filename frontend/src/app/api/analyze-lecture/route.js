@@ -5,7 +5,7 @@ export async function POST(request) {
 
     const formData = await request.formData();
 
-    let backendUrl = 'http://localhost:8000/analyze-lecture';
+    let backendUrl = 'http://localhost:8001/analyze-lecture';
     if (ytLink) {
       backendUrl += `?yt_link=${encodeURIComponent(ytLink)}`;
     }

@@ -6,7 +6,7 @@ const CLIP_API_URL = process.env.CLIP_API_URL || "https://api-inference.huggingf
 class ImageGenerator {
   constructor() {
     this.imageCache = new Map();
-    this.baseURL = process.env.NEXT_PUBLIC_IMAGE_SERVER_URL || 'http://localhost:8000';
+    this.baseURL = process.env.NEXT_PUBLIC_IMAGE_SERVER_URL || 'http://localhost:8002';
     this.educationalGenerator = new EducationalImageGenerator();
     this.maxImagesPerQuery = 10;
     this.minRelevanceScore = 0.7;

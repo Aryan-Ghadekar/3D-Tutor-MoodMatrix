@@ -4,8 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+import { BACKEND_URL } from '../../../config/constants';
 
 export async function POST(request) {
   console.log('=== AI SLIDE GENERATION REQUEST ===');

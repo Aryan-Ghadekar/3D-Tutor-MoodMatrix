@@ -31,7 +31,7 @@ export default function KnowledgeTestPage() {
     setGeneratingQuestions(true);
     try {
       // Call AI question generation API
-      const response = await fetch('http://localhost:8000/generate-diagnostic-mcq', {
+      const response = await fetch('http://localhost:8001/generate-diagnostic-mcq', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -689,7 +689,7 @@ export default function KnowledgeTestPage() {
 
       // Try to save to backend
       try {
-        const response = await fetch('http://localhost:8000/save-quiz-results', {
+        const response = await fetch('http://localhost:8001/save-quiz-results', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -784,7 +784,7 @@ export default function KnowledgeTestPage() {
       };
 
       console.log('Sending to backend:', {
-        endpoint: 'http://localhost:8000/save-quiz-results',
+        endpoint: 'http://localhost:8001/save-quiz-results',
         dataStructure: {
           session_id: saveData.session_id,
           lecture_id: saveData.lecture_id,
@@ -805,7 +805,7 @@ export default function KnowledgeTestPage() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const response = await fetch('http://localhost:8000/save-quiz-results', {
+        const response = await fetch('http://localhost:8001/save-quiz-results', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -6,7 +6,7 @@ export async function POST(request) {
     const { sessionId, questions, answers, studentGoal } = body;
 
     // Forward to backend
-    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 
     const response = await fetch(`${BACKEND_URL}/analyze-quiz-results`, {
       method: 'POST',

@@ -6,7 +6,7 @@
 // =========================================================
 // DEPENDENCIES AND IMPORTS
 // =========================================================
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
 
 // =========================================================
 // INTELLIGENCE ENGINE CLASS
@@ -895,20 +895,22 @@ export default class IntelligenceEngine {
         }));
 
         // Call backend API
-        const backendResponse = await fetch(`${this.config.backendUrl}/generate-slide`, {
+        const backendResponse = await fetch(`${this.config.backendUrl}/generate-dynamic-slide`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            topic: topic,
-            actionType: actionType,
-            context: context,
-            studentGoal: this.studentGoal,
-            knowledgeLevel: this.knowledgeLevel,
-            sessionId: this.sessionId,
-            lecturePlan: this.lecturePlan,
-            knowledgeState: knowledgeState,
-            misconceptions: misconceptionsList,
-            previousSlides: this.learningHistory.slice(-3) // Last 3 slides
+            session_id: this.sessionId,
+            lecture_plan: this.lecturePlan,
+            student_goal: this.studentGoal,
+            knowledge_state: {
+              knowledgeLevel: this.knowledgeLevel,
+              misconceptions: misconceptionsList,
+              previousSlides: this.learningHistory.slice(-3)
+            },
+            current_topic_index: this.currentTopicIndex || 0,
+            action_type: actionType,
+            user_question: context || null,
+            context: context || ''
           }),
           signal: AbortSignal.timeout(15000) // 15 second timeout
         });

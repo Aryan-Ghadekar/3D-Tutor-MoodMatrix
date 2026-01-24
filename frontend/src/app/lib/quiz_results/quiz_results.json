@@ -1,5 +1,1159 @@
 [
   {
+    "session_id": "476cdb46-41b4-462c-94c4-15233b6017d6",
+    "lecture_id": "964f8f11-d5c7-441a-a617-56d7154b28f3",
+    "score": 30.0,
+    "correct": 3,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Algae",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which of the following is true about diseases caused by microorganisms in plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "They only affect specific types of plants like wheat and rice",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "They do not impact crop yield",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Microorganisms can cause diseases in a variety of plants including wheat, rice, potato, sugarcane, orange, and apple",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "These diseases have no impact on agriculture",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which preventive measure is important in preventing the transmission of tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccination to be given at a suitable age",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Maintain personal hygiene",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Keep the patient in complete isolation",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Consume properly cooked food and boiled drinking water",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "How is nitrogen fixed in leguminous plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Through the action of Rhizobium bacteria in root nodules",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "By using oil and vinegar preservation methods",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "By exposure to sunlight and air",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Through the consumption of nitrogen-rich fertilizers",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "Which statement accurately describes the use of vaccines and antibiotics in disease prevention?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccines are used to cure diseases while antibiotics are used to prevent diseases",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Vaccines are crucial in preventing diseases like cholera and smallpox, while antibiotics are used to cure a variety of diseases",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Vaccines and antibiotics both work by controlling microbial infections in animals and plants",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Vaccines and antibiotics are only effective in treating viral infections",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which of the following food items is NOT mentioned as being made with the help of microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Cheese",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pickles",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Yogurt (curd)",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Rice idlis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "What is a common method to preserve cooked food at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Freezing",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Microwaving",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Frying",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Boiling",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What is a recommended practice to help prevent the spread of diseases through food?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Keeping food covered",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Leaving food uncovered",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Sharing food with animals",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Eating directly from the packaging",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Where can microorganisms be found?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only in hot springs",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "In air, water, and in the bodies of plants and animals",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Exclusively in deserts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Mainly in ice cold climates",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which type of microbes are commonly known for enriching soil with nitrogen and increasing its fertility?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Decomposers",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pathogens",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Biological nitrogen fixers",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Parasites",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T03:03:51.583112",
+    "saved_at": "2026-01-25T03:03:51.621751"
+  },
+  {
+    "session_id": "1e0249ea-cd5a-4dd7-a53a-3203075c12e6",
+    "lecture_id": "df5c650f-808a-4c68-9a4b-b0c0aef99e9a",
+    "score": 20.0,
+    "correct": 2,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which microorganism discovered by Robert Köch causes anthrax disease in animals?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacillus anthracis",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Pseudomonas aeruginosa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Escherichia coli",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Streptococcus pneumoniae",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which preventive measure is crucial in preventing the transmission of Tuberculosis bacteria through the air?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccination to be given at a suitable age",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Maintaining personal hygiene",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Keeping the patient in complete isolation",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Consume properly cooked food and boiled drinking water",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "Which method is used to prevent spoilage in pickles?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Freezing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Canning",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Oil and vinegar preservation",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Salting",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "What is the primary purpose of vaccines?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To treat bacterial infections",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "To prevent diseases by stimulating the immune system",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "To control microbial infections in livestock and poultry",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To cure viral infections in animals",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which of the following food items is NOT mentioned as being produced with the help of microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Cheese",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pickles",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Yogurt",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Idlis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "How can cooked food be preserved at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Refrigeration",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Boiling",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Grilling",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Pickling",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What is a recommended measure to prevent the transmission of pathogens through food?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Keeping food covered",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Leaving food uncovered",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Eating food quickly",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Sharing utensils with others",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Where can microorganisms be found?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only in hot springs and deserts",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only in the bodies of plants and animals",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "In air, water, and in the bodies of plants and animals",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Only in ice cold climates",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which type of microbes are commonly known as biological nitrogen fixers?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Nitrogen consumers",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Phosphorus fixers",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Biological nitrogen fixers",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Carbon recyclers",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T02:58:58.326494",
+    "saved_at": "2026-01-25T02:58:58.333509"
+  },
+  {
+    "session_id": "a5722ba0-6e1c-424c-8cd8-16a6222c3599",
+    "lecture_id": "3ca228a5-1484-433b-a600-b511cfe14034",
+    "score": 20.0,
+    "correct": 2,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which microorganism is responsible for causing diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which microorganism discovered by Robert Köch in 1876 causes anthrax disease in plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Virus",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacterium",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Fungus",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which preventive measure is recommended for preventing the transmission of Tuberculosis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Keep the patient in complete isolation.",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Maintain personal hygiene.",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Vaccination to be given at suitable age.",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Consume properly cooked food and boiled drinking water.",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "In the preservation method using oil and vinegar, what is the purpose of vinegar?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To provide a sour taste to the food items",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "To prevent the growth of bacteria and spoilage",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "To add moisture to the food items",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To enhance the color of the preserved food items",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "Which of the following is true about vaccines and antibiotics?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccines are used to cure diseases, while antibiotics are used for prevention",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Vaccines are crucial for preventing diseases, while antibiotics are used to cure diseases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Vaccines are used to prevent diseases, while antibiotics are used to control microbial infections",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Vaccines are only effective against fungi, while antibiotics are effective against bacteria",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which microorganisms play a crucial role in the fermentation process of curd, rice idlis, and dosa batter?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Bacteria",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "Which method is NOT effective for preserving cooked food at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Freezing",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Canning",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Storing at room temperature in airtight containers",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Pickling",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What is a recommended strategy to prevent the transmission of pathogens through food?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Eating uncovered food",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Keeping food covered",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Leaving food exposed to air",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Sharing utensils with others",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Which of the following statements about microorganisms is true?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Microorganisms are visible to the unaided eye",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Microorganisms can only survive in hot climates",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Microorganisms can live in various environments",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Microorganisms are only found in bodies of plants",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which type of microbes can enhance soil fertility by converting atmospheric nitrogen into a usable form for plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Decomposers",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Biological nitrogen fixers",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Pathogens",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Parasites",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T02:35:15.093569",
+    "saved_at": "2026-01-25T02:35:15.106374"
+  },
+  {
     "session_id": "intelligent_1769246071745_lqdvvgmqp",
     "lecture_id": "10300af5-d2b8-4b16-8e83-2e22c4e3d81a",
     "score": 0.0,

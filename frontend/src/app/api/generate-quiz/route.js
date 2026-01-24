@@ -11,7 +11,7 @@ import { NextResponse } from 'next/server';
 // =========================================================
 // CONFIGURATION
 // =========================================================
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 const USE_EXTERNAL_APIS = false; // Set to true to enable OpenRouter, etc.
 
 // =========================================================
