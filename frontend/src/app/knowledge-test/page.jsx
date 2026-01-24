@@ -853,6 +853,17 @@ export default function KnowledgeTestPage() {
       if (sessionId) params.append('sessionId', sessionId);
       params.append('knowledgeTestCompleted', 'true');
       
+      // Add goal from localStorage
+      const savedGoal = localStorage.getItem('learning_goal');
+      if (savedGoal) {
+        params.append('goal', savedGoal);
+      }
+      
+      const savedLevel = localStorage.getItem('knowledge_level');
+      if (savedLevel) {
+        params.append('level', savedLevel);
+      }
+      
       router.push(`/study-session?${params.toString()}`);
       
     } catch (error) {
@@ -863,6 +874,18 @@ export default function KnowledgeTestPage() {
       const params = new URLSearchParams();
       if (lectureId) params.append('lectureId', lectureId);
       if (sessionId) params.append('sessionId', sessionId);
+      
+      // Add goal from localStorage
+      const savedGoal = localStorage.getItem('learning_goal');
+      if (savedGoal) {
+        params.append('goal', savedGoal);
+      }
+      
+      const savedLevel = localStorage.getItem('knowledge_level');
+      if (savedLevel) {
+        params.append('level', savedLevel);
+      }
+      
       router.push(`/study-session?${params.toString()}`);
     } finally {
       setLoading(false);
@@ -890,7 +913,7 @@ export default function KnowledgeTestPage() {
       sessionData.knowledgeTestCompleted = true;
       sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
       
-      router.push(`/study-session?lectureId=${lectureId}&sessionId=${sessionId}`);
+      router.push(`/study-session?lectureId=${lectureId}&sessionId=${sessionId}&goal=${localStorage.getItem('learning_goal') || 'gate'}&level=${localStorage.getItem('knowledge_level') || 'intermediate'}`);
     } else {
       // Skip simple topic-based test
       testResults = {
@@ -906,7 +929,7 @@ export default function KnowledgeTestPage() {
         localStorage.setItem('lastTestResults', JSON.stringify(testResults));
       }
       
-      router.push('/study-session');
+      router.push(`/study-session?goal=${localStorage.getItem('learning_goal') || 'gate'}&level=${localStorage.getItem('knowledge_level') || 'intermediate'}`);
     }
   };
 
