@@ -536,12 +536,19 @@ function StudySessionContent() {
     
     setQuizHistory(prev => [...prev, answerData]);
     
-    // Track wrong answers for feedback slides
+    // Store wrong answer for feedback
     if (!isCorrect) {
       const wrongAnswerData = {
+        questionId: currentQuestion.id,
         question: currentQuestion.question,
-        selectedAnswer: currentQuestion.options[answerIndex],
-        correctAnswer: currentQuestion.options[currentQuestion.correctAnswer],
+        selectedAnswer: {
+          index: selectedAnswer,
+          text: currentQuestion.options?.[selectedAnswer]?.text || `Option ${selectedAnswer + 1}`
+        },
+        correctAnswer: {
+          index: currentQuestion.correctAnswer,
+          text: currentQuestion.options?.[currentQuestion.correctAnswer]?.text || `Option ${currentQuestion.correctAnswer + 1}`
+        },
         explanation: currentQuestion.explanation || '',
         topic: currentQuestion.topic || 'General',
         misconceptions: currentQuestion.misconceptions || [],
@@ -551,11 +558,24 @@ function StudySessionContent() {
       
       // Update misconception tracker if wrong answer
       if (misconceptionTracker) {
-        misconceptionTracker.addMisconception(
-          currentQuestion.topic || 'Unknown Topic',
-          currentQuestion.misconception || 'Incorrect understanding',
-          currentQuestion.explanation || 'Review needed'
-        );
+        // Safely access option texts
+        const wrongAnswerText = currentQuestion.options?.[selectedAnswer]?.text || `Option ${selectedAnswer + 1}`;
+        const correctAnswerText = currentQuestion.options?.[currentQuestion.correctAnswer]?.text || `Option ${currentQuestion.correctAnswer + 1}`;
+        
+        const misconception = {
+          concept: currentQuestion.topic || 'Unknown Topic',
+          type: 'quiz_error',
+          question: currentQuestion.question,
+          wrongAnswer: wrongAnswerText,
+          correctAnswer: correctAnswerText,
+          explanation: currentQuestion.explanation || 'Review needed',
+          topicId: intelligenceEngine?.enhancedTopics?.[currentTopicIndex]?.id,
+          severity: 'medium',
+          confidence: 70
+        };
+        
+        misconceptionTracker.addOrUpdateMisconception(misconception, `quiz_${Date.now()}`);
+        misconceptionTracker.saveToLocalStorage();
         updateMisconceptionData(misconceptionTracker);
       }
     }
@@ -1181,27 +1201,11 @@ function StudySessionContent() {
     if (quizData && quizData[currentQuestionIndex]) {
       const currentQuestion = quizData[currentQuestionIndex];
       if (answerId === currentQuestion.correctAnswer) {
-        // Correct answer - track success
-        if (misconceptionTracker && sessionId) {
-          misconceptionTracker.addCorrectAnswer(
-            currentQuestion.id,
-            currentQuestion.conceptsTested || [currentTopicIndex.toString()]
-          );
-        }
+        // Correct answer - visual feedback only
+        console.log('Correct answer selected');
       } else {
-        // Wrong answer - track misconception
-        if (misconceptionTracker && sessionId) {
-          misconceptionTracker.addMisconception({
-            concept: currentQuestion.conceptsTested?.[0] || 'general',
-            type: 'quiz_error',
-            question: currentQuestion.question,
-            wrongAnswer: answerId,
-            correctAnswer: currentQuestion.correctAnswer,
-            topicId: intelligenceEngine?.enhancedTopics?.[currentTopicIndex]?.id
-          });
-          misconceptionTracker.saveToLocalStorage();
-          updateMisconceptionData(misconceptionTracker);
-        }
+        // Wrong answer - visual feedback only
+        console.log('Wrong answer selected');
       }
     }
   };
@@ -1227,7 +1231,7 @@ function StudySessionContent() {
   const handleNextQuestion = async () => {
     if (!quizData) return;
     
-    if (currentQuestionIndex >= quizData.length - 1) {
+    if (currentQuestionIndex >= quizData.questions.length - 1) {
       // Quiz completed - calculate score
       const score = calculateQuizScore();
       setQuizScore(score);
@@ -1241,8 +1245,8 @@ function StudySessionContent() {
         topicId: currentTopic?.id,
         topicTitle: currentTopic?.title || 'Unknown',
         score: score,
-        totalQuestions: quizData.length,
-        correctAnswers: quizData.filter(q => q.userAnswer === q.correctAnswer).length,
+        totalQuestions: quizData.questions.length,
+        correctAnswers: quizData.questions.filter(q => q.userAnswer === q.correctAnswer).length,
         difficulty: getAdaptiveQuizDifficulty(),
         cognitiveLoadDuring: cognitiveLoad
       };
@@ -1261,10 +1265,10 @@ function StudySessionContent() {
       // Update misconception tracker
       if (misconceptionTracker) {
         misconceptionTracker.addQuizResults({
-          questions: quizData,
+          questions: quizData.questions,
           topic: currentTopic?.title || 'Unknown',
           score: score
-        }, quizData.map(q => q.userAnswer), quizId);
+        }, quizData.questions.map(q => q.userAnswer), quizId);
         
         misconceptionTracker.saveToLocalStorage();
         updateMisconceptionData(misconceptionTracker);
@@ -1275,7 +1279,7 @@ function StudySessionContent() {
         sessionStorage.addQuizToSession(sessionId, {
           id: quizId,
           topic: currentTopic?.title || 'Unknown',
-          questions: quizData
+          questions: quizData.questions
         }, {
           score: score,
           misconceptions: misconceptionTracker ? misconceptionTracker.getTopMisconceptions(3) : []
@@ -1293,8 +1297,8 @@ function StudySessionContent() {
           body: JSON.stringify({
             sessionId: sessionId,
             quizId: quizId,
-            questions: quizData,
-            answers: quizData.map(q => ({
+            questions: quizData.questions,
+            answers: quizData.questions.map(q => ({
               selectedOption: q.userAnswer,
               questionId: q.id
             })),
@@ -1990,7 +1994,7 @@ function StudySessionContent() {
           </div>
 
           <div className="space-y-4">
-            {currentQuiz.map((question, index) => (
+            {quizData.questions.map((question, index) => (
               <div key={index} className={`p-4 rounded-lg border ${
                 question.userAnswer === question.correctAnswer 
                   ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20' 
