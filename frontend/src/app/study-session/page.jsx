@@ -2,6 +2,7 @@
 
 import { useTheme } from "../theme-provider";
 import Header from "../../components/Header";
+import { BACKEND_URL, API_ENDPOINTS } from '../../config/constants';
 import {
   ChevronLeft, ChevronRight, Play, Pause, Brain, HelpCircle, 
   MessageCircle, FileQuestion, AlertCircle, X as XIcon, User,
@@ -192,6 +193,13 @@ function StudySessionContent() {
     if (typeof window !== 'undefined') {
       const savedGoal = localStorage.getItem('learning_goal');
       const savedLevel = localStorage.getItem('knowledge_level');
+      
+      console.log('Preference sources:', {
+        urlGoal,
+        urlLevel,
+        savedGoal,
+        savedLevel
+      });
       
       goal = urlGoal || savedGoal || 'gate';
       level = urlLevel || savedLevel || 'intermediate';
@@ -664,7 +672,7 @@ function StudySessionContent() {
     
     // Also try backend
     try {
-      await fetch('http://localhost:8001/save-quiz-results', {
+      await fetch(API_ENDPOINTS.SAVE_QUIZ_RESULTS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quizResults)
@@ -1319,7 +1327,7 @@ function StudySessionContent() {
         setLoading(true);
         setLoadingMessage('Analyzing quiz results and identifying mistakes...');
         
-        const analysisResponse = await fetch('http://localhost:8001/analyze-quiz-results', {
+        const analysisResponse = await fetch(API_ENDPOINTS.ANALYZE_QUIZ_RESULTS, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1343,7 +1351,7 @@ function StudySessionContent() {
           if (analysis.mistakes && analysis.mistakes.length > 0) {
             for (const mistake of analysis.mistakes) {
               try {
-                await fetch('http://localhost:8001/store-mistake', {
+                await fetch(API_ENDPOINTS.STORE_MISTAKE, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
