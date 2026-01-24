@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '../../config/constants';  
+
+// Backend configuration
+const BACKEND_URL = "http://localhost:8000";  // Change to 8001 if needed
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    
-    // comprehensive report format
+
+    // This is the comprehensive report format
     const {
       metadata,
       knowledgeAnalysis,
@@ -14,7 +16,7 @@ export async function POST(request) {
     } = body;
 
     console.log(`Saving comprehensive test report: ${metadata?.testId}`);
-    
+
     // Validate required fields
     if (!metadata || !metadata.lectureId || !metadata.sessionId) {
       console.warn('Missing metadata, saving locally only');
@@ -27,12 +29,12 @@ export async function POST(request) {
 
     // Prepare data for backend
     const questionsArray = detailedResults || [];
-    
+
     const answersArray = questionsArray.map(q => ({
       questionId: q.id,
       selectedAnswer: q.userAnswer
     }));
-    
+
     const misconceptions = knowledgeAnalysis?.detailedMisunderstandings?.map(m => ({
       topic: m.topic,
       question: m.question,
@@ -41,11 +43,11 @@ export async function POST(request) {
       explanation: m.explanation,
       type: m.misconceptionType || 'knowledge_gap'
     })) || [];
-    
+
     const weakTopics = summary?.topicPerformance
       ?.filter(t => t.accuracy < 70)
       ?.map(t => t.topicName) || [];
-    
+
     const recommendations = knowledgeAnalysis?.recommendations || [];
 
     try {
@@ -71,7 +73,7 @@ export async function POST(request) {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error('Backend error:', errorData);
-        
+
         return NextResponse.json({
           success: true,
           message: 'Saved locally (backend unavailable)',
@@ -81,9 +83,9 @@ export async function POST(request) {
       }
 
       const data = await response.json();
-      
-      console.log(`Comprehensive test report saved successfully`);
-      
+
+      console.log(`✅ Comprehensive test report saved successfully`);
+
       return NextResponse.json({
         success: true,
         message: 'Test report saved successfully',
@@ -93,7 +95,7 @@ export async function POST(request) {
       });
     } catch (fetchError) {
       console.error('Backend connection error:', fetchError);
-      
+
       return NextResponse.json({
         success: true,
         message: 'Saved locally (backend unavailable)',
@@ -104,7 +106,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Error in save-test-results API:', error);
-    
+
     return NextResponse.json({
       success: true,
       message: 'Saved locally',

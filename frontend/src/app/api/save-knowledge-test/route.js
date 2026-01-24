@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 
 // Backend configuration
-const BACKEND_URL = "http://localhost:8001";  
+const BACKEND_URL = "http://localhost:8000";  // Change to 8001 if needed
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    
+
     // Extract data from the test results
     const {
       lectureId,
@@ -32,16 +32,16 @@ export async function POST(request) {
     }
 
     console.log(`Saving knowledge test results for session: ${sessionId}`);
-    
+
     // Prepare questions array for backend
     const questionsArray = questionDetails || [];
-    
+
     // Prepare answers array for backend
     const answersArray = Object.entries(answers || {}).map(([questionId, selectedAnswer]) => ({
       questionId: parseInt(questionId),
       selectedAnswer: selectedAnswer
     }));
-    
+
     // Extract misconceptions from knowledge analysis
     const misconceptions = knowledgeAnalysis?.detailedMisunderstandings?.map(m => ({
       topic: m.topic,
@@ -51,10 +51,10 @@ export async function POST(request) {
       explanation: m.explanation,
       type: m.misconceptionType || 'knowledge_gap'
     })) || [];
-    
+
     // Extract weak topics
     const weakTopics = knowledgeAnalysis?.weaknesses || [];
-    
+
     // Extract recommendations
     const recommendations = knowledgeAnalysis?.recommendations || [];
 
@@ -81,7 +81,7 @@ export async function POST(request) {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error('Backend error:', errorData);
-        
+
         // Still return success since localStorage worked
         return NextResponse.json({
           success: true,
@@ -92,9 +92,9 @@ export async function POST(request) {
       }
 
       const data = await response.json();
-      
-      console.log(`Knowledge test results saved successfully`);
-      
+
+      console.log(`✅ Knowledge test results saved successfully`);
+
       return NextResponse.json({
         success: true,
         message: 'Test results saved successfully',
@@ -104,7 +104,7 @@ export async function POST(request) {
       });
     } catch (fetchError) {
       console.error('Backend connection error:', fetchError);
-      
+
       // Return success anyway since localStorage worked
       return NextResponse.json({
         success: true,
@@ -116,7 +116,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Error in save-knowledge-test API:', error);
-    
+
     // Even on error, return success since the frontend already saved to localStorage
     return NextResponse.json({
       success: true,

@@ -6,7 +6,7 @@
 // =========================================================
 // DEPENDENCIES AND IMPORTS
 // =========================================================
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 // =========================================================
 // INTELLIGENCE ENGINE CLASS
@@ -20,7 +20,7 @@ export default class IntelligenceEngine {
       defaultGoal: 'gate',
       ...config
     };
-    
+
     // Core state
     this.lecturePlan = null;
     this.studentGoal = null;
@@ -30,7 +30,7 @@ export default class IntelligenceEngine {
     this.misconceptions = [];
     this.learningHistory = [];
     this.quizHistory = [];
-    
+
     // Enhanced topic data
     this.enhancedTopics = [];
     this.topicProgress = {};
@@ -39,64 +39,64 @@ export default class IntelligenceEngine {
       pace: 'moderate',
       teachingStyle: 'balanced'
     };
-    
+
     // Services
     this.sessionStorage = this.initializeSessionStorage();
     this.imageGenerator = this.initializeImageGenerator();
-    
-    console.log(`IntelligenceEngine initialized for session: ${sessionId}`);
+
+    console.log(`🚀 IntelligenceEngine v3.0 initialized for session: ${sessionId}`);
   }
 
   // =========================================================
   // INITIALIZATION
   // =========================================================
-  
+
   async initialize(goal = null, knowledgeTestResults = null) {
-    console.log('Initializing IntelligenceEngine v3.0...');
-    
+    console.log('🔄 Initializing IntelligenceEngine v3.0...');
+
     try {
       // Set student goal
       this.studentGoal = goal || await this.loadStudentGoal() || this.config.defaultGoal;
-      
+
       // Load knowledge test results if provided
       if (knowledgeTestResults) {
         this.knowledgeLevel = knowledgeTestResults.knowledgeLevel || 'intermediate';
         this.misconceptions = knowledgeTestResults.misconceptions || [];
       }
-      
+
       // Load REAL lecture plan from backend
       await this.loadRealLecturePlan();
-      
+
       // If no real plan exists, create educational mock (not generic!)
       if (!this.lecturePlan || !this.lecturePlan.impTopics || this.lecturePlan.impTopics.length === 0) {
-        console.log('No real lecture plan found, creating educational mock');
+        console.log('⚠️ No real lecture plan found, creating educational mock');
         this.lecturePlan = await this.createEducationalMockPlan();
       }
-      
+
       // Enhance topics with educational intelligence
       await this.enhanceTopicsWithIntelligence();
-      
+
       // Initialize topic progress tracking
       this.initializeTopicProgress();
-      
+
       // Generate adaptive settings
       this.generateAdaptiveSettings();
-      
+
       // Save initial state
       await this.saveSessionState();
-      
-      console.log('IntelligenceEngine initialized:', {
+
+      console.log('✅ IntelligenceEngine initialized:', {
         topics: this.lecturePlan.impTopics.length,
         enhancedTopics: this.enhancedTopics.length,
         studentGoal: this.studentGoal,
         knowledgeLevel: this.knowledgeLevel,
         adaptiveSettings: this.adaptiveSettings
       });
-      
+
       return this.getInitialAnalysis();
-      
+
     } catch (error) {
-      console.error('IntelligenceEngine initialization failed:', error);
+      console.error('❌ IntelligenceEngine initialization failed:', error);
       return this.createEmergencyAnalysis();
     }
   }
@@ -104,71 +104,69 @@ export default class IntelligenceEngine {
   // =========================================================
   // LECTURE PLAN MANAGEMENT
   // =========================================================
-  
+
   async loadRealLecturePlan() {
-    console.log('Loading REAL lecture plan from backend...');
-    
+    console.log('📋 Loading REAL lecture plan from backend...');
+
     try {
       // Try to get lecture plan by session ID
       let lecturePlan = null;
-      
+
       // First try: Get by session ID
       if (this.sessionId) {
         const response = await fetch(
           `${this.config.backendUrl}/get-lecture-plan?sessionId=${this.sessionId}`,
           { signal: AbortSignal.timeout(10000) }
         );
-        
+
         if (response.ok) {
           const data = await response.json();
-          // Backend returns lecture plan directly, not wrapped in response object
-          if (data && (data.lecturePlan || data.impTopics)) {
-            lecturePlan = data.lecturePlan || data;
-            console.log('Loaded lecture plan by session ID:', lecturePlan.topic);
+          if (data.success && data.lecturePlan) {
+            lecturePlan = data.lecturePlan;
+            console.log('✅ Loaded lecture plan by session ID:', lecturePlan.topic);
           }
         }
       }
-      
+
       // Second try: Get latest lecture plan
       if (!lecturePlan) {
         const response = await fetch(
           `${this.config.backendUrl}/get-lecture-plan?latest=true`,
           { signal: AbortSignal.timeout(10000) }
         );
-        
+
         if (response.ok) {
           const data = await response.json();
-          // Backend returns lecture plan directly, not wrapped in response object
-          if (data && (data.lecturePlan || data.impTopics)) {
-            lecturePlan = data.lecturePlan || data;
-            console.log('Loaded latest lecture plan:', lecturePlan.topic);
+          if (data.success && data.lecturePlan) {
+            lecturePlan = data.lecturePlan;
+            console.log('✅ Loaded latest lecture plan:', lecturePlan.topic);
           }
         }
       }
-      
+
       // Third try: Check local storage
       if (!lecturePlan && typeof window !== 'undefined') {
         const savedPlan = localStorage.getItem('current_lecture_plan');
         if (savedPlan) {
           try {
             lecturePlan = JSON.parse(savedPlan);
-            console.log('Loaded lecture plan from localStorage');
+            console.log('✅ Loaded lecture plan from localStorage');
           } catch (e) {
             console.warn('Failed to parse localStorage lecture plan:', e);
           }
         }
       }
-      
+
       if (lecturePlan) {
         // Clean and validate the lecture plan
         this.lecturePlan = this.cleanAndValidateLecturePlan(lecturePlan);
         return true;
       }
-      
+
       return false;
-      
+
     } catch (error) {
-      console.error('Error loading lecture plan:', error);
+      console.error('❌ Error loading lecture plan:', error);
       return false;
     }
   }
@@ -177,18 +175,18 @@ export default class IntelligenceEngine {
     if (!plan || typeof plan !== 'object') {
       return null;
     }
-    
+
     // Ensure impTopics exists and is array
     if (!plan.impTopics || !Array.isArray(plan.impTopics)) {
       plan.impTopics = [];
     }
-    
+
     // Clean each topic
     plan.impTopics = plan.impTopics.map((topic, index) => {
       if (!topic || typeof topic !== 'object') {
         return this.createDefaultTopic(index, plan);
       }
-      
+
       // Ensure required fields
       return {
         id: topic.id || `topic-${index + 1}`,
@@ -197,23 +195,23 @@ export default class IntelligenceEngine {
         importance: topic.importance || 'medium',
         weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
         difficulty: topic.difficulty || 'medium',
-        
+
         // Educational fields (may be empty initially)
-        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights : 
-                    Array.isArray(topic.key_insights) ? topic.key_insights : [],
-        
+        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights :
+          Array.isArray(topic.key_insights) ? topic.key_insights : [],
+
         commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions :
-                            Array.isArray(topic.common_misconceptions) ? topic.common_misconceptions : [],
-        
+          Array.isArray(topic.common_misconceptions) ? topic.common_misconceptions : [],
+
         realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications :
-                             Array.isArray(topic.real_world_applications) ? topic.real_world_applications : [],
-        
+          Array.isArray(topic.real_world_applications) ? topic.real_world_applications : [],
+
         prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
-        
+
         // Metadata
         estimatedTime: topic.estimated_time || topic.estimatedTime || '25-35 minutes',
         educationalValue: topic.educational_value || topic.educationalValue || {},
-        
+
         // Keep original for reference
         originalData: topic
       };
@@ -221,23 +219,23 @@ export default class IntelligenceEngine {
       // Filter out topics with garbage titles
       const title = topic.title.toLowerCase();
       const garbagePatterns = [
-        'fig', 'table', 'cid:', 'activity', 'exercise', 
+        'fig', 'table', 'cid:', 'activity', 'exercise',
         'question', 'answer', 'solution', 'blank'
       ];
-      
+
       return !garbagePatterns.some(pattern => title.includes(pattern)) &&
-             topic.title.length > 5 &&
-             topic.title.split(' ').length <= 10;
+        topic.title.length > 5 &&
+        topic.title.split(' ').length <= 10;
     });
-    
+
     // Limit to max topics
     plan.impTopics = plan.impTopics.slice(0, this.config.maxTopics);
-    
+
     // Add metadata if missing
     if (!plan.metadata) plan.metadata = {};
     plan.metadata.cleanedAt = new Date().toISOString();
     plan.metadata.totalValidTopics = plan.impTopics.length;
-    
+
     return plan;
   }
 
@@ -245,7 +243,7 @@ export default class IntelligenceEngine {
     if (!title || typeof title !== 'string') {
       return 'Learning Topic';
     }
-    
+
     let clean = title
       // Remove PDF artifacts
       .replace(/\(cid:\d+\)/g, '')
@@ -253,20 +251,20 @@ export default class IntelligenceEngine {
       .replace(/Table\s*\d+[\.\d]*\s*[:–-]\s*/gi, '')
       .replace(/\b\d+\.\d+\s*[-–]\s*/g, '')
       .replace(/^\s*[•\-*]\s*/, '')
-      
+
       // Remove numbering
       .replace(/^(Chapter|Section|Topic|Unit|Module|Activity)\s*\d+[\.\d]*\s*[:–-]\s*/gi, '')
       .replace(/^\d+[\.\)\s]*/, '')
-      
+
       // Clean up whitespace
       .replace(/\s+/g, ' ')
       .trim();
-    
+
     // Ensure proper sentence ending
     if (clean && !clean.endsWith('.') && !clean.endsWith('?') && !clean.endsWith('!')) {
       clean = clean + '.';
     }
-    
+
     // Remove incomplete endings
     const incompleteEndings = [' a', ' an', ' the', ' and', ' but', ' or', ' for', ' with', ' of', ' in', ' on', ' at'];
     incompleteEndings.forEach(ending => {
@@ -274,18 +272,18 @@ export default class IntelligenceEngine {
         clean = clean.substring(0, clean.length - ending.length - 1) + '.';
       }
     });
-    
+
     // Capitalize properly
     if (clean.length > 0) {
       clean = clean.charAt(0).toUpperCase() + clean.slice(1);
     }
-    
+
     // Limit length
     const words = clean.split(' ');
     if (words.length > 10) {
       clean = words.slice(0, 8).join(' ') + '...';
     }
-    
+
     return clean || 'Important Concept';
   }
 
@@ -319,9 +317,9 @@ export default class IntelligenceEngine {
       "Pipelining and Parallel Processing",
       "Hardware-Software Interface"
     ];
-    
-    const title = index < genericTopics.length ? genericTopics[index] : `Topic ${index + 1}`;
-    
+
+    const title = index < defaultTopics.length ? defaultTopics[index] : `Topic ${index + 1}`;
+
     return {
       id: `topic-${index + 1}`,
       title: title,
@@ -439,7 +437,7 @@ export default class IntelligenceEngine {
         isMock: true
       }
     ];
-    
+
     return {
       sessionId: this.sessionId,
       lectureId: `mock_lecture_${Date.now()}`,
@@ -461,14 +459,14 @@ export default class IntelligenceEngine {
   // =========================================================
   // TOPIC ENHANCEMENT AND INTELLIGENCE
   // =========================================================
-  
+
   async enhanceTopicsWithIntelligence() {
-    console.log('Enhancing topics with educational intelligence...');
-    
+    console.log('🧠 Enhancing topics with educational intelligence...');
+
     this.enhancedTopics = await Promise.all(
       this.lecturePlan.impTopics.map(async (topic, index) => {
         const enhanced = { ...topic };
-        
+
         // Add educational intelligence
         enhanced.educationalMetadata = {
           enhancementLevel: 'intelligent',
@@ -476,32 +474,32 @@ export default class IntelligenceEngine {
           studentGoal: this.studentGoal,
           knowledgeLevel: this.knowledgeLevel
         };
-        
+
         // Generate missing educational content
         if (!enhanced.keyInsights || enhanced.keyInsights.length === 0) {
           enhanced.keyInsights = this.generateKeyInsights(topic);
         }
-        
+
         if (!enhanced.commonMisconceptions || enhanced.commonMisconceptions.length === 0) {
           enhanced.commonMisconceptions = this.generateCommonMisconceptions(topic);
         }
-        
+
         if (!enhanced.realWorldApplications || enhanced.realWorldApplications.length === 0) {
           enhanced.realWorldApplications = this.generateRealWorldApplications(topic);
         }
-        
+
         // Generate question seeds for quizzes
         enhanced.questionSeeds = this.generateQuestionSeeds(topic);
-        
+
         // Generate analogy seeds
         enhanced.analogySeeds = this.generateAnalogySeeds(topic);
-        
+
         // Determine exam relevance
         enhanced.examRelevance = this.determineExamRelevance(topic);
-        
+
         // Calculate learning metrics
         enhanced.learningMetrics = this.calculateLearningMetrics(topic);
-        
+
         // Add progress tracking
         enhanced.progress = {
           started: false,
@@ -510,19 +508,19 @@ export default class IntelligenceEngine {
           quizScore: null,
           misconceptionsIdentified: []
         };
-        
+
         return enhanced;
       })
     );
-    
-    console.log(`Enhanced ${this.enhancedTopics.length} topics with educational intelligence`);
+
+    console.log(`✅ Enhanced ${this.enhancedTopics.length} topics with educational intelligence`);
   }
 
   generateKeyInsights(topic) {
     const insights = [];
     const title = topic.title.toLowerCase();
     const desc = topic.description.toLowerCase();
-    
+
     // Generate insights based on topic content
     if (desc.includes('synchronization') || desc.includes('concurrent')) {
       insights.push(
@@ -551,7 +549,7 @@ export default class IntelligenceEngine {
         "Common implementation approaches"
       );
     }
-    
+
     return insights.slice(0, 4);
   }
 
@@ -559,7 +557,7 @@ export default class IntelligenceEngine {
     const misconceptions = [];
     const title = topic.title.toLowerCase();
     const desc = topic.description.toLowerCase();
-    
+
     if (desc.includes('synchronization') || desc.includes('deadlock')) {
       misconceptions.push(
         "Thinking mutex and semaphore are always interchangeable",
@@ -585,14 +583,14 @@ export default class IntelligenceEngine {
         "Misapplying concepts in wrong contexts"
       );
     }
-    
+
     return misconceptions.slice(0, 3);
   }
 
   generateRealWorldApplications(topic) {
     const applications = [];
     const title = topic.title.toLowerCase();
-    
+
     if (title.includes('synchronization') || title.includes('process')) {
       applications.push(
         "Database transaction management systems",
@@ -618,7 +616,7 @@ export default class IntelligenceEngine {
         "Algorithm implementation and optimization"
       );
     }
-    
+
     return applications.slice(0, 2);
   }
 
@@ -635,7 +633,7 @@ export default class IntelligenceEngine {
   generateAnalogySeeds(topic) {
     const analogies = [];
     const title = topic.title.toLowerCase();
-    
+
     if (title.includes('synchronization') || title.includes('coordination')) {
       analogies.push({
         domain: "Traffic Control",
@@ -655,13 +653,13 @@ export default class IntelligenceEngine {
         lesson: "Strong fundamentals support advanced structures"
       });
     }
-    
+
     return analogies;
   }
 
   determineExamRelevance(topic) {
     const goal = this.studentGoal.toUpperCase();
-    
+
     if (goal === "GATE") {
       return `High weightage in GATE (approx ${topic.weightage}% importance)`;
     } else if (goal === "JEE") {
@@ -676,7 +674,7 @@ export default class IntelligenceEngine {
   calculateLearningMetrics(topic) {
     const desc = topic.description || '';
     const wordCount = desc.split(' ').length;
-    
+
     return {
       estimatedStudyTime: topic.estimatedTime || this.estimateStudyTime(wordCount),
       complexity: this.calculateComplexity(desc),
@@ -694,22 +692,22 @@ export default class IntelligenceEngine {
 
   calculateComplexity(text) {
     if (!text) return 0.5;
-    
-    const complexIndicators = ['algorithm', 'synchronization', 'architecture', 
-                              'optimization', 'complexity', 'implementation'];
-    
+
+    const complexIndicators = ['algorithm', 'synchronization', 'architecture',
+      'optimization', 'complexity', 'implementation'];
+
     const words = text.toLowerCase().split(' ');
-    const complexCount = words.filter(word => 
+    const complexCount = words.filter(word =>
       complexIndicators.some(indicator => word.includes(indicator))
     ).length;
-    
+
     return Math.min(complexCount / 10, 1.0);
   }
 
   // =========================================================
   // PROGRESS TRACKING
   // =========================================================
-  
+
   initializeTopicProgress() {
     this.topicProgress = {};
     this.enhancedTopics.forEach(topic => {
@@ -739,37 +737,37 @@ export default class IntelligenceEngine {
         lastAccessed: new Date().toISOString()
       };
     }
-    
+
     this.topicProgress[topicId] = {
       ...this.topicProgress[topicId],
       ...updates,
       lastAccessed: new Date().toISOString()
     };
-    
+
     // Check if topic is completed
     if (updates.quizScore !== undefined && updates.quizScore >= 70) {
       this.topicProgress[topicId].completed = true;
       this.completedTopics.add(topicId);
     }
-    
+
     // Save progress
     this.saveProgress();
   }
 
   getCurrentTopic() {
     if (!this.enhancedTopics.length) return null;
-    
+
     // Find first incomplete topic
     for (let i = 0; i < this.enhancedTopics.length; i++) {
       const topic = this.enhancedTopics[i];
       const progress = this.topicProgress[topic.id];
-      
+
       if (!progress || !progress.completed) {
         this.currentTopicIndex = i;
         return topic;
       }
     }
-    
+
     // All topics completed, return last one
     this.currentTopicIndex = this.enhancedTopics.length - 1;
     return this.enhancedTopics[this.currentTopicIndex];
@@ -777,20 +775,20 @@ export default class IntelligenceEngine {
 
   getNextTopic() {
     if (!this.enhancedTopics.length) return null;
-    
+
     const nextIndex = this.currentTopicIndex + 1;
     if (nextIndex < this.enhancedTopics.length) {
       this.currentTopicIndex = nextIndex;
       return this.enhancedTopics[nextIndex];
     }
-    
+
     return null; // No more topics
   }
 
   // =========================================================
   // ADAPTIVE LEARNING
   // =========================================================
-  
+
   generateAdaptiveSettings() {
     // Base settings on student goal
     const goalSettings = {
@@ -799,9 +797,9 @@ export default class IntelligenceEngine {
       'neet': { difficulty: 'medium', pace: 'fast', teachingStyle: 'visual_memory' },
       'semester': { difficulty: 'medium', pace: 'moderate', teachingStyle: 'comprehensive' }
     };
-    
+
     this.adaptiveSettings = goalSettings[this.studentGoal] || goalSettings.gate;
-    
+
     // Adjust based on knowledge level
     if (this.knowledgeLevel === 'beginner') {
       this.adaptiveSettings.difficulty = 'easy';
@@ -814,11 +812,11 @@ export default class IntelligenceEngine {
 
   getAdaptiveRecommendations() {
     const recommendations = [];
-    
+
     // Based on progress
     const completedCount = this.completedTopics.size;
     const totalCount = this.enhancedTopics.length;
-    
+
     if (completedCount === 0) {
       recommendations.push({
         type: 'start',
@@ -841,7 +839,7 @@ export default class IntelligenceEngine {
         action: 'Review completed topics'
       });
     }
-    
+
     // Based on misconceptions
     if (this.misconceptions.length > 0) {
       recommendations.push({
@@ -851,35 +849,35 @@ export default class IntelligenceEngine {
         action: 'Review common misconceptions'
       });
     }
-    
+
     return recommendations;
   }
 
   // =========================================================
   // SLIDE GENERATION
   // =========================================================
-  
+
   async generateSlideContent(topicIndex, actionType = 'concept_explanation', context = '') {
-    console.log(`Generating slide for topic ${topicIndex}, action: ${actionType}`);
-    
+    console.log(`🎨 Generating slide for topic ${topicIndex}, action: ${actionType}`);
+
     try {
       // Get the topic
       const topic = this.enhancedTopics[topicIndex];
       if (!topic) {
         throw new Error(`Topic at index ${topicIndex} not found`);
       }
-      
+
       // Update progress
-      this.updateTopicProgress(topic.id, { 
+      this.updateTopicProgress(topic.id, {
         started: true,
-        slidesViewed: (this.topicProgress[topic.id]?.slidesViewed || 0) + 1 
+        slidesViewed: (this.topicProgress[topic.id]?.slidesViewed || 0) + 1
       });
-      
+
       // Try to generate from backend API first (with knowledge state and misconceptions)
       let slideContent;
       let images = [];
       let backendSuccess = false;
-      
+
       try {
         // Prepare knowledge state
         const knowledgeState = {
@@ -888,14 +886,14 @@ export default class IntelligenceEngine {
           topicsCompleted: Array.from(this.completedTopics),
           quizHistory: this.quizHistory.slice(-5) // Last 5 quizzes
         };
-        
+
         // Prepare misconceptions list
         const misconceptionsList = (this.misconceptions || []).map(m => ({
           concept: m.concept || m.type || 'general',
           description: m.description || m.question || '',
           topic: topic.title
         }));
-        
+
         // Call backend API
         const backendResponse = await fetch(`${this.config.backendUrl}/generate-slide`, {
           method: 'POST',
@@ -914,20 +912,20 @@ export default class IntelligenceEngine {
           }),
           signal: AbortSignal.timeout(15000) // 15 second timeout
         });
-        
+
         if (backendResponse.ok) {
           const backendData = await backendResponse.json();
           if (backendData.success && backendData.slide) {
             slideContent = backendData.slide.content;
             images = backendData.slide.images || [];
             backendSuccess = true;
-            console.log('Slide generated from backend API');
+            console.log('✅ Slide generated from backend API');
           }
         }
       } catch (backendError) {
         console.warn('Backend API failed, using local generation:', backendError.message);
       }
-      
+
       // Fallback to local generation if backend failed
       if (!backendSuccess) {
         if (actionType === 'explain-more') {
@@ -939,11 +937,11 @@ export default class IntelligenceEngine {
         } else {
           slideContent = this.generateConceptSlide(topic);
         }
-        
+
         // Generate images locally
         images = await this.generateSlideImages(topic, slideContent);
       }
-      
+
       // Create complete slide object
       const slide = {
         id: `slide_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -964,7 +962,7 @@ export default class IntelligenceEngine {
           hasKnowledgeState: backendSuccess
         }
       };
-      
+
       // Track in learning history
       this.learningHistory.push({
         timestamp: new Date().toISOString(),
@@ -973,12 +971,12 @@ export default class IntelligenceEngine {
         actionType: actionType,
         slideTitle: slide.title
       });
-      
-      console.log(`Slide generated: ${slide.title} (${slide.metadata.source})`);
+
+      console.log(`✅ Slide generated: ${slide.title} (${slide.metadata.source})`);
       return slide;
-      
+
     } catch (error) {
-      console.error('Slide generation failed:', error);
+      console.error('❌ Slide generation failed:', error);
       return this.createEmergencySlide(topicIndex, actionType, context);
     }
   }
@@ -1086,7 +1084,7 @@ export default class IntelligenceEngine {
     if (topic.description && topic.description.length > 50) {
       return `${topic.description.substring(0, 300)}... This concept is essential for ${this.studentGoal.toUpperCase()} preparation and has wide applications in technical problem-solving.`;
     }
-    
+
     return `Welcome to learning about ${topic.title}. This is a crucial concept for ${this.studentGoal.toUpperCase()} preparation, covering fundamental principles, practical applications, and important considerations for mastery.`;
   }
 
@@ -1095,10 +1093,10 @@ export default class IntelligenceEngine {
     if (topic.analogySeeds && topic.analogySeeds.length > 0) {
       return topic.analogySeeds.slice(0, 2);
     }
-    
+
     // Generate based on topic content
     const title = topic.title.toLowerCase();
-    
+
     if (title.includes('synchronization') || title.includes('process')) {
       return [
         {
@@ -1126,7 +1124,7 @@ export default class IntelligenceEngine {
         }
       ];
     }
-    
+
     // Default educational analogies
     return [
       {
@@ -1144,14 +1142,14 @@ export default class IntelligenceEngine {
 
   generateAdvancedAnalogies(topic) {
     const basicAnalogies = this.generateEducationalAnalogies(topic);
-    
+
     // Add an advanced analogy
     basicAnalogies.push({
       domain: "Engineering Systems",
       comparison: "Like optimizing a complex system where every component interaction matters",
       lesson: "Advanced understanding requires system-level thinking and attention to detail"
     });
-    
+
     return basicAnalogies;
   }
 
@@ -1161,7 +1159,7 @@ export default class IntelligenceEngine {
       `What's one practical application of ${topic.title} you find interesting?`,
       `How does ${topic.title} relate to other concepts you've learned?`
     ];
-    
+
     return questions[Math.floor(Math.random() * questions.length)];
   }
 
@@ -1171,7 +1169,7 @@ export default class IntelligenceEngine {
       `Remember: ${topic.title} = Foundation + Application`,
       `${topic.title}: Concept → Implementation → Optimization`
     ];
-    
+
     return hooks[Math.floor(Math.random() * hooks.length)];
   }
 
@@ -1180,19 +1178,19 @@ export default class IntelligenceEngine {
       // Try to get real educational images
       if (this.imageGenerator) {
         const images = await this.imageGenerator.getEducationalImages(
-          topic.title, 
-          2, 
+          topic.title,
+          2,
           slideContent.narrative
         );
-        
+
         if (images && images.length > 0 && !images[0].isPlaceholder) {
           return images;
         }
       }
-      
+
       // Fallback to conceptual images
       return this.generateConceptualImages(topic, slideContent);
-      
+
     } catch (error) {
       console.warn('Image generation failed, using fallback:', error.message);
       return this.generateConceptualImages(topic, slideContent);
@@ -1202,12 +1200,12 @@ export default class IntelligenceEngine {
   generateConceptualImages(topic, slideContent) {
     const colors = ['3b82f6', '10b981', '8b5cf6', 'f59e0b', 'ef4444'];
     const color = colors[Math.floor(Math.random() * colors.length)];
-    
+
     const encodedTitle = encodeURIComponent(topic.title.substring(0, 30));
-    const encodedInsight = slideContent.keyInsights && slideContent.keyInsights[0] 
+    const encodedInsight = slideContent.keyInsights && slideContent.keyInsights[0]
       ? encodeURIComponent(slideContent.keyInsights[0].substring(0, 40))
       : encodedTitle;
-    
+
     return [
       {
         id: `concept_${Date.now()}_1`,
@@ -1230,7 +1228,7 @@ export default class IntelligenceEngine {
 
   createEmergencySlide(topicIndex, actionType, context) {
     const topic = this.enhancedTopics[topicIndex] || { title: 'Learning Content' };
-    
+
     return {
       id: `emergency_${Date.now()}`,
       title: topic.title,
@@ -1281,19 +1279,19 @@ export default class IntelligenceEngine {
   // =========================================================
   // QUIZ GENERATION
   // =========================================================
-  
+
   async generateQuiz(topic, difficulty = 'medium') {
-    console.log(`Generating quiz for: ${topic.title}, difficulty: ${difficulty}`);
-    
+    console.log(`🧠 Generating quiz for: ${topic.title}, difficulty: ${difficulty}`);
+
     try {
-      const topicData = typeof topic === 'string' 
+      const topicData = typeof topic === 'string'
         ? this.enhancedTopics.find(t => t.title === topic) || this.enhancedTopics[0]
         : topic;
-      
+
       if (!topicData) {
         throw new Error('Topic not found for quiz generation');
       }
-      
+
       // Prepare quiz request
       const quizData = {
         topic: topicData,
@@ -1306,7 +1304,7 @@ export default class IntelligenceEngine {
         cognitiveLoad: this.estimateCognitiveLoad(),
         lecturePlan: this.lecturePlan
       };
-      
+
       // Try backend first
       let quiz;
       try {
@@ -1316,7 +1314,7 @@ export default class IntelligenceEngine {
           body: JSON.stringify(quizData),
           signal: AbortSignal.timeout(15000)
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.quiz) {
@@ -1331,7 +1329,7 @@ export default class IntelligenceEngine {
         console.log('Backend quiz failed, generating locally:', backendError.message);
         quiz = this.generateLocalQuiz(topicData, difficulty);
       }
-      
+
       // Track quiz generation
       this.quizHistory.push({
         timestamp: new Date().toISOString(),
@@ -1340,14 +1338,14 @@ export default class IntelligenceEngine {
         difficulty: difficulty,
         quizId: quiz.id
       });
-      
-      console.log(`Quiz generated: ${quiz.title} (${quiz.questions.length} questions)`);
+
+      console.log(`✅ Quiz generated: ${quiz.title} (${quiz.questions.length} questions)`);
       return { success: true, quiz: quiz };
-      
+
     } catch (error) {
-      console.error('Quiz generation failed:', error);
-      return { 
-        success: false, 
+      console.error('❌ Quiz generation failed:', error);
+      return {
+        success: false,
         error: error.message,
         quiz: this.generateFallbackQuiz(topic)
       };
@@ -1357,12 +1355,12 @@ export default class IntelligenceEngine {
   generateLocalQuiz(topic, difficulty) {
     const questions = [];
     const questionTypes = ['conceptual', 'application', 'analysis'];
-    
+
     for (let i = 0; i < 5; i++) {
       const qType = questionTypes[i % questionTypes.length];
       questions.push(this.createLocalQuestion(topic, qType, difficulty, i));
     }
-    
+
     return {
       id: `local_quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       title: `${this.studentGoal.toUpperCase()} Quiz: ${topic.title}`,
@@ -1383,7 +1381,7 @@ export default class IntelligenceEngine {
 
   createLocalQuestion(topic, type, difficulty, index) {
     const questionId = `q${index + 1}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-    
+
     const baseQuestion = {
       id: questionId,
       difficulty: difficulty,
@@ -1391,7 +1389,7 @@ export default class IntelligenceEngine {
       conceptsTested: [topic.title],
       timeEstimate: this.getTimeEstimate(type, difficulty)
     };
-    
+
     if (type === 'conceptual') {
       return {
         ...baseQuestion,
@@ -1443,16 +1441,16 @@ export default class IntelligenceEngine {
   getTimeEstimate(type, difficulty) {
     const baseTimes = { easy: 45, medium: 75, hard: 120 };
     const typeMultipliers = { conceptual: 1.0, application: 1.2, analysis: 1.5 };
-    
+
     const base = baseTimes[difficulty] || 60;
     const multiplier = typeMultipliers[type] || 1.0;
-    
+
     return Math.round(base * multiplier);
   }
 
   generateFallbackQuiz(topic) {
     const topicTitle = typeof topic === 'string' ? topic : topic.title;
-    
+
     return {
       id: `fallback_quiz_${Date.now()}`,
       title: `Quiz: ${topicTitle}`,
@@ -1483,7 +1481,7 @@ export default class IntelligenceEngine {
   // =========================================================
   // UTILITY FUNCTIONS
   // =========================================================
-  
+
   async loadStudentGoal() {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('learning_goal') || this.config.defaultGoal;
@@ -1492,19 +1490,19 @@ export default class IntelligenceEngine {
   }
 
   getPreviousPerformance() {
-    const completedQuizzes = this.quizHistory.filter(q => 
+    const completedQuizzes = this.quizHistory.filter(q =>
       this.topicProgress[q.topicId]?.quizScore !== undefined
     );
-    
+
     if (completedQuizzes.length === 0) {
       return { averageScore: 0, totalQuizzes: 0 };
     }
-    
+
     const totalScore = completedQuizzes.reduce((sum, quiz) => {
       const score = this.topicProgress[quiz.topicId]?.quizScore || 0;
       return sum + score;
     }, 0);
-    
+
     return {
       averageScore: Math.round(totalScore / completedQuizzes.length),
       totalQuizzes: completedQuizzes.length,
@@ -1515,12 +1513,12 @@ export default class IntelligenceEngine {
   estimateCognitiveLoad() {
     const recentInteractions = this.learningHistory.slice(-3);
     if (recentInteractions.length < 2) return 'medium';
-    
+
     // Simple heuristic: if many recent interactions, cognitive load might be high
     const recentTime = new Date(recentInteractions[0].timestamp).getTime();
     const now = Date.now();
     const minutesSinceLast = (now - recentTime) / (1000 * 60);
-    
+
     if (minutesSinceLast < 2) return 'high';
     if (minutesSinceLast > 10) return 'low';
     return 'medium';
@@ -1571,7 +1569,7 @@ export default class IntelligenceEngine {
   // =========================================================
   // STORAGE AND PERSISTENCE
   // =========================================================
-  
+
   initializeSessionStorage() {
     // Simple in-memory storage for now
     // Can be enhanced with localStorage or IndexedDB
@@ -1630,7 +1628,7 @@ export default class IntelligenceEngine {
       adaptiveSettings: this.adaptiveSettings,
       savedAt: new Date().toISOString()
     };
-    
+
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(`intelligence_engine_state_${this.sessionId}`, JSON.stringify(state));
@@ -1647,7 +1645,7 @@ export default class IntelligenceEngine {
         const state = localStorage.getItem(`intelligence_engine_state_${this.sessionId}`);
         if (state) {
           const parsed = JSON.parse(state);
-          
+
           // Restore state
           this.lecturePlan = parsed.lecturePlan;
           this.enhancedTopics = parsed.enhancedTopics || [];
@@ -1660,8 +1658,8 @@ export default class IntelligenceEngine {
           this.learningHistory = parsed.learningHistory || [];
           this.quizHistory = parsed.quizHistory || [];
           this.adaptiveSettings = parsed.adaptiveSettings || {};
-          
-          console.log('Loaded saved session state');
+
+          console.log('✅ Loaded saved session state');
           return true;
         }
       } catch (e) {
@@ -1678,7 +1676,7 @@ export default class IntelligenceEngine {
       completedTopics: Array.from(this.completedTopics),
       lastSaved: new Date().toISOString()
     };
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem(`learning_progress_${this.sessionId}`, JSON.stringify(progress));
     }
@@ -1687,12 +1685,12 @@ export default class IntelligenceEngine {
   // =========================================================
   // PUBLIC API
   // =========================================================
-  
+
   getLearningSummary() {
     const completedCount = this.completedTopics.size;
     const totalCount = this.enhancedTopics.length;
     const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-    
+
     return {
       sessionId: this.sessionId,
       studentGoal: this.studentGoal,
@@ -1716,9 +1714,9 @@ export default class IntelligenceEngine {
     const scores = Object.values(this.topicProgress)
       .filter(p => p.quizScore !== null && p.quizScore !== undefined)
       .map(p => p.quizScore);
-    
+
     if (scores.length === 0) return 0;
-    
+
     return Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
   }
 
@@ -1729,7 +1727,7 @@ export default class IntelligenceEngine {
       topicId: misconception.topicId || this.enhancedTopics[this.currentTopicIndex]?.id,
       corrected: false
     });
-    
+
     // Update topic progress
     if (misconception.topicId && this.topicProgress[misconception.topicId]) {
       if (!this.topicProgress[misconception.topicId].misconceptionsIdentified) {
@@ -1737,7 +1735,7 @@ export default class IntelligenceEngine {
       }
       this.topicProgress[misconception.topicId].misconceptionsIdentified.push(misconception);
     }
-    
+
     this.saveProgress();
   }
 
@@ -1759,7 +1757,7 @@ export default class IntelligenceEngine {
   // =========================================================
   // CLEANUP AND RESET
   // =========================================================
-  
+
   resetSession() {
     this.currentTopicIndex = 0;
     this.completedTopics.clear();
@@ -1767,11 +1765,11 @@ export default class IntelligenceEngine {
     this.misconceptions = [];
     this.learningHistory = [];
     this.quizHistory = [];
-    
+
     // Re-initialize topic progress
     this.initializeTopicProgress();
-    
-    console.log('Session reset');
+
+    console.log('🔄 Session reset');
   }
 
   clearData() {
@@ -1780,8 +1778,8 @@ export default class IntelligenceEngine {
       localStorage.removeItem(`learning_progress_${this.sessionId}`);
       localStorage.removeItem('current_lecture_plan');
     }
-    
-    console.log('All session data cleared');
+
+    console.log('🧹 All session data cleared');
   }
 }
 

@@ -1,8 +1,416 @@
 [
   {
-    "sessionId": "acc3d655-89ce-4b57-8828-e41fcfed8d4e",
-    "lectureId": "cbcf6d16-c5c7-43de-bb8f-01c2aa79f878",
-    "topic": "Microorganisms and Diseases: Bacteria, Protozoa, and Fungi",
+    "sessionId": "92aa1e62-0b0e-4d39-ad29-a3287a835dfb",
+    "lectureId": "8ee08cf6-fbd6-4ebc-a80d-62b7e87ed6e1",
+    "topic": "CSS Layout and Styling Techniques: Margins, Padding, Visibility, Opacity",
+    "duration": "45-60 minutes",
+    "date": "2026-01-22",
+    "instructor": "Web Development Instructor",
+    "impTopics": [
+      {
+        "id": "topic-1",
+        "title": "CSS Positioning, Visibility, Opacity, and Units: Advanced Techniques",
+        "description": "The content discusses CSS properties such as margin, padding, visibility, opacity, RGBA color, and units like relative, percent, em, and rem. It also provides a practice exercise to create a webpage layout with specific design elements, including setting the height and width of divs, adding borders, applying different background colors with opacity, and adjusting the content area's height using appropriate CSS units.",
+        "full_content": "inline but we can set margin & padding. none - To remove element from document flow. Visibility APNA visibility: hidden; COLLEGE Note : When visibility is set to none, space for the element is reserved. But for display set to none, no space is reserved or blocked for the element. Alpha Channel opacity (0 to 1) APNA RGBA COLLEGE color: rgba(255, 0, 0, 0.5); color: rgba(255, 0, 0, 1); Practice Set 4 Q1: Create a webpage layout with a header, a footer & a content area containing 3 divs. Set the hei",
+        "importance": "medium",
+        "weightage": 67.62,
+        "prerequisites": [
+          "CSS properties: margin, padding, visibility, opacity, color, position",
+          "Display property in CSS",
+          "Understanding RGBA color values"
+        ],
+        "commonMisconceptions": [
+          "Setting visibility to 'none' removes the element from document flow but space is reserved for it",
+          "Setting opacity using RGBA values requires a range from 0 to 1"
+        ],
+        "keyInsights": [
+          "Setting 'visibility: hidden;' reserves space for the element, while 'display: none;' does not reserve space.",
+          "Using 'rgba' in CSS allows setting a color with an alpha channel for transparency.",
+          "Creating a webpage layout with header, footer, and content area with specified dimensions and styles can be achieved using CSS properties like height, width, background color, and borders."
+        ]
+      },
+      {
+        "id": "topic-2",
+        "title": "Media Queries & Transitions: Advanced CSS Practice Set",
+        "description": "This content discusses the use of media queries in CSS to change the color of a div based on different viewport widths. It provides specific instructions on how to implement these changes, such as changing the color to green for widths less than 300px, pink for widths between 300px and 400px, red for widths between 400px and 600px, and blue for widths above 600px. Additionally, the content briefly touches on the concept of transitions in CSS, explaining how they enable defining the transition between two states of an element using properties like transition-property, transition-duration, transition-timing-function, and transition-delay.",
+        "full_content": "screen sizes & orientation Practice Set 7 Qs: Add a media query to implement the following: the color of a div changes to green for viewport width less than 300px APNA the color of a div changes to pink for width between 300px & 400px COLLEGE the color of a div changes to red for width between 400px & 600px the color of a div changes to blue for width above 600px Level 5 APNA COLLEGE THESE ARE things that can be called advanced CSS it is an important chapter because we should know but practicall",
+        "importance": "medium",
+        "weightage": 66.67,
+        "prerequisites": [
+          "Media queries",
+          "Viewport width",
+          "CSS transitions"
+        ],
+        "commonMisconceptions": [
+          "Misconception: Media queries are used only for responsive design",
+          "Misconception: Transition properties are only limited to specific CSS properties"
+        ],
+        "keyInsights": [
+          "Media queries for responsive design",
+          "Utilizing transitions in CSS for smooth animations"
+        ]
+      },
+      {
+        "id": "topic-3",
+        "title": "HTML CSS JS: Basics of CSS for College Level",
+        "description": "CSS (Cascading Style Sheets) is a language used to describe the style of a document, focusing on the layout and design of web pages. It is not a programming language but a styling language that works in conjunction with HTML to style content. CSS syntax includes selectors, properties, and values, and it can be applied inline within HTML elements, within a <style> tag in the same document, or in an external stylesheet linked to the HTML document.",
+        "full_content": "HTML CSS JS APNA Structure/layout Style Logic COLLEGE Level 1 APNA COLLEGE Basics of CSS CSS Cascading Style Sheet APNA It is a language that is used to describe the style of a document. COLLEGE makeup not a programming language, but a stying language But for styling there should be some content, and that's why we studied html before css go to websites & remove css Basic Syntax Selector APNA h1 { COLLEGE color: red; } Property Value semicolon shows that one property has ended & it is important t",
+        "importance": "medium",
+        "weightage": 65.1,
+        "prerequisites": [
+          "Basics of HTML",
+          "Basics of CSS",
+          "Basics of JavaScript"
+        ],
+        "commonMisconceptions": [
+          "CSS is a programming language",
+          "Semicolon at the end of CSS property is optional",
+          "CSS can only be added using the <style> tag"
+        ],
+        "keyInsights": [
+          "CSS is a language used to describe the style of a document, not a programming language.",
+          "Basic syntax in CSS includes selectors, properties, and values separated by semicolons.",
+          "Styles can be added inline, within <style> tags in the same document, or in an external stylesheet."
+        ]
+      },
+      {
+        "id": "topic-4",
+        "title": "Understanding Text Properties and Units in CSS",
+        "description": "The content discusses various text properties in CSS, such as font-family, units like pixels (px) for size specification, line-height, and text-transform for text styling like uppercase, lowercase, capitalize, or none. It also provides examples like setting font families, creating headings with capitalized text, and creating nested div elements with specific IDs and text content. These properties and techniques are commonly used in web development for styling and structuring text content on web pages.",
+        "full_content": "show how dark or light our text is it can be names or in terms of numbers values from 100 to 900 Text Properties font-family APNA font-family : arial COLLEGE font-family : arial, roboto we can write multiple familiies as a fall-back mechanism APNA COLLEGE Units in CSS Absolute pixels (px) APNA 96px = 1 inch COLLEGE font-size: 2px; cm, mm, inch & others are also there but pixels is the most used Text Properties line-height APNA line-height : 2px COLLEGE line-height : 3 line-height : normal Text P",
+        "importance": "medium",
+        "weightage": 61.26,
+        "prerequisites": [
+          "Understanding of CSS properties and values",
+          "Familiarity with font families and text properties",
+          "Basic knowledge of HTML structure and elements"
+        ],
+        "commonMisconceptions": [
+          "Using incorrect property names such as 'text-tranform' instead of 'text-transform'",
+          "Confusing font-family values with font-size values",
+          "Mistakenly assuming that line-height values can only be in pixels"
+        ],
+        "keyInsights": [
+          "Fonts can be specified with fallback options for better compatibility",
+          "Pixels are the most commonly used unit in CSS for text properties",
+          "Text properties like line-height and text-transform can be set differently for various elements"
+        ]
+      },
+      {
+        "id": "topic-5",
+        "title": "Responsive Web Design: Media Queries for Various Devices",
+        "description": "Creating a responsive design for websites is crucial to ensure that they appear correctly on various devices with different screen sizes and orientations. Media queries, such as @media (min-width: 200px) and (min-width: 300px), can be used to adjust the layout based on screen dimensions. This adaptability is essential in a world where users access websites on a wide range of devices, including laptops, desktops, smartphones, and tablets, each with unique screen sizes and orientations.",
+        "full_content": "sizes if you built a website people will use it on laptop, big screen } computers, an iphone, a big screen android phone or a small screen one, an ipad } even orientation is different like landscape or portrait so it's important that layout looks good on all so we need design to be responsive, respond to different screen sizes & orientation Media Queries @media (min-width : 200px) and (mAin-widPth : 3N00px)A { div { background-color : red; COLLEGE } } in today's world everyone has a different de",
+        "importance": "medium",
+        "weightage": 57.77,
+        "prerequisites": [
+          "Responsive web design",
+          "Media queries",
+          "Screen sizes and orientations"
+        ],
+        "commonMisconceptions": [
+          "Assuming all users have the same screen size",
+          "Neglecting to test the website on different devices and screen sizes",
+          "Not using media queries to make the design responsive"
+        ],
+        "keyInsights": [
+          "Responsive design is crucial for ensuring a website looks good on various devices and screen sizes",
+          "Media queries like @media can be used to apply different styles based on screen size and orientation",
+          "Adapting layouts for different devices and orientations is essential in today's diverse digital landscape"
+        ]
+      },
+      {
+        "id": "topic-6",
+        "title": "CSS Transitions and Transformations: Properties, Functions, and Applications",
+        "description": "The content discusses adding animation to elements in CSS using transitions and transforms. Transitions can be applied using the shorthand property with values for duration, timing function, and delay, such as \"font-size 2s ease-in-out 0.2s.\" CSS Transform is used for applying 2D and 3D transformations to elements, with examples like rotate, scale, translate, and skew, each with specific syntax and parameters like angles, distances, and units. For example, \"transform: rotate(45deg)\" rotates an element by 45 degrees, \"transform: scale(2)\" scales an element by a factor of 2, and \"transform: translate(20px)\" moves an element by 20 pixels.",
+        "full_content": "4ms .. to add some animation to elements timing function is how the transition should be applied show hover Transition Shorthand property name | duration | timing-function | delay APNA transition: font-size 2s ease-in-out 0.2s; COLLEGE to add some animation to elements CSS Transform Used to apply 2D & 3D transformations to an element rotate APNA transform: rotate(45deg); COLLEGE to add some more animation to how an element looks rotate is simple to understand, will take angles and degrees is mos",
+        "importance": "medium",
+        "weightage": 56.41,
+        "prerequisites": [
+          "CSS transitions",
+          "CSS transforms",
+          "Timing functions"
+        ],
+        "commonMisconceptions": [
+          "Using incorrect syntax for CSS transition shorthand property",
+          "Confusing the syntax for CSS transform functions",
+          "Misunderstanding the usage of CSS transform functions"
+        ],
+        "keyInsights": [
+          "CSS Transition shorthand property: font-size 2s ease-in-out 0.2s",
+          "CSS Transform rotate: rotate(45deg)",
+          "CSS Transform scale: scale(2), scale(0.5)"
+        ]
+      },
+      {
+        "id": "topic-7",
+        "title": "Flexbox Layout: One-Dimensional Arrangement of Items in Rows/Columns",
+        "description": "This content explains the basics of using Flexbox layout in CSS for arranging items in rows or columns. It covers key concepts such as defining a flex container using the display property set to flex, specifying the direction of flex items using flex-direction (options include row, row-reverse, column, and column-reverse), and utilizing properties like justify-content, align-items, and align-content to control alignment along the main and cross axes. Additionally, it discusses properties for flex items like align-self, which aligns individual items along the cross axis, and flex-grow, which determines how much a flex item will grow relative to others.",
+        "full_content": "a one-dimensional layout method for arranging items in rows or columns. APNA COLLEGE The Flex Model flex container APNA COLLEGE main axis flex item cross axis set display property of container to flex first Flexbox Direction It sets ho w flex items are placed in the flex container, along which axis and direction. flex-direction : row; (default) APNA flex-direction : row-reverse; COLLEGE flex-direction : column; flex-direction : column-reverse; Flex Properties for Flex Container justify-content :",
+        "importance": "medium",
+        "weightage": 55.99,
+        "prerequisites": [
+          "Understanding of CSS",
+          "Basic knowledge of web development",
+          "Familiarity with Flexbox layout"
+        ],
+        "commonMisconceptions": [
+          "Misconception: Flexbox only works in two dimensions",
+          "Misconception: Flex items must have the same height or width",
+          "Misconception: Justify-content and align-items do the same thing"
+        ],
+        "keyInsights": [
+          "Flexbox is a one-dimensional layout method for arranging items in rows or columns.",
+          "Key properties for Flex Container include justify-content, flex-wrap, align-items, and align-content.",
+          "Understanding flex-direction is crucial as it determines how flex items are placed in the flex container."
+        ]
+      },
+      {
+        "id": "topic-8",
+        "title": "Advanced 3D Object Creation and CSS Animation Techniques",
+        "description": "This content discusses creating advanced 3D objects using transformations in CSS, as well as animating CSS elements using keyframes. It explains the key concepts of animation properties like animation-name, animation-duration, animation-timing-function, animation-delay, animation-iteration-count, and animation-direction. Additionally, it provides a practice set with steps to create a simple loader using CSS, including creating a circular div with a thick border, adding an animation to make it spin, and setting the animation property with an infinite duration.",
+        "full_content": "that we have done it we can go and make some advanced 3d objects using transform if we are good at math Animation To animate CSS elements APNA @keyframe myName { from { font-size : 20px; } to { font-size : 40px; } COLLEGE } Animation Properties animation-name APNA animation-duration animation-timing-function COLLEGE animation-delay animation-iteration-count animation-direction Animation Shorthand APNA animation : myName 2s linear 3s infinite normal COLLEGE % in Animation APNA @keyframe myName { ",
+        "importance": "medium",
+        "weightage": 54.41,
+        "prerequisites": [
+          "Understanding of CSS animations",
+          "Familiarity with keyframes in CSS",
+          "Basic knowledge of CSS properties"
+        ],
+        "commonMisconceptions": [
+          "Using transform in 3D objects without understanding the math behind it",
+          "Confusing animation properties like animation-duration and animation-delay",
+          "Not specifying the keyframes percentage in animations"
+        ],
+        "keyInsights": [
+          "Ability to create advanced 3D objects using transforms and math",
+          "Understanding keyframe animations and animation properties in CSS",
+          "Practical application of animations in creating loaders and other visual effects"
+        ]
+      }
+    ],
+    "metadata": {
+      "analysisDepth": "signal-weighted-enhanced",
+      "confidenceScore": 0.61,
+      "fallbackUsed": true,
+      "totalTopicsGenerated": 8,
+      "wordCount": 2400,
+      "processingVersion": "2.0"
+    },
+    "generated_at": "2026-01-22T13:05:48.396192"
+  },
+  {
+    "sessionId": "aed14f8b-5321-45c1-843b-4dd48acf64c2",
+    "lectureId": "008cb7dd-78f8-46d8-8012-04433355a491",
+    "topic": "inline but we can set margin & padding....",
+    "duration": "Content generation failed - check API key and connection",
+    "date": "2026-01-22",
+    "instructor": "Content generation failed - check API key and connection",
+    "impTopics": [
+      {
+        "id": "topic-1",
+        "title": "inline but we can set margin & padding....",
+        "description": "inline but we can set margin & padding. none - To remove element from document flow. Visibility APNA visibility: hidden; COLLEGE Note : When visibility is set to none, space for the element is reserved. But for display set to none, no space is reserved or blocked for the element. Alpha Channel opaci...",
+        "full_content": "inline but we can set margin & padding. none - To remove element from document flow. Visibility APNA visibility: hidden; COLLEGE Note : When visibility is set to none, space for the element is reserved. But for display set to none, no space is reserved or blocked for the element. Alpha Channel opacity (0 to 1) APNA RGBA COLLEGE color: rgba(255, 0, 0, 0.5); color: rgba(255, 0, 0, 1); Practice Set 4 Q1: Create a webpage layout with a header, a footer & a content area containing 3 divs. Set the hei",
+        "importance": "medium",
+        "weightage": 67.62,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-2",
+        "title": "screen sizes & orientation Practice Set 7 Qs:...",
+        "description": "screen sizes & orientation Practice Set 7 Qs: Add a media query to implement the following: the color of a div changes to green for viewport width less than 300px APNA the color of a div changes to pink for width between 300px & 400px COLLEGE the color of a div changes to red for width between 400px...",
+        "full_content": "screen sizes & orientation Practice Set 7 Qs: Add a media query to implement the following: the color of a div changes to green for viewport width less than 300px APNA the color of a div changes to pink for width between 300px & 400px COLLEGE the color of a div changes to red for width between 400px & 600px the color of a div changes to blue for width above 600px Level 5 APNA COLLEGE THESE ARE things that can be called advanced CSS it is an important chapter because we should know but practicall",
+        "importance": "medium",
+        "weightage": 66.67,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-3",
+        "title": "HTML CSS JS APNA Structure/layout Style Logic COLLEGE...",
+        "description": "HTML CSS JS APNA Structure/layout Style Logic COLLEGE Level 1 APNA COLLEGE Basics of CSS CSS Cascading Style Sheet APNA It is a language that is used to describe the style of a document. COLLEGE makeup not a programming language, but a stying language But for styling there should be some content, an...",
+        "full_content": "HTML CSS JS APNA Structure/layout Style Logic COLLEGE Level 1 APNA COLLEGE Basics of CSS CSS Cascading Style Sheet APNA It is a language that is used to describe the style of a document. COLLEGE makeup not a programming language, but a stying language But for styling there should be some content, and that's why we studied html before css go to websites & remove css Basic Syntax Selector APNA h1 { COLLEGE color: red; } Property Value semicolon shows that one property has ended & it is important t",
+        "importance": "medium",
+        "weightage": 65.1,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-4",
+        "title": "show how dark or light our text is...",
+        "description": "show how dark or light our text is it can be names or in terms of numbers values from 100 to 900 Text Properties font-family APNA font-family : arial COLLEGE font-family : arial, roboto we can write multiple familiies as a fall-back mechanism APNA COLLEGE Units in CSS Absolute pixels (px) APNA 96px ...",
+        "full_content": "show how dark or light our text is it can be names or in terms of numbers values from 100 to 900 Text Properties font-family APNA font-family : arial COLLEGE font-family : arial, roboto we can write multiple familiies as a fall-back mechanism APNA COLLEGE Units in CSS Absolute pixels (px) APNA 96px = 1 inch COLLEGE font-size: 2px; cm, mm, inch & others are also there but pixels is the most used Text Properties line-height APNA line-height : 2px COLLEGE line-height : 3 line-height : normal Text P",
+        "importance": "medium",
+        "weightage": 61.26,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-5",
+        "title": "sizes if you built a website people will...",
+        "description": "sizes if you built a website people will use it on laptop, big screen } computers, an iphone, a big screen android phone or a small screen one, an ipad } even orientation is different like landscape or portrait so it's important that layout looks good on all so we need design to be responsive, respo...",
+        "full_content": "sizes if you built a website people will use it on laptop, big screen } computers, an iphone, a big screen android phone or a small screen one, an ipad } even orientation is different like landscape or portrait so it's important that layout looks good on all so we need design to be responsive, respond to different screen sizes & orientation Media Queries @media (min-width : 200px) and (mAin-widPth : 3N00px)A { div { background-color : red; COLLEGE } } in today's world everyone has a different de",
+        "importance": "medium",
+        "weightage": 57.77,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-6",
+        "title": "4ms .. to add some animation to elements...",
+        "description": "4ms .. to add some animation to elements timing function is how the transition should be applied show hover Transition Shorthand property name | duration | timing-function | delay APNA transition: font-size 2s ease-in-out 0.2s; COLLEGE to add some animation to elements CSS Transform Used to apply 2D...",
+        "full_content": "4ms .. to add some animation to elements timing function is how the transition should be applied show hover Transition Shorthand property name | duration | timing-function | delay APNA transition: font-size 2s ease-in-out 0.2s; COLLEGE to add some animation to elements CSS Transform Used to apply 2D & 3D transformations to an element rotate APNA transform: rotate(45deg); COLLEGE to add some more animation to how an element looks rotate is simple to understand, will take angles and degrees is mos",
+        "importance": "medium",
+        "weightage": 56.41,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-7",
+        "title": "a one-dimensional layout method for arranging items in...",
+        "description": "a one-dimensional layout method for arranging items in rows or columns. APNA COLLEGE The Flex Model flex container APNA COLLEGE main axis flex item cross axis set display property of container to flex first Flexbox Direction It sets ho w flex items are placed in the flex container, along which axis ...",
+        "full_content": "a one-dimensional layout method for arranging items in rows or columns. APNA COLLEGE The Flex Model flex container APNA COLLEGE main axis flex item cross axis set display property of container to flex first Flexbox Direction It sets ho w flex items are placed in the flex container, along which axis and direction. flex-direction : row; (default) APNA flex-direction : row-reverse; COLLEGE flex-direction : column; flex-direction : column-reverse; Flex Properties for Flex Container justify-content :",
+        "importance": "medium",
+        "weightage": 55.99,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-8",
+        "title": "that we have done it we can go...",
+        "description": "that we have done it we can go and make some advanced 3d objects using transform if we are good at math Animation To animate CSS elements APNA @keyframe myName { from { font-size : 20px; } to { font-size : 40px; } COLLEGE } Animation Properties animation-name APNA animation-duration animation-timing...",
+        "full_content": "that we have done it we can go and make some advanced 3d objects using transform if we are good at math Animation To animate CSS elements APNA @keyframe myName { from { font-size : 20px; } to { font-size : 40px; } COLLEGE } Animation Properties animation-name APNA animation-duration animation-timing-function COLLEGE animation-delay animation-iteration-count animation-direction Animation Shorthand APNA animation : myName 2s linear 3s infinite normal COLLEGE % in Animation APNA @keyframe myName { ",
+        "importance": "medium",
+        "weightage": 54.41,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      }
+    ],
+    "metadata": {
+      "analysisDepth": "signal-weighted-enhanced",
+      "confidenceScore": 0.61,
+      "fallbackUsed": true,
+      "totalTopicsGenerated": 8,
+      "wordCount": 2400,
+      "processingVersion": "2.0"
+    },
+    "generated_at": "2026-01-22T12:52:19.227134"
+  },
+  {
+    "sessionId": "035d008f-8631-49e4-a4dc-5410d5b6ac6e",
+    "lectureId": "caab442d-b749-4cd2-84b0-b4a9bea53282",
+    "topic": "Data Science Roadmap by Apna College Step1 :...",
+    "duration": "Content generation failed - check API key and connection",
+    "date": "2026-01-21",
+    "instructor": "Content generation failed - check API key and connection",
+    "impTopics": [
+      {
+        "id": "topic-1",
+        "title": "Data Science Roadmap by Apna College Step1 :...",
+        "description": "Data Science Roadmap by Apna College Step1 : Learn a Language (Learn Python) Python is recommended to learn. a. Learn basics (variables, if-else conditionals, loops) b. Learn numpy c. Learn pandas Step 2: Learn Math (Learn Math) a. Statistics : (mean, median, mode, variance, standard deviation, basi...",
+        "full_content": "Data Science Roadmap by Apna College Step1 : Learn a Language (Learn Python) Python is recommended to learn. a. Learn basics (variables, if-else conditionals, loops) b. Learn numpy c. Learn pandas Step 2: Learn Math (Learn Math) a. Statistics : (mean, median, mode, variance, standard deviation, basics of graphs etc.) b. Linear Algebra (matrices, vectors, eigen values etc.) c. Calculus (limits, continuity, dy/dx etc.) d. Probability (distribution, bayes theorem etc.) Step 3: Learn Data Visualizat",
+        "importance": "medium",
+        "weightage": 48.05,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      },
+      {
+        "id": "topic-2",
+        "title": "your journey ahead! Till then keep learning &...",
+        "description": "your journey ahead! Till then keep learning & keep exploring :)...",
+        "full_content": "your journey ahead! Till then keep learning & keep exploring :)",
+        "importance": "low",
+        "weightage": 29.51,
+        "prerequisites": [
+          "Content generation failed - check API key and connection"
+        ],
+        "commonMisconceptions": [
+          "Content generation failed - check API key and connection"
+        ],
+        "keyInsights": [
+          "Content generation failed - check API key and connection"
+        ]
+      }
+    ],
+    "metadata": {
+      "analysisDepth": "signal-weighted-enhanced",
+      "confidenceScore": 0.39,
+      "fallbackUsed": true,
+      "totalTopicsGenerated": 2,
+      "wordCount": 161,
+      "processingVersion": "2.0"
+    },
+    "generated_at": "2026-01-21T00:13:42.185352"
+  },
+  {
+    "sessionId": "15372752-aeb3-479e-87f6-76a2bef84c86",
+    "lectureId": "dc892f75-dfba-4b27-b661-31a213de9016",
+    "topic": "Efficient Hardware Management in Operating Systems",
     "duration": "30-45 minutes",
     "date": "2026-01-24",
     "instructor": "Content generation failed - check API key and connection",
@@ -2705,6 +3113,205 @@
       "wordCount": 4050,
       "processingVersion": "2.0"
     },
-    "generated_at": "2026-01-24T14:13:28.974385"
+    "generated_at": "2026-01-12T02:18:35.722494"
+  },
+  {
+    "sessionId": "cb87b7be-d6dc-4343-98e5-0bdba0bd5505",
+    "lectureId": "9a3befab-7a01-42fb-b562-c8d73749c597",
+    "topic": "Dynamic Memory Allocation and Linked List Implementation in C",
+    "duration": "30-45 minutes",
+    "date": "2026-01-12",
+    "instructor": "Data Structures Instructor",
+    "impTopics": [
+      {
+        "id": "topic-1",
+        "title": "Arrays vs. Linked Lists: Dynamic Memory Allocation and Implementation",
+        "description": "A circular chain is a data structure where the last node of the linked list points back to the first node. In a singly linked list, a node contains data and a pointer to the next node. Nodes can be inserted at the front, after a given node, or at the end of the linked list, providing flexibility in managing the list's structure.",
+        "full_content": "circular chain. Difference between Arrays and Linked List Dynamic Memory Allocation Functions Example \u2022 Syntax for malloc(): ptr=(datatype *)malloc(specified-size); \u2022 Example 1: int ptr; ptr=(int*)malloc(10*sizeof(int)); \u2022 Example 2: struct *str; str=(struct node*)malloc(sizeof(struct node)); Singly Linked List \u2022 What is a Node? \u2022 A Node in a linked list holds the data value and the pointer which points to the location of the next node in the linked list. Node Implementation // A linked list nod",
+        "importance": "medium",
+        "weightage": 63.99,
+        "prerequisites": [
+          "Pointers in C programming",
+          "Dynamic memory allocation in C",
+          "Understanding linked lists in programming"
+        ],
+        "commonMisconceptions": [
+          "Confusing syntax of malloc with incorrect data types",
+          "Misunderstanding the concept of a node in a linked list",
+          "Incorrect implementation of struct definitions in linked lists"
+        ],
+        "keyInsights": [
+          "Nodes in a linked list hold data and a pointer to the next node",
+          "A node can be added at the front, after a given node, or at the end of a linked list",
+          "Dynamic memory allocation functions like malloc() are used for allocating memory for nodes in linked lists"
+        ]
+      },
+      {
+        "id": "topic-2",
+        "title": "Singly Linked List Operations: Deletion, Search, Count, Concatenation, Merging",
+        "description": "The provided code snippet demonstrates two functions for deleting nodes in a singly linked list. The `end_delete()` function deletes a node from the end of the list by traversing to the last node and updating the pointers accordingly. The `delete_specified()` function allows the deletion of a node at a specified position by iterating through the list until the desired position is reached, updating the pointers, and freeing the memory of the deleted node. Additionally, the code includes functions for searching, counting the number of nodes, concatenation, merging, and reversing a singly linked list.",
+        "full_content": "} } Delete a node at the end voidend_delete() { structnode*ptr,*ptr1; if(head==NULL) { printf(\"\\nlistisempty\"); } elseif(head->next==NULL) { free(head); head=NULL; printf(\"\\nOnlynodeofthelistdeleted...\"); } else { ptr=head; while(ptr->next!=NULL) { ptr1=ptr; ptr=ptr->next; } ptr1->next=NULL; free(ptr); printf(\"\\nDeletedNodefromthelast...\"); } } Delete a node at specified position void delete_specified() { struct node *ptr,*ptr1; int loc,i; scanf(\"%d\",&loc); ptr=head; for(i=0;i<loc;i++) { ptr1 = ",
+        "importance": "medium",
+        "weightage": 62.5,
+        "prerequisites": [
+          "Singly linked list operations",
+          "Basic understanding of data structures",
+          "Knowledge of C programming language"
+        ],
+        "commonMisconceptions": [
+          "Improper formatting of code snippets",
+          "Not checking for edge cases like empty list in delete operations",
+          "Not properly updating pointers while deleting a node"
+        ],
+        "keyInsights": [
+          "Deleting a node at the end of a singly linked list involves traversing the list until the second last node and updating its next pointer",
+          "Deleting a node at a specified position in a singly linked list requires traversal to the specified position while keeping track of the previous node"
+        ]
+      },
+      {
+        "id": "topic-3",
+        "title": "DATA STRUCTURES \u2013 Linked List UNIT-3 Dr. SELVA...",
+        "description": "Linked List is a linear data structure consisting of nodes linked in a sequence where each node holds its own data and a reference to the next node. It is commonly used to create trees and graphs, offering dynamic memory allocation, easy insertion and deletion operations, and efficient execution of stacks and queues. However, linked lists have disadvantages such as wasted memory due to pointers, lack of random access to elements, and difficulty in reverse traversing. They find applications in various fields like implementing dynamic memory allocation, managing sparse matrices, and representing polynomials.",
+        "full_content": "DATA STRUCTURES \u2013 Linked List UNIT-3 Dr. SELVA KUMAR S ASSISTANT PROFESSOR B.M.S. COLLEGE OF ENGINEERING Linked List \u2022 Linked List is a very commonly used linear data structure which consists of group of nodes in a sequence. \u2022 Each node holds its own data and the address of the next node hence forming a chain like structure. \u2022 Linked Lists are used to create trees and graphs. Advantages of Linked Lists \u2022 They are a dynamic in nature which allocates the memory when required. \u2022 Insertion and delet",
+        "importance": "medium",
+        "weightage": 62.22,
+        "prerequisites": [
+          "Linear data structures",
+          "Nodes",
+          "Memory allocation"
+        ],
+        "commonMisconceptions": [
+          "Confusing linked list with arrays",
+          "Assuming linked lists allow random access to elements",
+          "Forgetting to update pointers when performing insertion or deletion operations"
+        ],
+        "keyInsights": [
+          "Linked List is a commonly used linear data structure with nodes in a sequence.",
+          "Advantages include dynamic memory allocation, easy insertion/deletion, and executing stacks/queues.",
+          "Disadvantages include wasted memory, lack of random element access, and difficulty in reverse traversing."
+        ]
+      },
+      {
+        "id": "topic-4",
+        "title": "Adding Long Integers and Polynomials: Algorithm and Implementation",
+        "description": "The content explains two examples: the first involves adding long positive integers using a linked list. The algorithm includes reading the integers as strings, converting characters to integers, creating nodes to store integers, inserting nodes at the beginning of the linked list, and adding the digits while considering carry values. The second example involves adding polynomials, but specific technical details about this process are not provided in the text.",
+        "full_content": "{ printf(\"%d\\n\",ptr->data); ptr=ptr->next; } } } Example1: Addition of long positive integers \u2022 Algorithm: \u2013 Read the first long integers as string. \u2022 Read each character from the string \u2022 Convert the character to integer \u2022 Create a new node and store each integer in that node \u2022 Insert each node at the beginning of the linked list. \u2013 Repeat the first step for the second number. \u2022 Traverse the two linked lists from start to end \u2022 Add the two digits each from respective linked lists. \u2022 If one of t",
+        "importance": "medium",
+        "weightage": 55.5,
+        "prerequisites": [
+          "linked lists",
+          "addition of integers",
+          "polynomials"
+        ],
+        "commonMisconceptions": [
+          "Using incorrect data types in the algorithm",
+          "Forgetting to handle cases where one linked list is longer than the other",
+          "Not properly updating the carry value when sum of two digits is greater than 9"
+        ],
+        "keyInsights": [
+          "Algorithm for adding long positive integers",
+          "Process for adding polynomials"
+        ]
+      },
+      {
+        "id": "topic-5",
+        "title": "ptr -> data); } } Doubly Linked List...",
+        "description": "ptr -> data); } } Doubly Linked List Operations on Doubly Linked List \u2022 Insertion at beginning \u2022 Insertion at end \u2022 Insertion after specified node \u2022 Deletion at beginning \u2022 Deletion at end \u2022 Deletion of the node given data \u2022 Searching \u2022 Traversing Insertion at beginning void insertbeginning(int item...",
+        "full_content": "ptr -> data); } } Doubly Linked List Operations on Doubly Linked List \u2022 Insertion at beginning \u2022 Insertion at end \u2022 Insertion after specified node \u2022 Deletion at beginning \u2022 Deletion at end \u2022 Deletion of the node given data \u2022 Searching \u2022 Traversing Insertion at beginning void insertbeginning(int item) { struct node *ptr = (struct node *)malloc(sizeof(struct node)); if(head==NULL) { ptr->next = NULL; ptr->prev=NULL; ptr->data=item; head=ptr; } else { ptr->data=item; ptr->prev=NULL; ptr->next = hea",
+        "importance": "medium",
+        "weightage": 51.87,
+        "prerequisites": [
+          "Understanding of Doubly Linked Lists",
+          "Knowledge of C programming language",
+          "Understanding of basic linked list operations"
+        ],
+        "commonMisconceptions": [
+          "Incomplete code snippet provided",
+          "Lack of error handling in the code",
+          "No explanation or context provided"
+        ],
+        "keyInsights": [
+          "Doubly linked list allows for efficient insertion and deletion operations at both the beginning and end of the list.",
+          "Doubly linked list traversal can be done in both forward and backward directions due to the presence of previous and next pointers in each node.",
+          "Inserting a node after a specified node in a doubly linked list involves traversing to the desired location using the next pointers."
+        ]
+      },
+      {
+        "id": "topic-6",
+        "title": "Singly Linked List Node Insertion and Deletion Operations",
+        "description": "The provided code demonstrates a function to add a new node at the front of a singly linked list. It allocates memory for a new node, assigns the data, updates the next pointer to point to the current head, and then updates the head to point to the new node. Additionally, there is a function to delete a node at the front of the linked list, which checks if the list is empty, then updates the head to the next node and frees the memory of the deleted node.",
+        "full_content": "of a list and an int, inserts a new node on the front of the list. */ void push(structNode** head_ref, int new_data) { /* 1. allocate node */ struct Node* new_node = (struct Node*) malloc(sizeof(struct Node)); /* 2. put in the data */ new_node->data = new_data; /* 3. Make next of new node as head */ new_node->next = (*head_ref); /* 4. move the head to point to the new node */ (*head_ref) = new_node; } Add a node at the end Display the content of Linked List Add a node at specified position Compl",
+        "importance": "medium",
+        "weightage": 50.87,
+        "prerequisites": [
+          "Singly linked list data structure",
+          "Memory allocation using malloc()",
+          "Basic understanding of C programming"
+        ],
+        "commonMisconceptions": [
+          "Incorrect function definition for push operation",
+          "Incomplete code snippet provided",
+          "Missing variable declarations in the code"
+        ],
+        "keyInsights": [
+          "Nodes can be inserted at the front, end, or at a specified position in a singly linked list",
+          "Nodes can be deleted from the front, end, or at a specified position in a singly linked list"
+        ]
+      },
+      {
+        "id": "topic-7",
+        "title": "Circular Linked List Operations: Insertion, Deletion, Searching, Traversal",
+        "description": "A circular linked list does not have a beginning or an end, and there is no null value in the next part of any node. Operations on a circular list include insertion at the beginning and end, deletion at the beginning and end, searching, and traversing. Insertion at the beginning involves creating a new node, updating pointers, and adjusting the head pointer. Insertion at the end similarly creates a new node, updates pointers, and handles cases where the list is empty or not.",
+        "full_content": "list contains a pointer to the first node of the list. We can have circular singly linked list as well as circular doubly linked list. \u2022 We traverse a circular singly linked list until we reach the same node where we started. The circular singly liked list has no beginning and no ending. There is no null value present in the next part of any of the nodes. Operations on Circular List \u2022 Insertion at the beginning \u2022 Insertion at the end \u2022 Deletion at the beginning \u2022 Deletion at the end \u2022 Searching ",
+        "importance": "medium",
+        "weightage": 49.42,
+        "prerequisites": [
+          "Basic understanding of linked lists",
+          "Knowledge of circular linked lists",
+          "Understanding of insertion and deletion operations on linked lists"
+        ],
+        "commonMisconceptions": [
+          "Confusing circular singly linked list with circular doubly linked list",
+          "Misunderstanding that a circular singly linked list has no beginning or ending",
+          "Not checking for NULL value in the next part of the nodes during traversal"
+        ],
+        "keyInsights": [
+          "Circular linked lists have no beginning or ending",
+          "Operations on circular lists include insertion, deletion, searching, and traversing",
+          "Insertion can be done at the beginning or end of the circular linked list"
+        ]
+      },
+      {
+        "id": "topic-8",
+        "title": "Linked List: Stack and Queue Implementation with Applications",
+        "description": "The provided code snippets demonstrate the implementation of a stack and a queue using linked lists in C. The stack implementation includes functions for pushing and popping elements, while the queue implementation includes functions for enqueueing and dequeuing elements. Additionally, the concept of a circular singly linked list is briefly mentioned, where the last node points back to the first node, creating a circular structure.",
+        "full_content": "variable. */ count++; } /* Print the total count. */ printf(\"\\n Total no. of nodes is %d\",count); } Concatenation Merging Reversing Applications of Linked List \u2022 Stack \u2022 Queue implementation Stack Implementation using Linked List void push(structNode** head_ref, intnew_data) { structNode* new_node= (structNode*) malloc(sizeof(structNode)); new_node->data = new_data; new_node->next = (*head_ref); (*head_ref) = new_node; } voidPop() { structnode*ptr; if(head==NULL) { printf(\"\\nListisempty\"); } els",
+        "importance": "medium",
+        "weightage": 48.76,
+        "prerequisites": [
+          "Linked List",
+          "Stack",
+          "Queue"
+        ],
+        "commonMisconceptions": [
+          "Misconception: Forgetting to initialize the head pointer in linked list implementations",
+          "Mistake: Not properly updating the pointers when adding or deleting nodes in linked list operations"
+        ],
+        "keyInsights": [
+          "Linked lists are versatile data structures that can be used for various applications like stack and queue implementations",
+          "Linked lists can be implemented in different forms such as singly linked lists, doubly linked lists, and circular linked lists",
+          "Understanding the basic operations like insertion, deletion, and traversal is essential for working with linked lists effectively"
+        ]
+      }
+    ],
+    "metadata": {
+      "analysisDepth": "signal-weighted-enhanced",
+      "confidenceScore": 0.56,
+      "fallbackUsed": true,
+      "totalTopicsGenerated": 8,
+      "wordCount": 1638,
+      "processingVersion": "2.0"
+    },
+    "generated_at": "2026-01-12T02:07:29.677584"
   }
 ]
