@@ -377,6 +377,8 @@ export const useStudySession = (searchParams, router) => {
                 setSelectedAnswer(null);
                 setQuizScore(null);
                 setQuizCompleted(false);
+            } else {
+                setError('Failed to generate quiz questions');
             }
         } catch (err) {
             setError(`Failed to load quiz: ${err.message}`);
@@ -400,7 +402,7 @@ export const useStudySession = (searchParams, router) => {
 
         // Update misconception tracker if wrong answer (real-time feedback)
         if (!isCorrect && misconceptionTracker && sessionId) {
-            misconceptionTracker.addMisconception(
+            misconceptionTracker.addOrUpdateMisconception(
                 currentQuestion.topic || { id: 'unknown' },
                 currentQuestion.misconception || 'Incorrect understanding',
                 currentQuestion.explanation || 'Review needed'

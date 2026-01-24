@@ -18,7 +18,7 @@ const USE_EXTERNAL_APIS = false; // Set to true to enable OpenRouter, etc.
 // MAIN API ROUTE
 // =========================================================
 export async function POST(request) {
-  console.log('🧠 === INTELLIGENT QUIZ GENERATION STARTED ===');
+  console.log('=== INTELLIGENT QUIZ GENERATION STARTED ===');
   const startTime = Date.now();
 
   try {
@@ -26,7 +26,7 @@ export async function POST(request) {
     const data = await request.json();
 
     // Log request for debugging
-    console.log('📥 Quiz generation request:', {
+    console.log('Quiz generation request:', {
       hasTopic: !!data.topic,
       topicTitle: data.topic?.title || data.topic,
       difficulty: data.difficulty,
@@ -57,7 +57,7 @@ export async function POST(request) {
     const previousPerformance = data.previousPerformance || {};
     const cognitiveLoad = data.cognitiveLoad || 'medium';
 
-    console.log('🎯 Processing quiz for:', {
+    console.log('Processing quiz for:', {
       topicTitle: enhancedTopic.title,
       difficulty,
       studentGoal,
@@ -77,9 +77,9 @@ export async function POST(request) {
         sessionId, misconceptions, previousPerformance, cognitiveLoad
       );
       generationSource = 'backend_intelligent';
-      console.log('✅ Backend quiz generation successful');
+      console.log('Backend quiz generation successful');
     } catch (backendError) {
-      console.log('🔄 Backend failed, using intelligent local generation:', backendError.message);
+      console.log('Backend failed, using intelligent local generation:', backendError.message);
 
       // Second try: Intelligent local generation with REAL topic data
       quizData = generateIntelligentLocalQuiz(
@@ -100,7 +100,7 @@ export async function POST(request) {
       enhancedQuiz, previousPerformance, cognitiveLoad, misconceptions
     );
 
-    console.log('✅ Quiz generated successfully:', {
+    console.log('Quiz generated successfully:', {
       questions: enhancedQuiz.questions.length,
       difficulty: enhancedQuiz.difficulty,
       source: generationSource,
@@ -126,7 +126,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('❌ FATAL ERROR in quiz generation:', error);
+    console.error('FATAL ERROR in quiz generation:', error);
 
     // Intelligent emergency fallback
     const emergencyQuiz = createIntelligentEmergencyQuiz(error, request);
@@ -147,7 +147,7 @@ export async function POST(request) {
 // =========================================================
 
 function enhanceQuizTopicData(topic, lecturePlan = null) {
-  console.log('🔧 Enhancing topic data for quiz generation...');
+  console.log('Enhancing topic data for quiz generation...');
 
   // If topic is a string, create enhanced object
   if (typeof topic === 'string') {
@@ -185,7 +185,7 @@ function enhanceQuizTopicData(topic, lecturePlan = null) {
     difficultyIndicators: analyzeTopicDifficulty(enhanced.description)
   };
 
-  console.log(`✅ Topic enhanced for quiz: "${enhanced.title}"`, {
+  console.log(`Topic enhanced for quiz: "${enhanced.title}"`, {
     insights: enhanced.keyInsights.length,
     misconceptions: enhanced.commonMisconceptions.length,
     questionSeeds: enhanced.quizQuestionSeeds.length,
@@ -196,7 +196,7 @@ function enhanceQuizTopicData(topic, lecturePlan = null) {
 }
 
 function createEnhancedQuizTopicFromString(topicString, lecturePlan) {
-  console.log('📝 Creating enhanced quiz topic from string:', topicString.substring(0, 50));
+  console.log('Creating enhanced quiz topic from string:', topicString.substring(0, 50));
 
   // Try to find matching topic in lecture plan
   let matchingTopic = null;
@@ -207,7 +207,7 @@ function createEnhancedQuizTopicFromString(topicString, lecturePlan) {
   }
 
   if (matchingTopic) {
-    console.log('✅ Found matching topic in lecture plan for quiz');
+    console.log('Found matching topic in lecture plan for quiz');
     return enhanceQuizTopicData(matchingTopic, lecturePlan);
   }
 
@@ -521,7 +521,7 @@ async function generateFromBackendWithRealTopic(
   enhancedTopic, difficulty, studentGoal, numberOfQuestions,
   sessionId, misconceptions, previousPerformance, cognitiveLoad
 ) {
-  console.log('🚀 Generating quiz from backend with real topic data...');
+  console.log('Generating quiz from backend with real topic data...');
 
   const payload = {
     topic: enhancedTopic,
@@ -570,10 +570,10 @@ function generateIntelligentLocalQuiz(
   enhancedTopic, difficulty, studentGoal, numberOfQuestions,
   misconceptions, previousPerformance, cognitiveLoad
 ) {
-  console.log('🧠 Generating intelligent local quiz...');
+  console.log('Generating intelligent local quiz...');
 
   const questions = [];
-  const questionCount = Math.max(3, Math.min(numberOfQuestions, 10));
+  const questionCount = Math.max(5, Math.min(numberOfQuestions, 10));
 
   // Determine question distribution based on difficulty and cognitive load
   const distribution = calculateQuestionDistribution(
@@ -593,8 +593,8 @@ function generateIntelligentLocalQuiz(
     }
   });
 
-  // Ensure we have at least 3 questions
-  while (questions.length < 3) {
+  // Ensure we have at least 5 questions
+  while (questions.length < 5) {
     const fallbackQuestion = createFallbackQuestion(enhancedTopic, questions.length + 1);
     questions.push(fallbackQuestion);
   }
@@ -1034,7 +1034,7 @@ function enhanceQuizWithAdaptiveIntelligence(
   quiz, enhancedTopic, difficulty, studentGoal,
   misconceptions, previousPerformance, cognitiveLoad, sessionId, generationSource
 ) {
-  console.log('🎯 Enhancing quiz with adaptive intelligence...');
+  console.log('Enhancing quiz with adaptive intelligence...');
 
   const enhancedQuiz = { ...quiz };
 
@@ -1092,7 +1092,7 @@ function enhanceQuizWithAdaptiveIntelligence(
     progressTracking: true
   };
 
-  console.log('✅ Quiz enhanced with adaptive intelligence', {
+  console.log('Quiz enhanced with adaptive intelligence', {
     adaptiveLevel: adaptiveLevel.toFixed(2),
     questionCount: enhancedQuiz.questions.length,
     questionTypes: enhancedQuiz.metadata.questionTypes
@@ -1302,7 +1302,7 @@ function checkIfTargetsMisconceptions(question, misconceptions) {
 // =========================================================
 
 function generateIntelligentRecommendations(quiz, previousPerformance, cognitiveLoad, misconceptions) {
-  console.log('💡 Generating intelligent recommendations...');
+  console.log('Generating intelligent recommendations...');
 
   const recommendations = {
     beforeQuiz: [],

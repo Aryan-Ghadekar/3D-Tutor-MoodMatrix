@@ -44,7 +44,7 @@ export default class IntelligenceEngine {
     this.sessionStorage = this.initializeSessionStorage();
     this.imageGenerator = this.initializeImageGenerator();
 
-    console.log(`🚀 IntelligenceEngine v3.0 initialized for session: ${sessionId}`);
+    console.log(`IntelligenceEngine v3.0 initialized for session: ${sessionId}`);
   }
 
   // =========================================================
@@ -52,7 +52,7 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async initialize(goal = null, knowledgeTestResults = null) {
-    console.log('🔄 Initializing IntelligenceEngine v3.0...');
+    console.log('Initializing IntelligenceEngine v3.0...');
 
     try {
       // Set student goal
@@ -69,7 +69,7 @@ export default class IntelligenceEngine {
 
       // If no real plan exists, create educational mock (not generic!)
       if (!this.lecturePlan || !this.lecturePlan.impTopics || this.lecturePlan.impTopics.length === 0) {
-        console.log('⚠️ No real lecture plan found, creating educational mock');
+        console.log('No real lecture plan found, creating educational mock');
         this.lecturePlan = await this.createEducationalMockPlan();
       }
 
@@ -85,7 +85,7 @@ export default class IntelligenceEngine {
       // Save initial state
       await this.saveSessionState();
 
-      console.log('✅ IntelligenceEngine initialized:', {
+      console.log('IntelligenceEngine initialized:', {
         topics: this.lecturePlan.impTopics.length,
         enhancedTopics: this.enhancedTopics.length,
         studentGoal: this.studentGoal,
@@ -96,7 +96,7 @@ export default class IntelligenceEngine {
       return this.getInitialAnalysis();
 
     } catch (error) {
-      console.error('❌ IntelligenceEngine initialization failed:', error);
+      console.error('IntelligenceEngine initialization failed:', error);
       return this.createEmergencyAnalysis();
     }
   }
@@ -106,7 +106,7 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async loadRealLecturePlan() {
-    console.log('📋 Loading REAL lecture plan from backend...');
+    console.log('Loading REAL lecture plan from backend...');
 
     try {
       // Try to get lecture plan by session ID
@@ -123,7 +123,7 @@ export default class IntelligenceEngine {
           const data = await response.json();
           if (data.success && data.lecturePlan) {
             lecturePlan = data.lecturePlan;
-            console.log('✅ Loaded lecture plan by session ID:', lecturePlan.topic);
+            console.log('Loaded lecture plan by session ID:', lecturePlan.topic);
           }
         }
       }
@@ -139,7 +139,7 @@ export default class IntelligenceEngine {
           const data = await response.json();
           if (data.success && data.lecturePlan) {
             lecturePlan = data.lecturePlan;
-            console.log('✅ Loaded latest lecture plan:', lecturePlan.topic);
+            console.log('Loaded latest lecture plan:', lecturePlan.topic);
           }
         }
       }
@@ -150,7 +150,7 @@ export default class IntelligenceEngine {
         if (savedPlan) {
           try {
             lecturePlan = JSON.parse(savedPlan);
-            console.log('✅ Loaded lecture plan from localStorage');
+            console.log('Loaded lecture plan from localStorage');
           } catch (e) {
             console.warn('Failed to parse localStorage lecture plan:', e);
           }
@@ -166,7 +166,7 @@ export default class IntelligenceEngine {
       return false;
 
     } catch (error) {
-      console.error('❌ Error loading lecture plan:', error);
+      console.error('Error loading lecture plan:', error);
       return false;
     }
   }
@@ -461,7 +461,7 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async enhanceTopicsWithIntelligence() {
-    console.log('🧠 Enhancing topics with educational intelligence...');
+    console.log('Enhancing topics with educational intelligence...');
 
     this.enhancedTopics = await Promise.all(
       this.lecturePlan.impTopics.map(async (topic, index) => {
@@ -513,7 +513,7 @@ export default class IntelligenceEngine {
       })
     );
 
-    console.log(`✅ Enhanced ${this.enhancedTopics.length} topics with educational intelligence`);
+    console.log(`Enhanced ${this.enhancedTopics.length} topics with educational intelligence`);
   }
 
   generateKeyInsights(topic) {
@@ -858,7 +858,7 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async generateSlideContent(topicIndex, actionType = 'concept_explanation', context = '') {
-    console.log(`🎨 Generating slide for topic ${topicIndex}, action: ${actionType}`);
+    console.log(`Generating slide for topic ${topicIndex}, action: ${actionType}`);
 
     try {
       // Get the topic
@@ -921,7 +921,7 @@ export default class IntelligenceEngine {
             slideContent = backendData.slide.content;
             images = backendData.slide.images || [];
             backendSuccess = true;
-            console.log('✅ Slide generated from backend API');
+            console.log('Slide generated from backend API');
           }
         }
       } catch (backendError) {
@@ -974,11 +974,11 @@ export default class IntelligenceEngine {
         slideTitle: slide.title
       });
 
-      console.log(`✅ Slide generated: ${slide.title} (${slide.metadata.source})`);
+      console.log(`Slide generated: ${slide.title} (${slide.metadata.source})`);
       return slide;
 
     } catch (error) {
-      console.error('❌ Slide generation failed:', error);
+      console.error('Slide generation failed:', error);
       return this.createEmergencySlide(topicIndex, actionType, context);
     }
   }
@@ -1283,7 +1283,7 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async generateQuiz(topic, difficulty = 'medium') {
-    console.log(`🧠 Generating quiz for: ${topic.title}, difficulty: ${difficulty}`);
+    console.log(`Generating quiz for: ${topic.title}, difficulty: ${difficulty}`);
 
     try {
       const topicData = typeof topic === 'string'
@@ -1341,11 +1341,11 @@ export default class IntelligenceEngine {
         quizId: quiz.id
       });
 
-      console.log(`✅ Quiz generated: ${quiz.title} (${quiz.questions.length} questions)`);
+      console.log(`Quiz generated: ${quiz.title} (${quiz.questions.length} questions)`);
       return { success: true, quiz: quiz };
 
     } catch (error) {
-      console.error('❌ Quiz generation failed:', error);
+      console.error('Quiz generation failed:', error);
       return {
         success: false,
         error: error.message,
@@ -1389,21 +1389,26 @@ export default class IntelligenceEngine {
       difficulty: difficulty,
       type: type,
       conceptsTested: [topic.title],
-      timeEstimate: this.getTimeEstimate(type, difficulty)
+      timeEstimate: this.getTimeEstimate(type, difficulty),
+      topic: topic
     };
+
+    const topicContent = topic.description || topic.title;
+    const keyInsights = topic.keyInsights || [];
+    const applications = topic.realWorldApplications || [];
 
     if (type === 'conceptual') {
       return {
         ...baseQuestion,
-        question: `What is the fundamental concept of ${topic.title}?`,
+        question: `Which statement best describes the key concept of ${topic.title}?`,
         options: [
-          { id: "A", text: "Basic principle that forms the foundation", isCorrect: true },
-          { id: "B", text: "Advanced application only for experts", isCorrect: false },
-          { id: "C", text: "Historical background information", isCorrect: false },
-          { id: "D", text: "Optional supplementary knowledge", isCorrect: false }
+          { id: "A", text: keyInsights[0] || `Understanding the fundamental principles of ${topic.title}`, isCorrect: true },
+          { id: "B", text: `Advanced applications beyond basic understanding`, isCorrect: false },
+          { id: "C", text: `Historical development only`, isCorrect: false },
+          { id: "D", text: `Unrelated theoretical concepts`, isCorrect: false }
         ],
         correctAnswer: "A",
-        explanation: `The fundamental concept of ${topic.title} involves understanding its basic principles and definitions, which are essential for ${this.studentGoal.toUpperCase()} preparation.`,
+        explanation: `The key concept of ${topic.title} involves ${keyInsights[0] || 'understanding its fundamental principles'}, which is essential for ${this.studentGoal.toUpperCase()} preparation.`,
         misconceptionAnalysis: "Many students confuse basic concepts with advanced applications. Fundamentals are always required.",
         examRelevance: `Tested directly in ${this.studentGoal.toUpperCase()} through definition and basic application questions.`
       };
@@ -1661,7 +1666,7 @@ export default class IntelligenceEngine {
           this.quizHistory = parsed.quizHistory || [];
           this.adaptiveSettings = parsed.adaptiveSettings || {};
 
-          console.log('✅ Loaded saved session state');
+          console.log('Loaded saved session state');
           return true;
         }
       } catch (e) {
@@ -1771,7 +1776,7 @@ export default class IntelligenceEngine {
     // Re-initialize topic progress
     this.initializeTopicProgress();
 
-    console.log('🔄 Session reset');
+    console.log('Session reset');
   }
 
   clearData() {
@@ -1781,7 +1786,7 @@ export default class IntelligenceEngine {
       localStorage.removeItem('current_lecture_plan');
     }
 
-    console.log('🧹 All session data cleared');
+    console.log('All session data cleared');
   }
 }
 

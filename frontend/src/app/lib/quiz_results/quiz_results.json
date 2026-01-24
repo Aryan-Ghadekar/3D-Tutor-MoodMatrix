@@ -1,5 +1,1919 @@
 [
   {
+    "session_id": "33e9f8d5-80f6-464b-8e19-439f1d8a3428",
+    "lecture_id": "1f8787ec-ce49-41de-9cb0-14b81fb11cc7",
+    "score": 50.0,
+    "correct": 5,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "In a singly linked list, what does a node hold?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only a pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and a pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Only the index of the node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "In a singly linked list, what does a node hold?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only the pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and the pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Neither the data value nor the pointer to the next node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "In a singly linked list deletion operation, how is a node at the end typically removed?",
+        "options": [
+          {
+            "id": "A",
+            "text": "By traversing the list to the last node and updating the pointers accordingly",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "By randomly selecting a node and deleting it",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "By deleting the first node of the list",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "By deleting the node at the middle of the list",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "How does the 'end_delete' function delete a node in a singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "It deletes the first node in the list",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "It deletes the node at the end of the list by traversing until the second last node",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "It deletes a node at a specified position in the list",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "It deletes every alternate node in the list",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "What is a key advantage of Linked Lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Static memory allocation",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Requires contiguous memory allocation",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Dynamic memory allocation",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Limited insertion and deletion operations",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "What is the first step in the algorithm for adding long positive integers?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Read the first long integer as a string",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Convert each character to a float",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Create a new node for the sum",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Insert the sum at the end of the linked list",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "What operation is NOT possible in a Doubly Linked List?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Insertion at the beginning",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Deletion at the end",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Insertion after a specified node",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Searching",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "Which operation is performed by the given function 'push' in a singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Add a node at the end",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Display the content of Linked List",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Add a node at specified position",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Add a node at the front",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "What is a key characteristic of a circular singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "It has a clear beginning and ending",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "It has no beginning or ending",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "It can have null values in the next part of nodes",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "It can only be traversed in one direction",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "What data structure can be efficiently implemented using linked lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Binary Search Tree",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Queue",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Array",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Hash Table",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "A",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T04:57:51.836016",
+    "saved_at": "2026-01-25T04:57:51.843515"
+  },
+  {
+    "session_id": "47746fb6-d84f-48a9-b1f3-ee315e863bd6",
+    "lecture_id": "88f64d40-1bc1-44c0-86b9-824e4110ca52",
+    "score": 30.0,
+    "correct": 3,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "In a singly linked list, what does a node typically hold?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only a pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and a pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Only the address of the head node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "In a singly linked list, what does a node hold?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only a pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and a pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "A pointer to the previous node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "What is the key difference between deleting a node at the end and deleting a node at a specified position in a singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Deleting at the end involves locating the second-to-last node, while deleting at a specified position involves traversing to the desired location",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Deleting at the end involves freeing memory first, while deleting at a specified position updates pointers before freeing memory",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Deleting at the end involves updating pointers, while deleting at a specified position requires locating the second-to-last node",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Deleting at the end involves traversing to the desired location, while deleting at a specified position involves freeing memory first",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "How is a node deleted at the end of a singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Locate the last node directly and free it",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Iterate to find the second-to-last node and update its 'next' pointer to NULL before freeing the last node",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Reverse the list and delete the first node",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Delete the first node directly",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "What is a key advantage of using Linked Lists as a data structure?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Static memory allocation",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Limited data storage capacity",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Dynamic memory allocation",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Inefficient insertion and deletion operations",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "What is the first step in the algorithm for adding long positive integers using linked lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Read the first long integer as a string"
+          },
+          {
+            "id": "B",
+            "text": "Convert each character to an integer and store in a new node"
+          },
+          {
+            "id": "C",
+            "text": "Traverse the linked list from start to end"
+          },
+          {
+            "id": "D",
+            "text": "Add the two digits from respective linked lists"
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "Which operation is NOT included in Doubly Linked List operations?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Insertion at the beginning",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Insertion in the middle",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Deletion at the end",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Deletion of a specific node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "In a singly linked list, which operation is performed by the given C function 'push'?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Inserting a node at the front of the linked list",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Deleting a node from the front of the linked list",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Adding a node at the end of the linked list",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Adding a node at a specified position in the linked list",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "What is a key characteristic of circular linked lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "They have a beginning and an ending",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "They contain null values in the next part of some nodes",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "They do not have a beginning or an ending",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "They only support insertion at the beginning",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which data structures can be implemented using linked lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Arrays",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Stacks and Queues",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Trees",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Graphs",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T04:35:50.872089",
+    "saved_at": "2026-01-25T04:35:50.931798"
+  },
+  {
+    "session_id": "da3f9b5e-760b-4336-9310-7341cc3f3cb6",
+    "lecture_id": "276cfe3b-0d21-446f-8d65-19cfdf3e9c82",
+    "score": 30.0,
+    "correct": 3,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "In a singly linked list, what does a node store?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only a pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and a pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Only the index of the node in the list",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "In a singly linked list, what does a node store?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the data value",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Only a pointer to the next node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both the data value and a pointer to the next node",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "A reference to the previous node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which operation is required to delete a node at the end of a singly linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Traversing the list and updating the next pointer of the second last node",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Traversing the list and updating the next pointer of the last node",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Traversing the list and updating the previous pointer of the last node",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Traversing the list and updating the next pointer of the first node",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "In a singly linked list, how is a node deleted at the end?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Traverse the list to the last node and update its next pointer",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Traverse the list to the second last node and update its next pointer",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Traverse the list to the first node and update its next pointer",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Delete the head node directly without traversing",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "What is a key advantage of Linked Lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Static in nature",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Require fixed memory allocation",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Dynamic in nature, allocating memory as required",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Limited to linear data structures only",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "When adding long positive integers using a linked list, what is the process to add the two digits from respective linked lists?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Subtract the two digits",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Multiply the two digits",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Add the two digits",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Divide the two digits",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "In a Doubly Linked List, which operation allows for efficient insertion and deletion at both ends of the list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Insertion after specified node",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Deletion of the node given data",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Insertion at beginning",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Searching",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "To add a node at the front of a singly linked list, which operation should be performed?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Add a node at the end",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Display the content of Linked List",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Add a node at specified position",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Implement a 'push' function",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "What is a key characteristic of a circular linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "It has a beginning and an ending",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "It has no beginning or ending",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "It contains null values in the next part of nodes",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "It can only be singly linked",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which data structure can be efficiently implemented using a linked list?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Stack",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Array",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Binary Tree",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Hash Table",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "A",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Strengthen understanding of undefined (50% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T04:23:04.515006",
+    "saved_at": "2026-01-25T04:23:04.607356"
+  },
+  {
+    "session_id": "7021f50d-96cb-4067-9af5-40e671e9dedf",
+    "lecture_id": "8e7da91b-4f3e-4fa9-b006-39b72cccad5c",
+    "score": 40.0,
+    "correct": 4,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Algae",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which of the following is NOT a common plant disease caused by microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Citrus canker",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Wheat rust",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Yellow vein virus",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Potato blight",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which preventive measure is NOT correctly matched with the mode of transmission of the microorganism?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Keeping the patient in complete isolation for tuberculosis",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Maintaining personal hygiene for measles",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Vaccination at a suitable age for chicken pox",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Consuming properly cooked food and boiled drinking water for polio",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "Which method is used to prevent spoilage in pickles?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Applying lemon juice",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Using oil and vinegar",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Sprinkling salt",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Adding sugar",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "What is the primary function of vaccines in preventing diseases?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Boosting the immune system against all types of infections",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Treating bacterial infections in livestock and poultry",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Preventing specific diseases by stimulating the immune system",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Controlling plant diseases caused by fungi and bacteria",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which microorganisms play a crucial role in the fermentation process of curd?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria and yeast",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Fungi and algae",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa and viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Mold and mildew",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "Which method is NOT recommended for safely storing and preserving cooked food at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Freezing in airtight containers",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Leaving cooked food at room temperature for several hours",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Pickling in vinegar solution",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Canning using proper sterilization techniques",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "Why is it advisable to always keep food covered?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To prevent the transmission of pathogens and reduce the likelihood of getting sick",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "To enhance the flavor of the food and make it more appealing",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "To increase the shelf life of the food and prevent spoilage",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To make it easier to see the food and identify any contaminants",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Where can microorganisms live?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only in hot springs",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Exclusively in marshy lands",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "In all kinds of environments, from ice cold climate to hot springs and deserts to marshy lands",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Only in air",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which type of microbes are commonly known for fixing nitrogen from the atmosphere to enrich the soil and increase its fertility?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Biological nitrogen fixers",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Antibiotic producers",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Soil decomposers",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Photosynthetic organisms",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "A",
+        "isCorrect": true
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T03:56:01.583772",
+    "saved_at": "2026-01-25T03:56:01.593884"
+  },
+  {
+    "session_id": "5516f8c4-c2ee-46df-9728-ea233aee64d4",
+    "lecture_id": "f4f9b6e1-ce1e-4eb6-8d73-4c45107fb3de",
+    "score": 20.0,
+    "correct": 2,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which of the following diseases are caused by bacterial microorganisms?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Dysentery",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Malaria",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Typhoid",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Tuberculosis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which type of microorganism can cause diseases in plants like wheat, rice, and potato?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Algae",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "What is a key preventive measure for several diseases?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccination at suitable age",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Maintaining personal hygiene",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Keeping the patient in complete isolation",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Consuming properly cooked food and boiled drinking water",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "Which method is used to prevent spoilage in pickles?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Adding sugar",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Using oil and vinegar",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Sprinkling salt",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Exposing to sunlight",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "Which medical intervention is used to prevent diseases like cholera, smallpox, and hepatitis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccines",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Antibiotics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Antiseptics",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Steroids",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which microorganism is beneficial for the fermentation of rice idlis and dosa batter?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Yeast",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "How can cooked food be preserved at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Refrigeration",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Deep frying",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Boiling",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Microwaving",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "Why is it advisable to keep food covered to prevent the spread of diseases?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To enhance the taste of the food",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "To prevent pathogens from contaminating the food",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "To increase the shelf life of the food",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To make the food more visually appealing",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Where can microorganisms live?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only in cold climates",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Exclusively in hot springs",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "In various environments including air, water, and the bodies of plants and animals",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Solely in marshy lands",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Which type of microbes play a crucial role in increasing soil fertility by fixing nitrogen from the atmosphere?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Pathogenic microbes",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Biological nitrogen fixers",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Antibiotic-resistant microbes",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Photosynthetic microbes",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T03:24:16.670981",
+    "saved_at": "2026-01-25T03:24:16.691981"
+  },
+  {
     "session_id": "476cdb46-41b4-462c-94c4-15233b6017d6",
     "lecture_id": "964f8f11-d5c7-441a-a617-56d7154b28f3",
     "score": 30.0,

@@ -338,13 +338,12 @@ export default function StudySessionLayout(props) {
                     quizData={props.quizData}
                     quizCompleted={props.quizCompleted}
                     currentQuestionIndex={props.currentQuestionIndex}
-                    getAdaptiveQuizDifficulty={() => 'medium'} // TODO: Expose from hook or pass
-                    handleAnswerSelect={props.handleAnswerSelect || props.handleQuizAnswer} // Hook called it handleQuizAnswer
+                    getAdaptiveQuizDifficulty={props.getAdaptiveQuizDifficulty}
+                    handleAnswerSelect={props.handleQuizAnswer}
                     selectedAnswer={props.selectedAnswer}
-                    handleSubmitAnswer={() => props.handleNextQuestion && props.handleNextQuestion()} // Wait, hook needs careful mapping. 
-                    // In hook I exposed handleQuizAnswer. I need to make sure SidePanel gets what it needs.
-                    handleNextQuestion={() => { }} // TODO: Hook check
-                    handleRestartQuiz={() => { }} // TODO: Hook check
+                    handleSubmitAnswer={props.handleSubmitAnswer}
+                    handleNextQuestion={props.handleNextQuestion}
+                    handleRestartQuiz={props.handleRestartQuiz}
                     quizScore={props.quizScore}
 
                     // Ask

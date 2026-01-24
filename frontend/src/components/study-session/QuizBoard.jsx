@@ -98,12 +98,16 @@ export default function QuizBoard({
                                         <XCircle className="w-5 h-5 text-red-500 mt-0.5" />
                                     )}
                                     <div className="flex-1">
-                                        <p className="font-medium text-gray-900 dark:text-white">{question.question}</p>
+                                        <p className="font-medium text-gray-900 dark:text-white">{question.text || question.question}</p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                            Your answer: <span className="font-semibold">{question.userAnswer}</span>
+                                            Your answer: <span className="font-semibold">
+                                                {question.options?.find(opt => opt.id === question.userAnswer)?.text || question.userAnswer}
+                                            </span>
                                         </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            Correct answer: <span className="font-semibold text-green-600 dark:text-green-400">{question.correctAnswer}</span>
+                                            Correct answer: <span className="font-semibold text-green-600 dark:text-green-400">
+                                                {question.options?.find(opt => opt.id === question.correctAnswer)?.text || question.correctAnswer}
+                                            </span>
                                         </p>
                                         {question.explanation && (
                                             <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/30 rounded">
@@ -154,7 +158,7 @@ export default function QuizBoard({
 
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                        {currentQuestion.question}
+                        {currentQuestion.text || currentQuestion.question}
                     </h3>
 
                     <div className="space-y-3">
