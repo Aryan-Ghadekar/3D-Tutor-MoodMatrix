@@ -678,8 +678,11 @@ function StudySessionContent() {
     if (wrongAnswers.length > 0) {
       console.log('Generating feedback slides for wrong answers...');
       
+      console.log(`Generating feedback slides for ${wrongAnswers.length} wrong answers`);
+      
       for (const wrongAnswer of wrongAnswers) {
         try {
+          console.log('Generating slide for wrong answer:', wrongAnswer.question.substring(0, 50));
           const contextData = {
             wrongAnswer: wrongAnswer,
             quizContext: `Question: ${wrongAnswer.question.substring(0, 100)}...`,
@@ -690,6 +693,7 @@ function StudySessionContent() {
             }
           };
           await generateDynamicSlide('quiz-feedback', '', null, JSON.stringify(contextData));
+          console.log('Feedback slide generated successfully');
         } catch (error) {
           console.error('Failed to generate feedback slide for wrong answer:', error);
         }
@@ -1657,28 +1661,6 @@ function StudySessionContent() {
 
     return (
       <div className="h-full overflow-y-auto p-6">
-        {/* Emergency/Status Banner */}
-        {isEmergency && (
-          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-500" />
-              <span className="font-medium text-amber-700 dark:text-amber-300">
-                Using enhanced learning system
-              </span>
-            </div>
-          </div>
-        )}
-
-        {isActionResponse && !isQuizResults && (
-          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-            <div className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-blue-500" />
-              <span className="font-medium text-blue-700 dark:text-blue-300">
-                Intelligent Response: {isActionResponse.replace('-', ' ')}
-              </span>
-            </div>
-          </div>
-        )}
 
         {isQuizResults && renderQuizResultsHeader()}
 
@@ -1991,6 +1973,14 @@ function StudySessionContent() {
     const correctAnswers = quizHistory.filter(q => q.isCorrect).length;
     const totalQuestions = quizHistory.length;
     const score = Math.round((correctAnswers / totalQuestions) * 100);
+    
+    console.log('Quiz Results Summary:', {
+      correctAnswers,
+      totalQuestions,
+      score,
+      quizHistoryLength: quizHistory.length,
+      wrongAnswersCount: wrongAnswers.length
+    });
     
     return (
       <div className="flex-1 flex flex-col min-h-0">
