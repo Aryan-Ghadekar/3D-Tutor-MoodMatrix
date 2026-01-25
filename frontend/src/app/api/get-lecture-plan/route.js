@@ -14,7 +14,7 @@ export async function POST(request) {
 
     // CASE 1: JSON request (from study-session)
     if (contentType.includes('application/json')) {
-      console.log('📥 JSON request detected - reading lecture plan');
+      console.log('JSON request detected - reading lecture plan');
 
       try {
         const { topic, studentGoal } = await request.json();
@@ -35,10 +35,10 @@ export async function POST(request) {
             if (Array.isArray(lecturePlanData) && lecturePlanData.length > 0) {
               // Get the most recent plan
               lecturePlan = lecturePlanData[0];
-              console.log('📄 Using most recent lecture plan from array');
+              console.log('Using most recent lecture plan from array');
             } else if (typeof lecturePlanData === 'object') {
               lecturePlan = lecturePlanData;
-              console.log('📄 Using lecture plan object');
+              console.log('Using lecture plan object');
             } else {
               throw new Error('Invalid lecture plan format');
             }
@@ -62,7 +62,7 @@ export async function POST(request) {
             return generateFallbackPlan(topic, studentGoal);
           }
         } else {
-          console.log('📭 No mock lecture plan found, generating fallback');
+          console.log('No mock lecture plan found, generating fallback');
           return generateFallbackPlan(topic, studentGoal);
         }
 
@@ -74,7 +74,7 @@ export async function POST(request) {
 
     // CASE 2: FormData request (from lecture-input)
     else if (contentType.includes('multipart/form-data')) {
-      console.log('📤 FormData request detected - processing files');
+      console.log('FormData request detected - processing files');
 
       const formData = await request.formData();
       const pdfFile = formData.get('pdf');
@@ -173,7 +173,7 @@ export async function POST(request) {
         return NextResponse.json(
           {
             error: 'Backend service is not running',
-            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8000'
+            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8001'
           },
           { status: 503 }
         );
@@ -361,7 +361,7 @@ function adaptPlanForGoal(lecturePlan, studentGoal) {
 }
 
 function generateFallbackPlan(topic, studentGoal) {
-  console.log('🔄 Generating fallback lecture plan');
+  console.log('Generating fallback lecture plan');
 
   const fallbackPlan = {
     lectureId: `fallback-${Date.now()}`,
