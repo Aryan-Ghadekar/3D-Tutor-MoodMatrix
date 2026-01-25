@@ -6,7 +6,7 @@ const CLIP_API_URL = process.env.CLIP_API_URL || "https://api-inference.huggingf
 class ImageGenerator {
   constructor() {
     this.imageCache = new Map();
-    this.baseURL = process.env.NEXT_PUBLIC_IMAGE_SERVER_URL || 'http://localhost:8001';
+    this.baseURL = process.env.NEXT_PUBLIC_IMAGE_SERVER_URL || 'http://localhost:8002';
     this.educationalGenerator = new EducationalImageGenerator();
     this.maxImagesPerQuery = 10;
     this.minRelevanceScore = 0.7;
@@ -15,7 +15,7 @@ class ImageGenerator {
   async getImageForConcept(concept, options = {}) {
     // Generate cache key
     const cacheKey = `${concept}_${JSON.stringify(options)}`;
-    
+
     // Check cache first (client-side only)
     if (typeof window !== 'undefined' && this.imageCache.has(cacheKey)) {
       const cached = this.imageCache.get(cacheKey);
@@ -27,7 +27,7 @@ class ImageGenerator {
     try {
       // First try image server
       const image = await this.fetchFromImageServer(concept, options);
-      
+
       if (image && image.url && !image.isPlaceholder) {
         // Cache the result
         if (typeof window !== 'undefined') {
@@ -42,7 +42,7 @@ class ImageGenerator {
 
       // Fallback to placeholder or conceptual diagram
       const fallback = this.generateConceptualImage(concept, options);
-      
+
       if (typeof window !== 'undefined') {
         this.imageCache.set(cacheKey, {
           ...fallback,
@@ -50,7 +50,7 @@ class ImageGenerator {
           source: 'generated'
         });
       }
-      
+
       return fallback;
 
     } catch (error) {
@@ -62,12 +62,12 @@ class ImageGenerator {
   async fetchFromImageServer(concept, options) {
     try {
       const query = this.buildImageQuery(concept, options);
-      
+
       const response = await fetch(`${this.baseURL}/search_image?query=${encodeURIComponent(query)}`);
-      
+
       if (response.ok) {
         const data = await response.json();
-        
+
         if (data.image_url && !data.image_url.includes('placeholder.com')) {
           return {
             id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -91,17 +91,17 @@ class ImageGenerator {
 
   buildImageQuery(concept, options) {
     let query = concept;
-    
+
     if (options.category) {
       query += ` ${options.category} diagram`;
     }
-    
+
     if (options.difficulty === 'beginner') {
       query += ' simple illustration educational';
     } else if (options.difficulty === 'advanced') {
       query += ' detailed technical schematic';
     }
-    
+
     if (options.studentGoal === 'neet') {
       query += ' medical biological';
     } else if (options.studentGoal === 'gate') {
@@ -109,40 +109,25 @@ class ImageGenerator {
     } else if (options.studentGoal === 'jee') {
       query += ' physics mathematics';
     }
-    
+
     query += ' educational diagram infographic';
-    
+
     return query;
   }
 
   generateConceptualImage(concept, options) {
-    // Create a simple data URL for a conceptual diagram
-    return {
-      id: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      url: `https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=${encodeURIComponent(concept.substring(0, 30))}`,
-      altText: `Conceptual diagram of ${concept}`,
-      title: `Conceptual representation: ${concept}`,
-      caption: options.caption || `Visual aid to understand ${concept}`,
-      source: 'generated',
-      isPlaceholder: true,
-      isSVG: false,
-      colors: {
-        primary: '#4F46E5',
-        secondary: '#10B981',
-        accent: '#F59E0B'
-      },
-      diagramType: 'concept_map'
-    };
+    // Return empty array instead of placeholder images
+    return null;
   }
 
   async batchGetImages(concepts, options = {}) {
     const results = {};
-    
+
     for (const concept of concepts) {
       try {
         const image = await this.getImageForConcept(concept, options);
         results[concept] = image;
-        
+
         // Small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
@@ -150,7 +135,7 @@ class ImageGenerator {
         results[concept] = this.generateConceptualImage(concept, options);
       }
     }
-    
+
     return results;
   }
 
@@ -160,7 +145,7 @@ class ImageGenerator {
 
   getCacheStats() {
     const imageCacheValues = Array.from(this.imageCache.values());
-    
+
     return {
       size: this.imageCache.size,
       hits: imageCacheValues.filter(img => img.source === 'image_server').length,
@@ -189,35 +174,45 @@ class EducationalImageGenerator {
    */
   async generateForTopic(topic, context = "", count = 3) {
     console.log(`Generating images for: "${topic}"`);
-    
+
     try {
       // Step 1: Generate search queries from topic
       const searchQueries = this.generateSearchQueries(topic, context);
-      
+
       // Step 2: Search Wikimedia Commons
       const imageCandidates = await this.searchWikimedia(searchQueries);
-      
+
       if (imageCandidates.length === 0) {
-        console.log("No images found on Wikimedia Commons, using fallback");
-        return this.getFallbackImages(topic);
+        console.log(`No images found on Wikimedia Commons for: "${topic}"`);
+        return [];
       }
-      
+
+      console.log(`Found ${imageCandidates.length} candidate images, verifying with CLIP...`);
+
       // Step 3: Filter with CLIP verification
       const verifiedImages = await this.verifyWithCLIP(
-        imageCandidates, 
-        topic, 
+        imageCandidates,
+        topic,
         context
       );
-      
+
+      if (verifiedImages.length === 0) {
+        console.log(`No images passed CLIP verification for: "${topic}"`);
+        return [];
+      }
+
       // Step 4: Select best images
       const selectedImages = this.selectBestImages(verifiedImages, count);
-      
+
       // Step 5: Format for educational use
-      return this.formatForEducationalUse(selectedImages, topic);
-      
+      const formattedImages = this.formatForEducationalUse(selectedImages, topic);
+
+      console.log(`Successfully generated ${formattedImages.length} verified images for: "${topic}"`);
+      return formattedImages;
+
     } catch (error) {
-      console.error("Image generation failed:", error.message);
-      return this.getFallbackImages(topic);
+      console.error(`Image generation failed for "${topic}":`, error.message);
+      return [];
     }
   }
 
@@ -226,23 +221,23 @@ class EducationalImageGenerator {
    */
   generateSearchQueries(topic, context = "") {
     const queries = [];
-    
+
     // Main topic query
     queries.push(topic);
-    
+
     // Add educational-specific terms
     const educationalTerms = [
-      "diagram", "chart", "graph", "illustration", 
+      "diagram", "chart", "graph", "illustration",
       "infographic", "schematic", "flowchart", "process",
       "concept map", "visualization", "educational"
     ];
-    
+
     // Combine with educational terms
     educationalTerms.forEach(term => {
       queries.push(`${topic} ${term}`);
       queries.push(`${term} of ${topic}`);
     });
-    
+
     // Extract key terms from context if provided
     if (context) {
       const keyTerms = this.extractKeyTermsFromContext(context);
@@ -253,11 +248,11 @@ class EducationalImageGenerator {
         }
       });
     }
-    
+
     // Add domain-specific queries for common CS topics
     const domainSpecific = this.getDomainSpecificQueries(topic);
     queries.push(...domainSpecific);
-    
+
     // Remove duplicates and return
     return [...new Set(queries)].slice(0, 15); // Limit queries
   }
@@ -267,11 +262,11 @@ class EducationalImageGenerator {
    */
   async searchWikimedia(searchQueries) {
     const allImages = [];
-    
+
     for (const query of searchQueries) {
       try {
-        console.log(`🔍 Searching Wikimedia for: "${query}"`);
-        
+        console.log(`Searching Wikimedia for: "${query}"`);
+
         const params = new URLSearchParams({
           action: 'query',
           format: 'json',
@@ -286,36 +281,36 @@ class EducationalImageGenerator {
           pithumbsize: '300',
           origin: '*'
         });
-        
+
         const response = await fetch(`${WIKIMEDIA_API_URL}?${params}`, {
           headers: {
             'User-Agent': 'EducationalApp/1.0 (https://yourapp.com)'
           }
         });
-        
+
         if (!response.ok) {
           console.warn(`Wikimedia API error for "${query}": ${response.status}`);
           continue;
         }
-        
+
         const data = await response.json();
         const images = this.parseWikimediaResponse(data, query);
-        
+
         allImages.push(...images);
-        
+
         // Early exit if we have enough images
         if (allImages.length >= this.maxImagesPerQuery * 3) {
           break;
         }
-        
+
         // Rate limiting delay
         await new Promise(resolve => setTimeout(resolve, 200));
-        
+
       } catch (error) {
         console.warn(`Search failed for "${query}":`, error.message);
       }
     }
-    
+
     return allImages;
   }
 
@@ -324,28 +319,28 @@ class EducationalImageGenerator {
    */
   parseWikimediaResponse(data, query) {
     const images = [];
-    
+
     if (!data.query || !data.query.pages) {
       return images;
     }
-    
+
     Object.values(data.query.pages).forEach(page => {
       if (!page.imageinfo || !page.imageinfo[0]) return;
-      
+
       const imageInfo = page.imageinfo[0];
       const metadata = imageInfo.extmetadata || {};
-      
+
       // Filter for educational content
       if (!this.isEducationalImage(metadata, imageInfo)) {
         return;
       }
-      
+
       const image = {
         id: page.pageid,
         title: page.title?.replace('File:', '') || 'Untitled',
-        description: metadata.ImageDescription?.value || 
-                    metadata.ObjectName?.value || 
-                    metadata.Caption?.value || '',
+        description: metadata.ImageDescription?.value ||
+          metadata.ObjectName?.value ||
+          metadata.Caption?.value || '',
         author: metadata.Artist?.value || 'Unknown',
         license: metadata.LicenseShortName?.value || 'Unknown',
         url: imageInfo.thumburl || imageInfo.url,
@@ -359,13 +354,13 @@ class EducationalImageGenerator {
         source: 'wikimedia',
         timestamp: new Date().toISOString()
       };
-      
+
       // Calculate quality score
       image.qualityScore = this.calculateQualityScore(image, metadata);
-      
+
       images.push(image);
     });
-    
+
     return images;
   }
 
@@ -374,9 +369,9 @@ class EducationalImageGenerator {
    */
   async verifyWithCLIP(images, topic, context) {
     console.log(`Verifying ${images.length} images with CLIP...`);
-    
+
     const verifiedImages = [];
-    
+
     for (const image of images) {
       try {
         // Skip if already in cache
@@ -388,7 +383,7 @@ class EducationalImageGenerator {
           }
           continue;
         }
-        
+
         // Prepare CLIP input
         const clipInput = {
           inputs: {
@@ -402,7 +397,7 @@ class EducationalImageGenerator {
             ]
           }
         };
-        
+
         // Call CLIP API
         const response = await fetch(CLIP_API_URL, {
           method: 'POST',
@@ -412,43 +407,43 @@ class EducationalImageGenerator {
           },
           body: JSON.stringify(clipInput)
         });
-        
+
         if (!response.ok) {
           console.warn(`CLIP API error: ${response.status}`);
           continue;
         }
-        
+
         const scores = await response.json();
-        
+
         // Calculate relevance score (average of all text scores)
         const relevanceScore = Array.isArray(scores) && scores.length > 0
           ? scores.reduce((sum, arr) => sum + Math.max(...arr), 0) / scores.length
           : 0;
-        
+
         const verificationResult = {
           relevanceScore: relevanceScore,
           verifiedAt: new Date().toISOString(),
           isRelevant: relevanceScore >= this.minRelevanceScore
         };
-        
+
         // Cache result
         this.cache.set(cacheKey, verificationResult);
-        
+
         if (verificationResult.isRelevant) {
           verifiedImages.push({
             ...image,
             ...verificationResult
           });
         }
-        
+
         // Rate limiting
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
       } catch (error) {
         console.warn(`CLIP verification failed for image ${image.id}:`, error.message);
       }
     }
-    
+
     console.log(`CLIP verification complete: ${verifiedImages.length} relevant images`);
     return verifiedImages;
   }
@@ -507,10 +502,10 @@ class EducationalImageGenerator {
    * Generate educational caption
    */
   generateEducationalCaption(image, topic) {
-    const base = image.description 
+    const base = image.description
       ? `${image.description}. `
       : `Illustration showing ${topic}. `;
-    
+
     return `${base}This visual aid helps explain the concept of ${topic} in computer science.`;
   }
 
@@ -521,12 +516,12 @@ class EducationalImageGenerator {
     if (image.description && image.description.length > 20) {
       return `Diagram: ${image.description}. Related to ${topic}.`;
     }
-    
+
     const imageType = image.title.toLowerCase().includes('diagram') ? 'Diagram' :
-                     image.title.toLowerCase().includes('chart') ? 'Chart' :
-                     image.title.toLowerCase().includes('graph') ? 'Graph' :
-                     'Illustration';
-    
+      image.title.toLowerCase().includes('chart') ? 'Chart' :
+        image.title.toLowerCase().includes('graph') ? 'Graph' :
+          'Illustration';
+
     return `${imageType} illustrating the concept of ${topic} in operating systems and process synchronization.`;
   }
 
@@ -541,7 +536,7 @@ class EducationalImageGenerator {
       'PD': 'Public domain',
       'GFDL': 'GNU Free Documentation License'
     };
-    
+
     return guidelines[license] || 'Check specific license terms';
   }
 
@@ -551,7 +546,7 @@ class EducationalImageGenerator {
   determineEducationalPurpose(image, topic) {
     const title = image.title.toLowerCase();
     const desc = image.description.toLowerCase();
-    
+
     if (title.includes('diagram') || desc.includes('diagram')) {
       return 'concept_visualization';
     } else if (title.includes('chart') || desc.includes('chart')) {
@@ -572,25 +567,25 @@ class EducationalImageGenerator {
    */
   calculateQualityScore(image, metadata) {
     let score = 0.5; // Base score
-    
+
     // Resolution quality
     if (image.width >= 800 && image.height >= 600) score += 0.2;
     if (image.width >= 1200 && image.height >= 800) score += 0.1;
-    
+
     // Metadata completeness
     if (metadata.ImageDescription?.value) score += 0.1;
     if (metadata.Artist?.value) score += 0.05;
     if (metadata.LicenseShortName?.value) score += 0.05;
-    
+
     // Educational relevance
     const hasEducationalTerms = ['diagram', 'chart', 'graph', 'illustration', 'educational']
-      .some(term => image.title.toLowerCase().includes(term) || 
-                   image.description.toLowerCase().includes(term));
+      .some(term => image.title.toLowerCase().includes(term) ||
+        image.description.toLowerCase().includes(term));
     if (hasEducationalTerms) score += 0.1;
-    
+
     // File format (prefer SVG for diagrams)
     if (image.mime === 'image/svg+xml') score += 0.2;
-    
+
     return Math.min(score, 1.0); // Cap at 1.0
   }
 
@@ -600,21 +595,21 @@ class EducationalImageGenerator {
   isEducationalImage(metadata, imageInfo) {
     // Skip non-image files
     if (!imageInfo.mime?.startsWith('image/')) return false;
-    
+
     // Skip very small images
     if (imageInfo.width < 300 || imageInfo.height < 200) return false;
-    
+
     // Skip inappropriate categories
     const categories = metadata.Categories?.value?.toLowerCase() || '';
     const blockedTerms = ['porn', 'adult', 'offensive', 'violence', 'person', 'portrait', 'selfie'];
     if (blockedTerms.some(term => categories.includes(term))) return false;
-    
+
     // Check file name for educational terms
     const fileName = metadata.ObjectName?.value?.toLowerCase() || '';
     const educationalTerms = ['diagram', 'chart', 'graph', 'illustration', 'infographic', 'schematic'];
-    
-    return educationalTerms.some(term => 
-      fileName.includes(term) || 
+
+    return educationalTerms.some(term =>
+      fileName.includes(term) ||
       categories.includes(term)
     );
   }
@@ -624,17 +619,17 @@ class EducationalImageGenerator {
    */
   extractKeyTermsFromContext(context) {
     const terms = [];
-    
+
     // Simple extraction - can be enhanced with NLP
     const words = context.toLowerCase().split(/\W+/);
     const stopWords = new Set(['the', 'and', 'for', 'with', 'that', 'this', 'from']);
-    
+
     words.forEach(word => {
       if (word.length > 4 && !stopWords.has(word)) {
         terms.push(word);
       }
     });
-    
+
     return [...new Set(terms)].slice(0, 10);
   }
 
@@ -662,14 +657,14 @@ class EducationalImageGenerator {
         'search algorithm'
       ]
     };
-    
+
     const lowerTopic = topic.toLowerCase();
     for (const [key, queries] of Object.entries(domainMap)) {
       if (lowerTopic.includes(key)) {
         return queries;
       }
     }
-    
+
     return [];
   }
 
@@ -678,7 +673,7 @@ class EducationalImageGenerator {
    */
   getFallbackImages(topic) {
     console.log(`Using fallback images for: "${topic}"`);
-    
+
     // Return simple placeholder structure
     return [{
       type: 'placeholder',
@@ -695,4 +690,5 @@ class EducationalImageGenerator {
   }
 }
 
+export { EducationalImageGenerator };
 export default ImageGenerator;

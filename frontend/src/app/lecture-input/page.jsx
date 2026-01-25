@@ -119,6 +119,10 @@ export default function LectureInputPage() {
                 throw new Error('Invalid response: No topics generated. Check backend logs.');
             }
             
+            // Invalidate cached lecture plan for ANY new content (PDF, PPT, audio, YouTube)
+            localStorage.setItem('force_lecture_plan_refresh', 'true');
+            console.log('Cache invalidated - new content uploaded (PDF/PPT/Audio/YouTube)');
+            
             const sessionId = lecturePlan.sessionId || `session_${Date.now()}`;
             const lectureId = lecturePlan.lectureId || `lecture_${Date.now()}`;
             

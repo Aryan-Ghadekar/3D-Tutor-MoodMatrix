@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '../../config/constants';  
+
+// Backend configuration
+const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if needed
 
 export async function POST(request) {
   try {

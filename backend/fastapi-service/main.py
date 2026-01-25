@@ -608,7 +608,9 @@ def create_diagnostic_question(qid, topic, content, misconceptions, insights):
 # SAVE FUNCTION
 # =========================================================
 def save_lecture_plan_to_mock(lecture_plan):
-    mock_file_path = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\mock_lecture_plan.json")
+    # Get the project root directory (3 levels up from this file: backend/fastapi-service/main.py -> backend/fastapi-service -> backend -> root)
+    project_root = Path(__file__).resolve().parents[2]
+    mock_file_path = project_root / "frontend" / "src" / "app" / "lib" / "mock_lecture_plan.json"
     mock_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     data = []
@@ -634,7 +636,9 @@ def save_lecture_plan_to_mock(lecture_plan):
 def save_quiz_results(results_data):
     """Save quiz results to file"""
     try:
-        results_dir = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\quiz_results")
+        # Get the project root directory
+        project_root = Path(__file__).resolve().parents[2]
+        results_dir = project_root / "frontend" / "src" / "app" / "lib" / "quiz_results"
         results_dir.mkdir(parents=True, exist_ok=True)
         
         results_file = results_dir / "quiz_results.json"
@@ -1308,7 +1312,9 @@ async def get_lecture_plan(
 ):
     """Get lecture plan - always returns latest if sessionId not found"""
     try:
-        mock_file_path = Path(r"C:\Users\91901\OneDrive\Desktop\Fork-Automated-Lecture-Summarizer-and-Note-Generator-with-AR-Tutor\frontend\src\app\lib\mock_lecture_plan.json")
+        # Get the project root directory
+        project_root = Path(__file__).resolve().parents[2]
+        mock_file_path = project_root / "frontend" / "src" / "app" / "lib" / "mock_lecture_plan.json"
         
         if not mock_file_path.exists():
             raise HTTPException(status_code=404, detail="No lecture plans found")

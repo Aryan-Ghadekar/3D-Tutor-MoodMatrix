@@ -1,13 +1,18 @@
+/**
+ * AI-POWERED SLIDE GENERATION API
+ * Connects frontend to AI backend for dynamic slide creation
+ */
+
 import { NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 
 export async function POST(request) {
-  console.log('=== SLIDE GENERATION ===');
-  
+  console.log('=== AI SLIDE GENERATION REQUEST ===');
+
   try {
     const data = await request.json();
-    
+
     console.log('Request Details:', {
       actionType: data.actionType,
       sessionId: data.sessionId?.substring(0, 8) + '...',
@@ -16,7 +21,7 @@ export async function POST(request) {
       hasQuestion: !!data.userQuestion,
       knowledgeLevel: data.knowledgeState?.knowledgeLevel
     });
-    
+
     // Validate required fields
     if (!data.sessionId) {
       throw new Error("Missing sessionId");
@@ -24,10 +29,10 @@ export async function POST(request) {
     if (!data.lecturePlan) {
       throw new Error("Missing lecturePlan");
     }
-    
+
     // Call AI backend
     console.log('Calling AI backend...');
-    
+
     const backendResponse = await fetch(`${BACKEND_URL}/generate-dynamic-slide`, {
       method: 'POST',
       headers: {
@@ -45,19 +50,19 @@ export async function POST(request) {
       }),
       signal: AbortSignal.timeout(35000) // 35 second timeout for AI
     });
-    
+
     if (!backendResponse.ok) {
       const errorText = await backendResponse.text();
       console.error('Backend error:', backendResponse.status, errorText);
       throw new Error(`Backend error: ${backendResponse.status} - ${errorText.substring(0, 100)}`);
     }
-    
+
     const result = await backendResponse.json();
-    
+
     if (!result.success) {
       throw new Error(result.message || 'AI generation failed');
     }
-    
+
     console.log('AI Slide Generated:', {
       title: result.slide?.title,
       type: result.slide?.type,
@@ -65,7 +70,7 @@ export async function POST(request) {
       imageCount: result.slide?.images?.length,
       aiModel: result.slide?.metadata?.aiModel
     });
-    
+
     return NextResponse.json({
       success: true,
       slide: result.slide,
@@ -76,10 +81,10 @@ export async function POST(request) {
         timestamp: new Date().toISOString()
       }
     });
-    
+
   } catch (error) {
     console.error('CRITICAL ERROR in slide generation:', error);
-    
+
     // Create emergency fallback slide (NON-AI)
     const emergencySlide = {
       id: `emergency_${Date.now()}`,
@@ -113,14 +118,7 @@ export async function POST(request) {
         ],
         memoryHook: "Personalize → Learn → Practice → Master"
       },
-      images: [{
-        id: `emergency_img_${Date.now()}`,
-        url: 'https://via.placeholder.com/800x500/3b82f6/ffffff?text=AI+Learning+System',
-        caption: 'AI-Powered Learning System',
-        alt: 'Educational AI system',
-        source: 'placeholder',
-        isPlaceholder: true
-      }],
+      images: [],
       metadata: {
         generatedAt: new Date().toISOString(),
         isEmergency: true,
@@ -128,7 +126,7 @@ export async function POST(request) {
         generatedBy: 'fallback'
       }
     };
-    
+
     return NextResponse.json({
       success: false,
       slide: emergencySlide,

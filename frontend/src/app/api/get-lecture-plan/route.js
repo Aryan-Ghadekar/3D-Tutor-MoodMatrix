@@ -11,41 +11,41 @@ const FALLBACK_URLS = ["http://localhost:8001", "http://localhost:8001"];
 export async function POST(request) {
   try {
     const contentType = request.headers.get('content-type') || '';
-    
+
     // CASE 1: JSON request (from study-session)
     if (contentType.includes('application/json')) {
-      console.log('JSON request detected - reading lecture plan');
-      
+      console.log('📥 JSON request detected - reading lecture plan');
+
       try {
         const { topic, studentGoal } = await request.json();
         console.log('Request for lecture plan:', { topic, studentGoal });
-        
+
         // Try to read from mock_lecture_plan.json
         const mockFilePath = path.join(process.cwd(), 'src/app/lib/mock_lecture_plan.json');
-        
+
         if (fs.existsSync(mockFilePath)) {
           const fileContent = fs.readFileSync(mockFilePath, 'utf8');
           let lecturePlanData;
-          
+
           try {
             lecturePlanData = JSON.parse(fileContent);
-            
+
             // Handle both array and object formats
             let lecturePlan;
             if (Array.isArray(lecturePlanData) && lecturePlanData.length > 0) {
               // Get the most recent plan
               lecturePlan = lecturePlanData[0];
-              console.log('Using most recent lecture plan from array');
+              console.log('📄 Using most recent lecture plan from array');
             } else if (typeof lecturePlanData === 'object') {
               lecturePlan = lecturePlanData;
-              console.log('Using lecture plan object');
+              console.log('📄 Using lecture plan object');
             } else {
               throw new Error('Invalid lecture plan format');
             }
-            
+
             // Adapt plan for student goal
             const adaptedPlan = adaptPlanForGoal(lecturePlan, studentGoal);
-            
+
             return NextResponse.json({
               success: true,
               message: 'Lecture plan retrieved successfully',
@@ -56,26 +56,26 @@ export async function POST(request) {
               source: 'mock_file',
               retrievedAt: new Date().toISOString()
             });
-            
+
           } catch (parseError) {
             console.error('Error parsing lecture plan:', parseError);
             return generateFallbackPlan(topic, studentGoal);
           }
         } else {
-          console.log('No mock lecture plan found, generating fallback');
+          console.log('📭 No mock lecture plan found, generating fallback');
           return generateFallbackPlan(topic, studentGoal);
         }
-        
+
       } catch (jsonError) {
         console.error('Error processing JSON request:', jsonError);
         return generateFallbackPlan('Operating Systems', 'gate');
       }
     }
-    
+
     // CASE 2: FormData request (from lecture-input)
     else if (contentType.includes('multipart/form-data')) {
-      console.log('FormData request detected - processing files');
-      
+      console.log('📤 FormData request detected - processing files');
+
       const formData = await request.formData();
       const pdfFile = formData.get('pdf');
       const pptFile = formData.get('ppt');
@@ -83,7 +83,7 @@ export async function POST(request) {
       const youtubeUrl = formData.get('youtube_url');
       const courseName = formData.get('course_name') || 'Auto Generated Lecture';
       const duration = formData.get('duration') || '45 minutes';
-      
+
       // Validate that at least one input source is provided
       if (!pdfFile && !pptFile && !youtubeUrl) {
         return NextResponse.json(
@@ -91,7 +91,7 @@ export async function POST(request) {
           { status: 400 }
         );
       }
-      
+
       // Validate file types if provided
       if (pdfFile && pdfFile.size > 0 && pdfFile.type !== 'application/pdf') {
         return NextResponse.json(
@@ -99,14 +99,14 @@ export async function POST(request) {
           { status: 400 }
         );
       }
-      
+
       if (pptFile && pptFile.size > 0 && !pptFile.type.includes('presentation')) {
         return NextResponse.json(
           { error: 'PowerPoint file must be valid (.ppt or .pptx)' },
           { status: 400 }
         );
       }
-      
+
       if (pdfFile && pdfFile.size > 0) {
         console.log(`PDF received: ${pdfFile.name} (${(pdfFile.size / 1024).toFixed(2)} KB)`);
       }
@@ -117,9 +117,9 @@ export async function POST(request) {
         console.log(`YouTube URL received: ${youtubeUrl}`);
       }
       console.log(`Course: ${courseName}, Duration: ${duration}`);
-      
+
       const fastapiFormData = new FormData();
-      
+
       // Add the primary content source (PDF, PPT, or YouTube URL)
       if (pdfFile && pdfFile.size > 0) {
         fastapiFormData.append('pdf', pdfFile);
@@ -130,10 +130,10 @@ export async function POST(request) {
       if (youtubeUrl) {
         fastapiFormData.append('youtube_url', youtubeUrl);
       }
-      
+
       fastapiFormData.append('course_name', courseName);
       fastapiFormData.append('duration', duration);
-      
+
       let hasAudio = false;
       if (audioFile && audioFile.size > 0) {
         const audioTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/mp3', 'audio/x-m4a', 'audio/webm', 'audio/ogg'];
@@ -145,15 +145,15 @@ export async function POST(request) {
           console.warn(`Unsupported audio type: ${audioFile.type}`);
         }
       }
-      
+
       console.log('Calling FastAPI service...');
       console.log(`Primary URL: ${FASTAPI_URL}/analyze-lecture`);
       console.log(`Fallback URLs: ${FALLBACK_URLS.join(', ')}`);
-      
+
       // Test FastAPI connection first with fallback
       let workingUrl = FASTAPI_URL;
       let testResponse;
-      
+
       for (const url of FALLBACK_URLS) {
         try {
           testResponse = await fetch(`${url}/`, { timeout: 5000 });
@@ -167,25 +167,25 @@ export async function POST(request) {
           continue;
         }
       }
-      
+
       if (!testResponse || !testResponse.ok) {
         console.log('All FastAPI connection attempts failed');
         return NextResponse.json(
-          { 
+          {
             error: 'Backend service is not running',
-            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8001'
+            details: 'Start FastAPI with: python main.py or uvicorn main:app --port 8000'
           },
           { status: 503 }
         );
       }
-      
+
       const response = await fetch(`${workingUrl}/analyze-lecture`, {
         method: 'POST',
         body: fastapiFormData,
       });
-      
+
       console.log(`FastAPI response status: ${response.status} ${response.statusText}`);
-      
+
       if (!response.ok) {
         let errorText;
         try {
@@ -193,43 +193,43 @@ export async function POST(request) {
         } catch {
           errorText = 'No error details available';
         }
-        
+
         console.error('FastAPI error:', errorText);
-        
+
         return NextResponse.json(
-          { 
+          {
             error: 'Failed to process lecture',
             details: errorText
           },
           { status: response.status }
         );
       }
-      
+
       let fastAPIData;
       try {
         fastAPIData = await response.json();
         console.log('Lecture plan generated successfully by FastAPI');
-        
+
         // Validate response structure
         if (!fastAPIData.success) {
           throw new Error(fastAPIData.error || 'FastAPI reported failure');
         }
-        
+
         if (!fastAPIData.studyPlan && !fastAPIData.lecturePlan && !fastAPIData.lectureId) {
           throw new Error('Invalid response structure from FastAPI - missing lecture plan data');
         }
-        
+
       } catch (parseError) {
         console.error('Failed to parse or validate response:', parseError);
         return NextResponse.json(
-          { 
+          {
             error: 'Invalid response from backend',
             details: parseError.message
           },
           { status: 500 }
         );
       }
-      
+
       return NextResponse.json({
         success: true,
         message: 'Lecture plan generated',
@@ -239,26 +239,26 @@ export async function POST(request) {
         source: 'fastapi',
         generatedAt: new Date().toISOString()
       });
-      
+
     } else {
       // Unknown content type
       return NextResponse.json(
-        { 
+        {
           error: 'Unsupported content type',
           details: 'Please send either JSON or FormData'
         },
         { status: 400 }
       );
     }
-    
+
   } catch (error) {
     console.error('Error in get-lecture-plan:', error.message);
-    
+
     // Fallback: Load from mock if available
     try {
       const mockData = await loadMockLecturePlan();
       const latestPlan = mockData[0]; // Get latest plan
-        
+
       return NextResponse.json({
         success: true,
         studyPlan: latestPlan,
@@ -269,7 +269,7 @@ export async function POST(request) {
       });
     } catch (fallbackError) {
       console.error('Fallback also failed:', fallbackError);
-      
+
       // Generate a basic fallback
       const basicPlan = {
         sessionId: `session_${Date.now()}`,
@@ -295,7 +295,7 @@ export async function POST(request) {
           }
         ]
       };
-      
+
       return NextResponse.json({
         success: true,
         studyPlan: basicPlan,
@@ -310,7 +310,7 @@ export async function POST(request) {
 
 function adaptPlanForGoal(lecturePlan, studentGoal) {
   if (!studentGoal || !lecturePlan) return lecturePlan;
-  
+
   const goalInfo = {
     gate: {
       examFocus: "Problem-solving speed and accuracy",
@@ -338,9 +338,9 @@ function adaptPlanForGoal(lecturePlan, studentGoal) {
       weightageAdjustment: 1.0
     }
   };
-  
+
   const goalData = goalInfo[studentGoal] || goalInfo.gate;
-  
+
   // Update topics with goal-specific adjustments
   if (lecturePlan.impTopics && Array.isArray(lecturePlan.impTopics)) {
     lecturePlan.impTopics = lecturePlan.impTopics.map(topic => ({
@@ -350,19 +350,19 @@ function adaptPlanForGoal(lecturePlan, studentGoal) {
       preparationTips: [...(topic.preparationTips || []), ...goalData.preparationTips.slice(0, 2)]
     }));
   }
-  
+
   // Add goal metadata
   lecturePlan.studentGoal = studentGoal;
   lecturePlan.adaptedForGoal = true;
   lecturePlan.adaptationDate = new Date().toISOString();
   lecturePlan.goalSpecificInfo = goalData;
-  
+
   return lecturePlan;
 }
 
 function generateFallbackPlan(topic, studentGoal) {
-  console.log('Generating fallback lecture plan');
-  
+  console.log('🔄 Generating fallback lecture plan');
+
   const fallbackPlan = {
     lectureId: `fallback-${Date.now()}`,
     sessionId: `session-fallback-${Date.now()}`,
@@ -446,9 +446,9 @@ function generateFallbackPlan(topic, studentGoal) {
       note: "Using fallback content - upload PDF for personalized plan"
     }
   };
-  
+
   const adaptedPlan = adaptPlanForGoal(fallbackPlan, studentGoal);
-  
+
   return NextResponse.json({
     success: true,
     message: 'Using fallback lecture plan',
@@ -470,7 +470,7 @@ async function loadMockLecturePlan() {
     return JSON.parse(fileContents);
   } catch (error) {
     console.error('Error loading mock file:', error);
-    
+
     // Return default mock data
     return [
       {
@@ -510,15 +510,15 @@ export async function GET(request) {
 
     // Load from mock file
     const mockData = await loadMockLecturePlan();
-    
+
     let planToUse;
     if (sessionId || lectureId) {
-      planToUse = mockData.find(p => 
-        (sessionId && p.sessionId === sessionId) || 
+      planToUse = mockData.find(p =>
+        (sessionId && p.sessionId === sessionId) ||
         (lectureId && p.lectureId === lectureId)
       );
     }
-    
+
     if (!planToUse) {
       planToUse = mockData[0];
     }
@@ -532,7 +532,7 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('Error fetching lecture plan:', error);
-    
+
     // Return minimal fallback
     return NextResponse.json({
       success: true,
