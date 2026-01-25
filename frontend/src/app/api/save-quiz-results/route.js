@@ -63,7 +63,7 @@ export async function POST(request) {
 
     const data = await response.json();
 
-    console.log(`✅ Quiz results saved successfully`);
+    console.log(`Quiz results saved successfully`);
 
     return NextResponse.json({
       success: true,

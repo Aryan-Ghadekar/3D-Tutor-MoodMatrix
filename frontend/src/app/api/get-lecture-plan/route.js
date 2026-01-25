@@ -159,17 +159,17 @@ export async function POST(request) {
           testResponse = await fetch(`${url}/`, { timeout: 5000 });
           if (testResponse.ok) {
             workingUrl = url;
-            console.log(`✅ FastAPI connection successful on: ${url}`);
+            console.log(`FastAPI connection successful on: ${url}`);
             break;
           }
         } catch (testError) {
-          console.log(`❌ FastAPI test failed on ${url}: ${testError.message}`);
+          console.log(`FastAPI test failed on ${url}: ${testError.message}`);
           continue;
         }
       }
 
       if (!testResponse || !testResponse.ok) {
-        console.log('🚫 All FastAPI connection attempts failed');
+        console.log('All FastAPI connection attempts failed');
         return NextResponse.json(
           {
             error: 'Backend service is not running',
@@ -208,7 +208,7 @@ export async function POST(request) {
       let fastAPIData;
       try {
         fastAPIData = await response.json();
-        console.log('✅ Lecture plan generated successfully by FastAPI');
+        console.log('Lecture plan generated successfully by FastAPI');
 
         // Validate response structure
         if (!fastAPIData.success) {

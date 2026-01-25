@@ -1,5 +1,774 @@
 [
   {
+    "session_id": "eca747bd-5135-4b0d-a9d5-831edf37201c",
+    "lecture_id": "f8eeb500-8a48-44fe-9b02-50271144036d",
+    "score": 20.0,
+    "correct": 2,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which type of microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Fungi",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which microorganism can cause diseases in plants like wheat, rice, potato, and apple?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Algae",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "What is a recommended preventive measure to control the transmission of tuberculosis bacteria through the air?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Keep the personal belongings of the patient away from those of others",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Vaccination to be given at a suitable age",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Consume properly cooked food and boiled drinking water",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Keep the patient in complete isolation",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "How is nitrogen fixed in leguminous plants?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Through the action of Rhizobium bacteria in the root nodules",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "By using oil and vinegar as a preservation method",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "By exposing the plants to sunlight for extended periods",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Through the process of photosynthesis",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "Which of the following is used to prevent diseases like cholera, smallpox, and hepatitis?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccines",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Antibiotics",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Feed additives",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Plant vaccines",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which microorganisms play a crucial role in the fermentation process of curd?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Yeast",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Mold",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "Which method is NOT effective for preserving cooked food at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Canning",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Freezing",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Storing at room temperature",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Vacuum sealing",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What is a recommended strategy to prevent the transmission of pathogens through food?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Leaving food uncovered",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Covering food when not in use",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Sharing uncovered food with others",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Eating uncovered food to build immunity",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Which of the following statements about microorganisms is true?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Microorganisms are visible to the unaided eye",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Microorganisms can only live in hot climates",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Microorganisms are too small to be seen without assistance",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Microorganisms cannot survive in diverse environments",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "What is the role of biological nitrogen fixers in soil fertility?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Decreasing nitrogen levels in the soil",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Introducing harmful bacteria to the soil",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Enriching the soil with nitrogen for plant growth",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Preventing plant growth by producing antibodies",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "A",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T06:10:15.855235",
+    "saved_at": "2026-01-25T06:10:15.873636"
+  },
+  {
+    "session_id": "3d4a0b46-0643-433f-9df8-e4e08b1daa2d",
+    "lecture_id": "7287c328-e90b-4ce5-8f85-df453ff6f4cd",
+    "score": 30.0,
+    "correct": 3,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "What is a key feature of an Input-Output Processor (IOP)?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Handles arithmetic and logic tasks",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Communicates with the processor using DMA",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Translates code instructions for the main memory unit",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Performs branching operations within the CPU",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "In memory organization, what is the purpose of the address bus?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To store binary information in groups of bits called words",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "To carry the information out from the memory unit",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "To provide the information to be stored into the memory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To specify the address of the data to be accessed within the memory unit",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "What is the main function of the Instruction Buffer Register (IBR) in a computer system?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Store instructions that are not immediately executed",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Execute instructions immediately",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Connect internal components to the CPU and memory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Manage the flow of data between the memory unit and I/O devices",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "What is a key benefit of high-performing computers in terms of data processing?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Faster access to critical information",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "More immersive gaming experiences",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Reduced cost of computer systems",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Optimized multimedia performance",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "Which bus is responsible for carrying instructions among the main memory system, processor, and I/O devices?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Data Bus",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Instruction Bus",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Address Bus",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Control Bus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which input/output mode requires constant monitoring by the CPU of peripheral devices?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Interrupt-initiated I/O",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Direct memory access (DMA)",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Programmed I/O",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Memory-mapped I/O",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "In a single accumulator-based CPU organization, what is the format of the address instruction?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Opcode + Data",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Data + Opcode",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Opcode + Address",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Address + Opcode",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "In a computer system, when an external signal such as an interrupt appears, what does the control unit do?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Enters the state concerned with reaction to the external signal",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Stops the execution cycle immediately",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Resets all flags and state variables",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Skips the next instruction in the program",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "What is the purpose of the fetch sub-cycle in the instruction cycle of a microprocessor?",
+        "options": [
+          {
+            "id": "A",
+            "text": "To load the instruction from memory into a register",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "To perform arithmetic operations on the data",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "To store the result in memory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "To execute the instruction",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "Where is cache memory located in a computer system?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Inside the CPU",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Next to the CPU",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "In the main memory",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "In the registers",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "D",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T05:59:49.896238",
+    "saved_at": "2026-01-25T05:59:49.936052"
+  },
+  {
     "session_id": "de356703-80f6-4c08-aa24-632dff763756",
     "lecture_id": "e70f0926-ba1e-4df6-8cc7-c5f25dee9ff4",
     "score": 40.0,

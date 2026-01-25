@@ -93,7 +93,7 @@ export async function POST(request) {
 
       const data = await response.json();
 
-      console.log(`✅ Knowledge test results saved successfully`);
+      console.log(`Knowledge test results saved successfully`);
 
       return NextResponse.json({
         success: true,

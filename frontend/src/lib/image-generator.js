@@ -116,23 +116,8 @@ class ImageGenerator {
   }
 
   generateConceptualImage(concept, options) {
-    // Create a simple data URL for a conceptual diagram
-    return {
-      id: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      url: `https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=${encodeURIComponent(concept.substring(0, 30))}`,
-      altText: `Conceptual diagram of ${concept}`,
-      title: `Conceptual representation: ${concept}`,
-      caption: options.caption || `Visual aid to understand ${concept}`,
-      source: 'generated',
-      isPlaceholder: true,
-      isSVG: false,
-      colors: {
-        primary: '#4F46E5',
-        secondary: '#10B981',
-        accent: '#F59E0B'
-      },
-      diagramType: 'concept_map'
-    };
+    // Return empty array instead of placeholder images
+    return null;
   }
 
   async batchGetImages(concepts, options = {}) {
@@ -198,9 +183,11 @@ class EducationalImageGenerator {
       const imageCandidates = await this.searchWikimedia(searchQueries);
 
       if (imageCandidates.length === 0) {
-        console.log("No images found on Wikimedia Commons, using fallback");
-        return this.getFallbackImages(topic);
+        console.log(`No images found on Wikimedia Commons for: "${topic}"`);
+        return [];
       }
+
+      console.log(`Found ${imageCandidates.length} candidate images, verifying with CLIP...`);
 
       // Step 3: Filter with CLIP verification
       const verifiedImages = await this.verifyWithCLIP(
@@ -209,15 +196,23 @@ class EducationalImageGenerator {
         context
       );
 
+      if (verifiedImages.length === 0) {
+        console.log(`No images passed CLIP verification for: "${topic}"`);
+        return [];
+      }
+
       // Step 4: Select best images
       const selectedImages = this.selectBestImages(verifiedImages, count);
 
       // Step 5: Format for educational use
-      return this.formatForEducationalUse(selectedImages, topic);
+      const formattedImages = this.formatForEducationalUse(selectedImages, topic);
+
+      console.log(`Successfully generated ${formattedImages.length} verified images for: "${topic}"`);
+      return formattedImages;
 
     } catch (error) {
-      console.error("Image generation failed:", error.message);
-      return this.getFallbackImages(topic);
+      console.error(`Image generation failed for "${topic}":`, error.message);
+      return [];
     }
   }
 
@@ -270,7 +265,7 @@ class EducationalImageGenerator {
 
     for (const query of searchQueries) {
       try {
-        console.log(`🔍 Searching Wikimedia for: "${query}"`);
+        console.log(`Searching Wikimedia for: "${query}"`);
 
         const params = new URLSearchParams({
           action: 'query',

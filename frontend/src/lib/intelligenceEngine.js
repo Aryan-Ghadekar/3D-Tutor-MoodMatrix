@@ -1187,7 +1187,7 @@ export default class IntelligenceEngine {
 
   async generateSlideImages(topic, slideContent) {
     try {
-      // Try to get real educational images
+      // Use educational image generator with Wikimedia + CLIP verification
       if (this.imageGenerator) {
         const images = await this.imageGenerator.getEducationalImages(
           topic.title,
@@ -1195,47 +1195,19 @@ export default class IntelligenceEngine {
           slideContent.narrative
         );
 
-        if (images && images.length > 0 && !images[0].isPlaceholder) {
+        if (images && images.length > 0) {
+          console.log(`Generated ${images.length} verified images for: ${topic.title}`);
           return images;
         }
       }
 
-      // Fallback to conceptual images
-      return this.generateConceptualImages(topic, slideContent);
+      console.log(`No verified images available for: ${topic.title}`);
+      return [];
 
     } catch (error) {
-      console.warn('Image generation failed, using fallback:', error.message);
-      return this.generateConceptualImages(topic, slideContent);
+      console.warn('Image generation failed:', error.message);
+      return [];
     }
-  }
-
-  generateConceptualImages(topic, slideContent) {
-    const colors = ['3b82f6', '10b981', '8b5cf6', 'f59e0b', 'ef4444'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-
-    const encodedTitle = encodeURIComponent(topic.title.substring(0, 30));
-    const encodedInsight = slideContent.keyInsights && slideContent.keyInsights[0]
-      ? encodeURIComponent(slideContent.keyInsights[0].substring(0, 40))
-      : encodedTitle;
-
-    return [
-      {
-        id: `concept_${Date.now()}_1`,
-        url: `https://via.placeholder.com/800x500/${color}/ffffff?text=${encodedTitle}`,
-        caption: `Concept Overview: ${topic.title}`,
-        alt: `Conceptual diagram for ${topic.title}`,
-        source: 'conceptual',
-        isPlaceholder: true
-      },
-      {
-        id: `concept_${Date.now()}_2`,
-        url: `https://via.placeholder.com/600x400/${colors[1]}/ffffff?text=${encodedInsight}`,
-        caption: 'Key Insight Visualization',
-        alt: 'Visual representation of important learning point',
-        source: 'conceptual',
-        isPlaceholder: true
-      }
-    ];
   }
 
   createEmergencySlide(topicIndex, actionType, context) {
@@ -1269,14 +1241,7 @@ export default class IntelligenceEngine {
         commonTraps: ['Skipping fundamentals', 'Inconsistent practice', 'Ignoring feedback'],
         memoryHook: 'Adapt → Learn → Practice → Succeed'
       },
-      images: [{
-        id: `emergency_img_${Date.now()}`,
-        url: `https://via.placeholder.com/800x500/3b82f6/ffffff?text=${encodeURIComponent(topic.title.substring(0, 30))}`,
-        caption: 'Educational Content',
-        alt: 'Learning system interface',
-        source: 'emergency',
-        isPlaceholder: true
-      }],
+      images: [],
       metadata: {
         generatedAt: new Date().toISOString(),
         isEmergency: true,

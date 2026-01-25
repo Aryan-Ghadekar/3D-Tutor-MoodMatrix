@@ -4,7 +4,8 @@
  */
 
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '../../../config/constants';
+
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 
 export async function POST(request) {
   console.log('=== AI SLIDE GENERATION REQUEST ===');
@@ -117,14 +118,7 @@ export async function POST(request) {
         ],
         memoryHook: "Personalize → Learn → Practice → Master"
       },
-      images: [{
-        id: `emergency_img_${Date.now()}`,
-        url: 'https://via.placeholder.com/800x500/3b82f6/ffffff?text=AI+Learning+System',
-        caption: 'AI-Powered Learning System',
-        alt: 'Educational AI system',
-        source: 'placeholder',
-        isPlaceholder: true
-      }],
+      images: [],
       metadata: {
         generatedAt: new Date().toISOString(),
         isEmergency: true,

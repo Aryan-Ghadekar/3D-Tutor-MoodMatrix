@@ -84,7 +84,7 @@ export async function POST(request) {
 
       const data = await response.json();
 
-      console.log(`✅ Comprehensive test report saved successfully`);
+      console.log(`Comprehensive test report saved successfully`);
 
       return NextResponse.json({
         success: true,

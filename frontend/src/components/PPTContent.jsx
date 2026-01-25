@@ -230,9 +230,13 @@ export function MixedContent({ title, items = [] }) {
                                 <div className="p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
                                     <div className="relative w-[300px] h-[200px] rounded-xl overflow-hidden">
                                         <img
-                                            src={item.imageUrl || `https://via.placeholder.com/400x300?text=${encodeURIComponent(item.keywords?.[0] || 'Image')}`}
+                                            src={item.imageUrl}
                                             alt={item.caption}
                                             className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No image available</div>';
+                                            }}
                                         />
                                         <div className="absolute bottom-0 inset-x-0 bg-black/60 p-2 text-white text-xs">
                                             {item.caption}
