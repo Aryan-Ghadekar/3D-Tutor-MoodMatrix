@@ -1,5 +1,768 @@
 [
   {
+    "session_id": "de356703-80f6-4c08-aa24-632dff763756",
+    "lecture_id": "e70f0926-ba1e-4df6-8cc7-c5f25dee9ff4",
+    "score": 40.0,
+    "correct": 4,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which microorganism is responsible for diseases like dysentery and malaria?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Protozoa",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Viruses",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "Which of the following microorganisms can cause diseases in plants like wheat, rice, and potato?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Bacteria",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Fungi",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Viruses",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "Protozoa",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "Which preventive measure is crucial in preventing the transmission of tuberculosis bacteria through the air?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccination to be given at a suitable age."
+          },
+          {
+            "id": "B",
+            "text": "Consuming properly cooked food and boiled drinking water."
+          },
+          {
+            "id": "C",
+            "text": "Maintaining personal hygiene."
+          },
+          {
+            "id": "D",
+            "text": "Keeping the patient in complete isolation.",
+            "isCorrect": true
+          }
+        ],
+        "correctAnswer": "D",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "How is nitrogen fixation in leguminous plants primarily achieved?",
+        "options": [
+          {
+            "id": "A",
+            "text": "By adding chemical fertilizers",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Through the action of Rhizobium bacteria in root nodules",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "By exposure to sunlight",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "By watering the plants frequently",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "How are vaccines and antibiotics different in their primary function?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vaccines prevent diseases, while antibiotics cure diseases",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Vaccines cure diseases, while antibiotics prevent diseases",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Vaccines are used for animals, while antibiotics are used for plants",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Vaccines are natural, while antibiotics are synthetic",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "Which microorganism is essential for the fermentation of curd?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Yeast",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Bacteria",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Mold",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Virus",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "What method can be used to preserve cooked food at home?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Refrigeration",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Microwaving",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Deep frying",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Grilling",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What is a recommended strategy to prevent the transmission of pathogens through food consumption?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Eating uncovered food",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Keeping food covered",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Leaving food exposed to air",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Sharing utensils while eating",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "Where can microorganisms live?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only in cold climates",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "In air, water, and the bodies of plants and animals",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Exclusively in deserts",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Restricted to marshy lands",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "How do biological nitrogen fixers contribute to soil fertility?",
+        "options": [
+          {
+            "id": "A",
+            "text": "By decreasing the nitrogen content in the soil",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "By introducing antibodies into the soil",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "By enriching the soil with nitrogen from the atmosphere",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "By reducing the fertility of the soil",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "C",
+        "isCorrect": true
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T05:39:32.191764",
+    "saved_at": "2026-01-25T05:39:32.213652"
+  },
+  {
+    "session_id": "82440043-c3b4-4245-b83c-b02de49e8215",
+    "lecture_id": "1c0a9628-663a-47bc-bb18-b19ee3b3d014",
+    "score": 40.0,
+    "correct": 4,
+    "total": 10,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Which flag will be affected by the instruction MOV AL,7FH INC AL INC AL?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Carry flag",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Overflow flag",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Zero flag",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Sign flag",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-1",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q2",
+        "question": "What does the Pentium processor do when encountering the INT instruction for software interrupts?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Pushes the flags onto the stack before transferring control to the interrupt handler",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Pops the flags off the stack before transferring control to the interrupt handler",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Stores the flags in the IP register before transferring control to the interrupt handler",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Clears the flags before transferring control to the interrupt handler",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-2",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q3",
+        "question": "In Intel microprocessors, how are 32-bit numbers typically stored in registers?",
+        "options": [
+          {
+            "id": "A",
+            "text": "DX and AX each hold 16 bits of the number",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "DX holds the lower 16 bits and AX holds the upper 16 bits",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "The number is split between registers CX and BX",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "The number is stored in a single register AX",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-3",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q4",
+        "question": "Which instruction is needed to test bit 13 in register DX?",
+        "options": [
+          {
+            "id": "A",
+            "text": "TEST DX, 1000b",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "CMP DX, 0010b",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "AND DX, 0100b",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "OR DX, 1000b",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-4",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q5",
+        "question": "In assembly language programming, what data is pushed onto the stack during a far call?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Only the return address",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Instruction offset and code segment value",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Only the instruction offset",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Only the code segment value",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-5",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q6",
+        "question": "In assembly language, what is required for nested procedures to be defined properly?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Matching FAR PTR statements for each PROC statement",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Matching ENDP statements for each PROC statement",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Calling FAR procedures before defining nested procedures",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Using different interrupt statements for nested procedures",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-6",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q7",
+        "question": "Which register in the Pentium processor is specifically used for storing bytes?",
+        "options": [
+          {
+            "id": "A",
+            "text": "AH",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "BH",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "CH",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "DH",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-7",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q8",
+        "question": "What will be the result of executing MOVSX AX,AL instruction in assembly language?",
+        "options": [
+          {
+            "id": "A",
+            "text": "AX=0030H",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "AX=3000H",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "AX=FF36H",
+            "isCorrect": true
+          },
+          {
+            "id": "D",
+            "text": "AX=0036H",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "C",
+        "topicId": "topic-8",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q9",
+        "question": "What does the RET instruction do in x86 Assembly Procedures?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Pushes information onto the stack",
+            "isCorrect": false
+          },
+          {
+            "id": "B",
+            "text": "Pops necessary information off the stack and places it into assigned registers",
+            "isCorrect": true
+          },
+          {
+            "id": "C",
+            "text": "Halts the program execution",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Jumps to a different memory location",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "B",
+        "topicId": "topic-9",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      },
+      {
+        "id": "q10",
+        "question": "When writing a 16-bit hexadecimal number into memory locations, which byte is written first?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Lower byte first",
+            "isCorrect": true
+          },
+          {
+            "id": "B",
+            "text": "Higher byte first",
+            "isCorrect": false
+          },
+          {
+            "id": "C",
+            "text": "Both bytes simultaneously",
+            "isCorrect": false
+          },
+          {
+            "id": "D",
+            "text": "Random byte order",
+            "isCorrect": false
+          }
+        ],
+        "correctAnswer": "A",
+        "topicId": "topic-10",
+        "conceptsTested": [
+          "Unknown Topic"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "questionId": "q1",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q2",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q3",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q4",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q5",
+        "selectedAnswer": "C",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q6",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q7",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q8",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      },
+      {
+        "questionId": "q9",
+        "selectedAnswer": "B",
+        "isCorrect": true
+      },
+      {
+        "questionId": "q10",
+        "selectedAnswer": "B",
+        "isCorrect": false
+      }
+    ],
+    "misconceptions": [],
+    "weak_topics": [],
+    "recommendations": [
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)",
+      "Review undefined - significant improvement needed (0% accuracy)"
+    ],
+    "timestamp": "2026-01-25T05:25:29.255134",
+    "saved_at": "2026-01-25T05:25:29.263873"
+  },
+  {
     "session_id": "33e9f8d5-80f6-464b-8e19-439f1d8a3428",
     "lecture_id": "1f8787ec-ce49-41de-9cb0-14b81fb11cc7",
     "score": 50.0,

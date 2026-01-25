@@ -109,6 +109,16 @@ export default class IntelligenceEngine {
     console.log('Loading REAL lecture plan from backend...');
 
     try {
+      // Check if we should force refresh (new content uploaded: PDF, PPT, audio, YouTube)
+      const forceRefresh = typeof window !== 'undefined' && 
+                          localStorage.getItem('force_lecture_plan_refresh') === 'true';
+      
+      if (forceRefresh) {
+        console.log('Force refresh detected, clearing cached lecture plans');
+        localStorage.removeItem('current_lecture_plan');
+        localStorage.removeItem('force_lecture_plan_refresh');
+      }
+
       // Try to get lecture plan by session ID
       let lecturePlan = null;
 
@@ -1400,6 +1410,7 @@ export default class IntelligenceEngine {
     if (type === 'conceptual') {
       return {
         ...baseQuestion,
+        text: `Which statement best describes the key concept of ${topic.title}?`,
         question: `Which statement best describes the key concept of ${topic.title}?`,
         options: [
           { id: "A", text: keyInsights[0] || `Understanding the fundamental principles of ${topic.title}`, isCorrect: true },
@@ -1415,6 +1426,7 @@ export default class IntelligenceEngine {
     } else if (type === 'application') {
       return {
         ...baseQuestion,
+        text: `How would you apply ${topic.title} to solve a typical problem?`,
         question: `How would you apply ${topic.title} to solve a typical problem?`,
         options: [
           { id: "A", text: "Use memorized patterns without understanding", isCorrect: false },
@@ -1430,6 +1442,7 @@ export default class IntelligenceEngine {
     } else { // analysis
       return {
         ...baseQuestion,
+        text: `Which demonstrates deep understanding of ${topic.title}?`,
         question: `Which demonstrates deep understanding of ${topic.title}?`,
         options: [
           { id: "A", text: "Surface-level recognition", isCorrect: false },
@@ -1440,7 +1453,8 @@ export default class IntelligenceEngine {
         correctAnswer: "B",
         explanation: `Deep understanding of ${topic.title} is shown by analyzing complex scenarios, identifying patterns, drawing insights, and applying concepts creatively.`,
         misconceptionAnalysis: "Many confuse analysis with simple recognition. True analysis requires deeper thinking.",
-        examRelevance: `Analysis questions differentiate average from top performers in ${this.studentGoal.toUpperCase()}.`
+        examRelevance: `Analysis questions differentiate average from top performers in ${this.studentGoal.toUpperCase()}.`,
+        textField: "Please provide a detailed explanation of your answer."
       };
     }
   }
@@ -1465,6 +1479,7 @@ export default class IntelligenceEngine {
       questions: [
         {
           id: 'fbq1',
+          text: `What is important to know about ${topicTitle}?`,
           question: `What is important to know about ${topicTitle}?`,
           options: [
             { id: "A", text: "Both conceptual understanding and practical application", isCorrect: true },
@@ -1475,7 +1490,8 @@ export default class IntelligenceEngine {
           correctAnswer: "A",
           explanation: `${topicTitle} requires both solid conceptual understanding AND practical application skills for mastery.`,
           difficulty: "medium",
-          type: "conceptual"
+          type: "conceptual",
+          textField: "Please provide a detailed explanation of your answer."
         }
       ],
       metadata: {
