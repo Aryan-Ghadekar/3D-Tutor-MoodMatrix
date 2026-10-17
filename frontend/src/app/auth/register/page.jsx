@@ -80,12 +80,32 @@ export default function RegisterPage() {
     
     setErrors({});
     setLoading(true);
-    
-    setTimeout(() => {
-      console.log("Registration attempt:", { ...formData, userType });
-      setLoading(false);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          specialization: formData.specialization,
+          role: userType,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setErrors({ form: data.error || "Could not create the account. Please try again." });
+        return;
+      }
       router.push("/auth/login?registered=true");
-    }, 1500);
+    } catch {
+      setErrors({ form: "Cannot reach the server. Please try again." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -187,6 +207,11 @@ export default function RegisterPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        {errors.form && (
+          <div role="alert" className="text-xs rounded-lg px-3 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800">
+            {errors.form}
+          </div>
+        )}
         <div>
           <label className={`block text-xs font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
             Full Name

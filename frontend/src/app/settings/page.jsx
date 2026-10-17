@@ -13,19 +13,28 @@ export default function SettingsPage() {
   }, []);
 
   const fetchUserGoal = async () => {
-    const response = await fetch('/api/user/profile');
-    const data = await response.json();
-    setGoal(data.goal || '');
+    setGoal(localStorage.getItem('learning_goal') || '');
+    try {
+      const response = await fetch('/api/user/profile');
+      if (!response.ok) return;
+      const data = await response.json();
+      if (data.goal) setGoal(data.goal);
+    } catch (error) {
+      console.error('Could not load profile:', error);
+    }
   };
 
   const handleSave = async () => {
+    if (!goal) return;
     setLoading(true);
     try {
-      await fetch('/api/user/profile/goal', {
+      localStorage.setItem('learning_goal', goal);
+      const response = await fetch('/api/user/profile/goal', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ goal })
       });
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -82,7 +91,7 @@ export default function SettingsPage() {
         <div className="flex gap-4">
           <button
             onClick={handleSave}
-            disabled={loading}
+            disabled={loading || !goal}
             className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium flex items-center gap-2 hover:shadow-lg disabled:opacity-50 transition-all"
           >
             {loading ? (

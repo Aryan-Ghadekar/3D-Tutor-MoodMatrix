@@ -13,9 +13,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script src="/video-error-prevention.js" async />
-      </head>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider>
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

@@ -54,24 +54,20 @@ export default function GoalSelectionPage() {
     if (!selectedGoal) return;
     
     setLoading(true);
+    // The study session reads the goal from localStorage, so this must succeed even if the server call fails
+    localStorage.setItem('learning_goal', selectedGoal);
     try {
-      // Save goal to backend
       const response = await fetch('/api/user/profile/goal', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ goal: selectedGoal })
       });
-
-      if (response.ok) {
-        router.push('/lecture-input');
-      } else {
-        router.push('/lecture-input');
-      }
+      if (!response.ok) console.warn('Goal was saved locally but not on the server:', response.status);
     } catch (error) {
       console.error('Error saving goal:', error);
-      router.push('/lecture-input');
     } finally {
       setLoading(false);
+      router.push('/lecture-input');
     }
   };
 
@@ -126,7 +122,7 @@ export default function GoalSelectionPage() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/lecture-input')}
             className="px-8 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
           >
             Skip for now

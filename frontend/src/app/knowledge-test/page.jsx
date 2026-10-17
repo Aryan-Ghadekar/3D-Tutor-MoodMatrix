@@ -1,11 +1,29 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Brain, Check, HelpCircle, Timer, ArrowLeft, Home } from 'lucide-react';
 import Header from '../../components/Header';
+import { BACKEND_URL } from '@/lib/config';
+import { QuizStorage } from '@/app/lib/quiz-storage';
 
-export default function KnowledgeTestPage() {
+function readStoredLecture(sessionId) {
+  if (typeof window === 'undefined') return null;
+  try {
+    const lectureData = JSON.parse(localStorage.getItem('lectureData') || 'null');
+    const plan = lectureData?.lecturePlan;
+    if (plan && (!sessionId || lectureData.sessionId === sessionId || plan.sessionId === sessionId)) return plan;
+  } catch { /* corrupt storage entry: fall through */ }
+  return null;
+}
+
+function levelFromScore(score) {
+  if (score >= 80) return 'advanced';
+  if (score >= 60) return 'intermediate';
+  return 'beginner';
+}
+
+function KnowledgeTest() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -31,7 +49,7 @@ export default function KnowledgeTestPage() {
     setGeneratingQuestions(true);
     try {
       // Call AI question generation API
-      const response = await fetch('http://localhost:8001/generate-diagnostic-mcq', {
+      const response = await fetch(`${BACKEND_URL}/generate-diagnostic-mcq`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,8 +63,8 @@ export default function KnowledgeTestPage() {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.questions) {
-          return data.questions;
+        if (data.success && Array.isArray(data.questions) && data.questions.length > 0) {
+          return data.questions.map((q, i) => ({ ...q, assessedSkill: q.assessedSkill || 'conceptual_understanding', topicName: q.topicName || q.conceptsTested?.[0] || `Topic ${i + 1}` }));
         }
       }
     } catch (error) {
@@ -62,7 +80,12 @@ export default function KnowledgeTestPage() {
   // Fallback rule-based question generation
   const generateRuleBasedQuestions = (lecturePlan) => {
     const questions = [];
-    const topics = lecturePlan.impTopics;
+    const topics = lecturePlan.impTopics.map(t => ({
+      ...t,
+      fullText: t.fullText || [t.description, ...(t.keyInsights || [])].filter(Boolean).join('. '),
+      misconceptions: t.misconceptions || t.commonMisconceptions,
+      applications: t.applications || t.realWorldApplications
+    }));
     let questionId = 1;
 
     // Generate different types of questions for each topic
@@ -689,7 +712,7 @@ export default function KnowledgeTestPage() {
 
       // Try to save to backend
       try {
-        const response = await fetch('http://localhost:8001/save-quiz-results', {
+        const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -779,12 +802,16 @@ export default function KnowledgeTestPage() {
         questions: formattedQuestions,
         answers: formattedAnswers,
         misconceptions: formattedMisconceptions,
-        weak_topics: (knowledgeAnalysis.weaknesses || []).filter(w => w && typeof w === 'string'),
+        // Topic names (not skill names) so the study session can target them
+        weak_topics: Object.values(knowledgeAnalysis.topicPerformance || {})
+          .filter(p => p.total > 0 && p.correct / p.total < 0.7)
+          .map(p => p.topicName)
+          .filter(Boolean),
         recommendations: knowledgeAnalysis.recommendations || []
       };
 
       console.log('Sending to backend:', {
-        endpoint: 'http://localhost:8001/save-quiz-results',
+        endpoint: `${BACKEND_URL}/save-quiz-results`,
         dataStructure: {
           session_id: saveData.session_id,
           lecture_id: saveData.lecture_id,
@@ -805,7 +832,7 @@ export default function KnowledgeTestPage() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const response = await fetch('http://localhost:8001/save-quiz-results', {
+        const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -839,13 +866,18 @@ export default function KnowledgeTestPage() {
         // Don't throw - localStorage save is enough
       }
 
-      // Update session storage
-      if (typeof window !== 'undefined' && lecturePlan) {
-        const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
-        sessionData.knowledgeTestResults = saveData;
-        sessionData.knowledgeTestCompleted = true;
-        sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
-      }
+      // Feed the result into the student profile the study session reads
+      QuizStorage.saveQuizResults({
+        source: 'knowledge_test',
+        lectureId: saveData.lecture_id,
+        sessionId: saveData.session_id,
+        score: saveData.score,
+        correct: saveData.correct,
+        total: saveData.total,
+        weak_topics: saveData.weak_topics,
+        misconceptions: saveData.misconceptions
+      });
+      localStorage.setItem('knowledge_level', levelFromScore(saveData.score));
 
       // Navigate to study session
       const params = new URLSearchParams();
@@ -909,7 +941,7 @@ export default function KnowledgeTestPage() {
         completedAt: new Date().toISOString()
       };
 
-      const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
+      const sessionData = {};
       sessionData.knowledgeTestResults = testResults;
       sessionData.knowledgeTestCompleted = true;
       sessionStorage.setItem('current_lecture_session', JSON.stringify(sessionData));
@@ -945,18 +977,15 @@ export default function KnowledgeTestPage() {
       setLoading(true);
       try {
         if (lectureId && sessionId) {
-          // Try to get from session storage first
-          if (typeof window !== 'undefined') {
-            const sessionData = JSON.parse(sessionStorage.getItem('current_lecture_session') || '{}');
-
-            if (sessionData.lecturePlan) {
-              setLecturePlan(sessionData.lecturePlan);
-              setDisplayTopic(sessionData.topic || topic);
-              const questions = await generateIntelligentQuestions(sessionData.lecturePlan);
-              setTestQuestions(questions);
-              setLoading(false);
-              return;
-            }
+          // The lecture-input page stores the plan for this lecture; prefer it over a server lookup
+          const stored = readStoredLecture(sessionId);
+          if (stored) {
+            setLecturePlan(stored);
+            setDisplayTopic(stored.topic || topic);
+            const questions = await generateIntelligentQuestions(stored);
+            setTestQuestions(questions);
+            setLoading(false);
+            return;
           }
 
           // Fallback to API
@@ -965,11 +994,14 @@ export default function KnowledgeTestPage() {
             const data = await response.json();
             if (data.lecturePlan) {
               setLecturePlan(data.lecturePlan);
-              setDisplayTopic(data.topic || topic);
+              setDisplayTopic(data.lecturePlan.topic || topic);
               const questions = await generateIntelligentQuestions(data.lecturePlan);
               setTestQuestions(questions);
+              return;
             }
           }
+          // The lecture could not be found anywhere: fall back to a generic assessment
+          setTestQuestions(generateFallbackQuestions());
         } else {
           // Use fallback questions for topic-based test
           const questions = generateFallbackQuestions();
@@ -1176,5 +1208,17 @@ export default function KnowledgeTestPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function KnowledgeTestPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <KnowledgeTest />
+    </Suspense>
   );
 }

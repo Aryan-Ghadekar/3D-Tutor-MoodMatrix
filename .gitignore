@@ -3,4 +3,11 @@ frontend/node_modules/
 .next/
 .env
 .env.local
-__pycache__
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+# runtime data written by the services
+backend/fastapi-service/data/
+frontend/.data/

@@ -1,206 +1,76 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { helpAPI, quizAPI } from '@/lib/api';
-import { X, Brain, BookOpen, HelpCircle, ChevronRight } from 'lucide-react';
+import { X, Brain, BookOpen, HelpCircle, Lightbulb, ChevronRight } from 'lucide-react';
 
-export default function HelpOffer({ sessionId, userId, onClose }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [offerType, setOfferType] = useState('quiz');
-  const [loadValue, setLoadValue] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [showQA, setShowQA] = useState(false);
+const OPTIONS = [
+  { key: 'quiz', icon: BookOpen, title: 'Quick check quiz', text: 'Test your understanding of this topic', tone: 'blue' },
+  { key: 'explain', icon: Lightbulb, title: 'Explain it differently', text: 'Get a deeper, alternative explanation', tone: 'purple' },
+  { key: 'ask', icon: HelpCircle, title: 'Ask a question', text: 'Get clarification on a specific point', tone: 'green' },
+];
 
-  // Listen for cognitive load events
-  useEffect(() => {
-    const handleHelpOffer = (event) => {
-      const { offerType, loadValue } = event.detail;
-      setOfferType(offerType);
-      setLoadValue(loadValue);
-      setIsVisible(true);
-      
-      // Record that offer was shown
-      helpAPI.recordOfferShown({
-        userId,
-        sessionId,
-        triggerType: offerType,
-        loadValue
-      });
-    };
+const TONES = {
+  blue: 'hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 [&_.icon]:bg-blue-100 [&_.icon]:text-blue-600',
+  purple: 'hover:border-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 [&_.icon]:bg-purple-100 [&_.icon]:text-purple-600',
+  green: 'hover:border-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 [&_.icon]:bg-green-100 [&_.icon]:text-green-600',
+};
 
-    window.addEventListener('cognitive-help-offer', handleHelpOffer);
-    return () => window.removeEventListener('cognitive-help-offer', handleHelpOffer);
-  }, [sessionId, userId]);
+/**
+ * Offers help when the student seems stuck (struggling on quizzes, asking for repeated
+ * explanations, or idle on one slide for a while).
+ */
+export default function HelpOffer({ show, cognitiveLoad, onQuiz, onExplain, onAsk, onClose }) {
+  if (!show) return null;
 
-  const handleChoice = async (choice) => {
-    setIsLoading(true);
-    
-    // Record user choice
-    await helpAPI.recordUserChoice({
-      offerId: Date.now(), // In real app, get from offer-shown response
-      userChoice: choice,
-      loadAfterAction: loadValue - 20 // Mock reduction
-    });
-
-    // Execute chosen action
-    if (choice === 'quiz') {
-      setShowQuiz(true);
-    } else if (choice === 'explanation') {
-      setShowExplanation(true);
-    } else if (choice === 'qa') {
-      setShowQA(true);
-    } else if (choice === 'continue') {
-      setIsVisible(false);
-      if (onClose) onClose();
-    }
-
-    setIsLoading(false);
-  };
-
-  const getOfferMessage = () => {
-    if (loadValue > 80) {
-      return "You seem really stuck. Let me help you understand this better.";
-    } else if (loadValue > 70) {
-      return "This seems challenging. Want some help?";
-    }
-    return "Need some assistance with this concept?";
-  };
-
-  if (!isVisible) return null;
-
-  if (showQuiz) {
-    return <QuickQuiz 
-      topic="backpropagation" 
-      loadLevel={loadValue > 80 ? 'easy' : 'medium'}
-      onComplete={() => {
-        setShowQuiz(false);
-        setIsVisible(false);
-        if (onClose) onClose();
-      }}
-    />;
-  }
-
-  if (showExplanation) {
-    return <AdaptiveExplanation 
-      concept="backpropagation"
-      difficulty={loadValue > 80 ? 'simple' : 'detailed'}
-      onClose={() => {
-        setShowExplanation(false);
-        setIsVisible(false);
-        if (onClose) onClose();
-      }}
-    />;
-  }
-
-  if (showQA) {
-    return <ContextualQA 
-      onClose={() => {
-        setShowQA(false);
-        setIsVisible(false);
-        if (onClose) onClose();
-      }}
-    />;
-  }
+  const handlers = { quiz: onQuiz, explain: onExplain, ask: onAsk };
+  const message =
+    cognitiveLoad === 'high'
+      ? 'This topic seems challenging. Want some help?'
+      : 'Taking a while on this slide? Here are a few ways to move forward.';
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full animate-fade-in">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="Learning support">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${
-                loadValue > 80 ? 'bg-red-100 text-red-600' : 
-                'bg-blue-100 text-blue-600'
-              }`}>
+              <div className={`p-2 rounded-full ${cognitiveLoad === 'high' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
                 <Brain size={24} />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-800">Learning Support</h3>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    loadValue > 80 ? 'bg-red-500' : 
-                    loadValue > 70 ? 'bg-yellow-500' : 
-                    'bg-blue-500'
-                  }`}></div>
-                  <span className="text-sm text-gray-600">
-                    Cognitive load: {loadValue}%
-                  </span>
-                </div>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white">Learning support</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">Cognitive load: {cognitiveLoad}</p>
               </div>
             </div>
-            <button
-              onClick={() => {
-                setIsVisible(false);
-                handleChoice('dismissed');
-              }}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" aria-label="Close">
               <X size={20} />
             </button>
           </div>
 
-          <p className="text-gray-700 mb-6">
-            {getOfferMessage()}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">{message}</p>
 
           <div className="space-y-3">
-            <button
-              onClick={() => handleChoice('quiz')}
-              disabled={isLoading}
-              className="w-full flex items-center justify-between p-3 text-left rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                  <BookOpen size={18} />
+            {OPTIONS.map(({ key, icon: Icon, title, text, tone }) => (
+              <button
+                key={key}
+                onClick={handlers[key]}
+                className={`w-full flex items-center justify-between p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 transition-all ${TONES[tone]}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="icon p-2 rounded-lg">
+                    <Icon size={18} />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-800 dark:text-white">{title}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{text}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-medium text-gray-800">Quick Check Quiz</div>
-                  <div className="text-sm text-gray-500">Test your understanding with 2-3 questions</div>
-                </div>
-              </div>
-              <ChevronRight size={18} className="text-gray-400" />
-            </button>
+                <ChevronRight size={18} className="text-gray-400" />
+              </button>
+            ))}
 
             <button
-              onClick={() => handleChoice('explanation')}
-              disabled={isLoading}
-              className="w-full flex items-center justify-between p-3 text-left rounded-lg border hover:border-purple-300 hover:bg-purple-50 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
-                  <BookOpen size={18} />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-800">Different Explanation</div>
-                  <div className="text-sm text-gray-500">See this concept explained in another way</div>
-                </div>
-              </div>
-              <ChevronRight size={18} className="text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleChoice('qa')}
-              disabled={isLoading}
-              className="w-full flex items-center justify-between p-3 text-left rounded-lg border hover:border-green-300 hover:bg-green-50 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 text-green-600 rounded-lg">
-                  <HelpCircle size={18} />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-800">Ask a Question</div>
-                  <div className="text-sm text-gray-500">Get clarification on specific points</div>
-                </div>
-              </div>
-              <ChevronRight size={18} className="text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleChoice('continue')}
-              disabled={isLoading}
-              className="w-full p-3 text-center rounded-lg border hover:bg-gray-50 text-gray-600 hover:text-gray-800 transition-all"
+              onClick={onClose}
+              className="w-full p-3 text-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all"
             >
               Continue without help
             </button>

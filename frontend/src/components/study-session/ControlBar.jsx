@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, SkipBack, SkipForward, Play, Pause } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SkipBack, SkipForward } from 'lucide-react';
 
 export default function ControlBar({
     currentSlideIndex,
@@ -10,8 +10,8 @@ export default function ControlBar({
     loading,
     currentTopicIndex,
     totalTopics,
-    isPlaying,
-    setIsPlaying,
+    nextLabel = 'Next Slide',
+    canGoNext = true,
     handlePreviousSlide,
     handleNextSlide,
     jumpToTopic,
@@ -40,13 +40,13 @@ export default function ControlBar({
 
                 <button
                     onClick={handleNextSlide}
-                    disabled={loading}
-                    className={`px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition border ${loading
+                    disabled={!canGoNext}
+                    className={`px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition border ${!canGoNext
                         ? 'opacity-50 cursor-not-allowed'
                         : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-200 border-gray-400 dark:border-gray-600'
                         }`}
                 >
-                    {currentSlideIndex >= slidesLength - 1 ? 'Next Topic' : 'Next Slide'}
+                    {nextLabel}
                     <ChevronRight className="w-4 h-4" />
                 </button>
 
@@ -55,7 +55,7 @@ export default function ControlBar({
                     <div className="flex items-center gap-2 ml-4">
                         <button
                             onClick={() => jumpToTopic(Math.max(0, currentTopicIndex - 1))}
-                            disabled={currentTopicIndex === 0}
+                            disabled={loading || currentTopicIndex === 0}
                             className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                             title="Previous Topic"
                         >
@@ -66,7 +66,7 @@ export default function ControlBar({
                         </span>
                         <button
                             onClick={() => jumpToTopic(Math.min(totalTopics - 1, currentTopicIndex + 1))}
-                            disabled={currentTopicIndex === totalTopics - 1}
+                            disabled={loading || currentTopicIndex === totalTopics - 1}
                             className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                             title="Next Topic"
                         >
@@ -76,18 +76,6 @@ export default function ControlBar({
                 )}
             </div>
 
-            <div className="flex items-center gap-4">
-                <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className={`px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition border ${isPlaying
-                        ? 'bg-blue-600 text-white border-blue-700 hover:bg-blue-700'
-                        : 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-800 dark:text-blue-300 border-blue-400 dark:border-blue-700'
-                        }`}
-                >
-                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    {isPlaying ? "Pause" : "Play"}
-                </button>
-            </div>
         </div>
     );
 }

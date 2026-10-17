@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "./theme-provider";
-import { Brain, Play, Settings, TrendingUp } from "lucide-react";
+import { Brain, Play, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 
@@ -11,10 +11,6 @@ export default function HomePage() {
 
   const handleStartStudySession = () => {
     router.push("/lecture-input");
-  };
-
-  const handleConnectDevices = () => {
-    console.log("Connect devices clicked");
   };
 
   return (
@@ -41,8 +37,8 @@ export default function HomePage() {
         <p className={`text-lg max-w-2xl leading-relaxed mb-10
           ${isLight ? "text-gray-600" : "text-gray-300"}`}
         >
-          Transform your learning experience with AI-powered emotional
-          intelligence, real-time feedback, and personalized study optimization.
+          Turn any lecture into an adaptive study session: AI-generated slides,
+          quizzes that adjust to how you are doing, and explanations on demand.
         </p>
 
         {/* Buttons */}
@@ -59,17 +55,6 @@ export default function HomePage() {
             Start Study Session
           </button>
 
-          <button
-            onClick={handleConnectDevices}
-            className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold shadow-md transition-all hover:bg-gray-100 active:scale-95
-            ${isLight
-                ? "bg-white border border-gray-200 text-gray-800 hover:shadow-lg"
-                : "bg-gray-800 border border-gray-700 text-gray-200 hover:bg-gray-700 hover:shadow-lg"
-              }`}
-          >
-            <Settings className="w-5 h-5" />
-            Connect Devices
-          </button>
         </div>
       </section>
 
@@ -94,7 +79,7 @@ export default function HomePage() {
             </h3>
 
             <p className={isLight ? "text-gray-600" : "text-gray-400"}>
-              Advanced emotional intelligence monitoring for optimal learning states.
+              Lecture-aware slides, quizzes and explanations tailored to your goal and knowledge level.
             </p>
           </div>
 
@@ -116,7 +101,7 @@ export default function HomePage() {
             </h3>
 
             <p className={isLight ? "text-gray-600" : "text-gray-400"}>
-              Live feedback on focus, posture, and attention levels during study sessions.
+              Adaptive feedback that tracks quiz performance and struggle signals during study sessions.
             </p>
           </div>
         </div>

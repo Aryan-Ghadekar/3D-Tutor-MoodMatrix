@@ -5,6 +5,8 @@ import Header from '../Header'; // Adjust path based on location
 import SlideViewer from './SlideViewer';
 import ControlBar from './ControlBar';
 import SidePanel from './SidePanel';
+import HelpOffer from './HelpOffer';
+import Link from 'next/link';
 import { X as XIcon, CheckCircle, SkipBack, SkipForward } from 'lucide-react';
 
 export default function StudySessionLayout(props) {
@@ -25,12 +27,12 @@ export default function StudySessionLayout(props) {
         slides,
         currentSlideIndex,
         currentTopicIndex,
-        currentTopicIndex: propTopicIndex, // Aliasing if needed, but it's passed as is
 
         // Actions
         handleRestartSession,
+        fatalError,
+        dismissError,
         setShowProgressModal,
-        handleDownloadPPT, // Note: This was in page.jsx but not in hook return? I need to check hook.
         showProgressModal,
 
         // Render Helpers (Some moved to sub-components)
@@ -182,7 +184,7 @@ export default function StudySessionLayout(props) {
         );
     }
 
-    if (error && !currentSlideData) {
+    if (fatalError || (error && !currentSlideData)) {
         return (
             <div className={`h-screen flex flex-col items-center justify-center ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'} p-6`}>
                 <div className={`text-center max-w-md p-6 ${theme === 'light' ? 'bg-white' : 'bg-gray-800'} rounded-xl shadow-lg`}>
@@ -190,13 +192,21 @@ export default function StudySessionLayout(props) {
                     <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                         Learning Session Error
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                    >
-                        Restart Session
-                    </button>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">{fatalError || error}</p>
+                    <div className="flex gap-3 justify-center">
+                        <Link
+                            href="/lecture-input"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                        >
+                            Upload a lecture
+                        </Link>
+                        <button
+                            onClick={handleRestartSession}
+                            className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                        >
+                            Try again
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -286,6 +296,15 @@ export default function StudySessionLayout(props) {
                 </div>
             </div>
 
+            {error && (
+                <div role="alert" className="flex-shrink-0 flex items-center justify-between gap-4 px-6 py-2 bg-red-50 dark:bg-red-900/30 border-b border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">
+                    <span>{error}</span>
+                    <button onClick={dismissError} className="p-1 hover:bg-red-100 dark:hover:bg-red-800 rounded" aria-label="Dismiss error">
+                        <XIcon className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
+
             {/* Main Content Area */}
             <div className="flex-1 flex min-h-0">
                 {/* Slide Area */}
@@ -313,8 +332,8 @@ export default function StudySessionLayout(props) {
                         loading={loading}
                         currentTopicIndex={currentTopicIndex}
                         totalTopics={totalTopics}
-                        isPlaying={false} // State needed
-                        setIsPlaying={() => { }} // State needed
+                        nextLabel={props.nextLabel}
+                        canGoNext={props.canGoNext}
                         handlePreviousSlide={props.handlePreviousSlide}
                         handleNextSlide={props.handleNextSlide}
                         jumpToTopic={props.jumpToTopic}
@@ -332,7 +351,7 @@ export default function StudySessionLayout(props) {
                     handleExplainMore={props.handleExplainMore}
                     setActiveView={props.setActiveView}
                     setShowProgressModal={setShowProgressModal}
-                    handleClosePane={() => props.setActiveView(null)}
+                    handleClosePane={props.handleClosePane}
 
                     // Quiz
                     quizData={props.quizData}
@@ -364,6 +383,15 @@ export default function StudySessionLayout(props) {
             </div>
 
             {renderProgressModal()}
+
+            <HelpOffer
+                show={props.showHelpOffer && !loading}
+                cognitiveLoad={cognitiveLoad}
+                onClose={() => props.setShowHelpOffer(false)}
+                onQuiz={props.handleTakeQuiz}
+                onExplain={props.handleExplainMore}
+                onAsk={() => { props.setShowHelpOffer(false); props.setActiveView('askQuestions'); }}
+            />
         </div>
     );
 }

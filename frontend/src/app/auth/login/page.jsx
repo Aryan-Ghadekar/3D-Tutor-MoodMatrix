@@ -27,18 +27,40 @@ export default function LoginPage() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const isDark = theme === "dark";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    setTimeout(() => {
-      console.log("Login attempt:", { ...formData, userType });
+    setError("");
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, role: userType }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setError(data.error || "Could not sign in. Please try again.");
+        return;
+      }
+
+      // Returning users who already chose a goal go straight to their lecture
+      if (data.user?.goal) {
+        localStorage.setItem("learning_goal", data.user.goal);
+        router.push("/lecture-input");
+      } else {
+        router.push("/onboarding/goal");
+      }
+    } catch {
+      setError("Cannot reach the server. Please try again.");
+    } finally {
       setLoading(false);
-      router.push("/onboarding/goal"); 
-    }, 1500);
+    }
   };
 
   const handleChange = (e) => {
@@ -134,6 +156,11 @@ export default function LoginPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        {error && (
+          <div role="alert" className="text-xs rounded-lg px-3 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800">
+            {error}
+          </div>
+        )}
         <div>
           <label className={`block text-xs font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
             Email Address
