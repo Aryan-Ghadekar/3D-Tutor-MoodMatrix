@@ -707,6 +707,8 @@ export default class IntelligenceEngine {
       case 'quiz-results':
       case 'mistake-explanation':
         return this.generateQuizResultsSlide(topic, context);
+      case 'simplified-explanation':
+        return this.generateSimplifiedSlide(topic, context);
       case 'completion':
         return this.generateCompletionSlide();
       default:
@@ -775,6 +777,24 @@ export default class IntelligenceEngine {
     });
 
     return slide;
+  }
+
+  generateSimplifiedSlide(topic, context) {
+    const sentences = (topic.description || '').split(/(?<=[.!?])\s+/).filter(Boolean);
+    const heard = context ? ` The teacher just said: "${context.slice(-240)}".` : '';
+    return {
+      title: `In simple terms: ${topic.title}`,
+      narrative: `${sentences.slice(0, 2).join(' ') || `Let us go back to the basics of ${topic.title}.`}${heard}`,
+      keyInsights: (topic.keyInsights || []).slice(0, 3),
+      analogies: [{ domain: 'Everyday life', comparison: `Think of ${topic.title} as a simple everyday routine: one clear step after another.`, lesson: 'Take it one step at a time.' }],
+      realWorldScenario: topic.realWorldApplications?.[0]
+        ? { situation: topic.realWorldApplications[0], application: 'See how the idea is used.', outcome: 'It becomes easier to remember.' }
+        : null,
+      interactiveElement: 'Can you say the main idea in one sentence?',
+      examRelevance: topic.examRelevance || '',
+      commonTraps: (topic.commonMisconceptions || []).slice(0, 2),
+      memoryHook: 'One idea at a time.'
+    };
   }
 
   generateCompletionSlide() {
@@ -1034,7 +1054,7 @@ export default class IntelligenceEngine {
   // QUIZ GENERATION
   // =========================================================
 
-  async generateQuiz(topic, difficulty = 'medium') {
+  async generateQuiz(topic, difficulty = 'medium', recentContext = '') {
     console.log(`Generating quiz for: ${topic.title}, difficulty: ${difficulty}`);
 
     try {
@@ -1056,6 +1076,7 @@ export default class IntelligenceEngine {
         misconceptions: this.misconceptions,
         previousPerformance: this.getPreviousPerformance(),
         cognitiveLoad: this.estimateCognitiveLoad(),
+        recentContext,
         lecturePlan: { topic: this.lecturePlan?.topic, impTopics: this.lecturePlan?.impTopics?.map(t => ({ id: t.id, title: t.title })) }
       };
 

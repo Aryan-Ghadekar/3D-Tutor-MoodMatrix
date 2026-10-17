@@ -74,7 +74,7 @@ export async function POST(request) {
       // First try: Use backend with REAL topic data
       quizData = await generateFromBackendWithRealTopic(
         enhancedTopic, difficulty, studentGoal, numberOfQuestions,
-        sessionId, misconceptions, previousPerformance, cognitiveLoad
+        sessionId, misconceptions, previousPerformance, cognitiveLoad, data.recentContext || ''
       );
       generationSource = 'backend_intelligent';
       console.log('Backend quiz generation successful');
@@ -519,7 +519,7 @@ function analyzeTopicDifficulty(description) {
 
 async function generateFromBackendWithRealTopic(
   enhancedTopic, difficulty, studentGoal, numberOfQuestions,
-  sessionId, misconceptions, previousPerformance, cognitiveLoad
+  sessionId, misconceptions, previousPerformance, cognitiveLoad, recentContext = ''
 ) {
   console.log('Generating quiz from backend with real topic data...');
 
@@ -531,7 +531,8 @@ async function generateFromBackendWithRealTopic(
     sessionId,
     misconceptions: misconceptions.filter(m => m && typeof m === 'object'),
     previousPerformance,
-    cognitiveLoad
+    cognitiveLoad,
+    recentContext
   };
 
   const response = await fetch(`${BACKEND_URL}/generate-topic-quiz`, {

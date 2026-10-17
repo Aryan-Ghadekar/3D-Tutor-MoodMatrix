@@ -3,6 +3,7 @@ import MisconceptionTracker from "@/lib/misconception-tracker";
 import SessionStorage from "@/lib/session-storage";
 import IntelligenceEngine from "@/lib/intelligenceEngine";
 import { QuizStorage } from "@/app/lib/quiz-storage";
+import { levelFor } from "@/lib/cognitive/fusion";
 
 const SESSION_KEY = 'current_intelligent_session';
 const SESSION_MAX_AGE_MS = 2 * 60 * 60 * 1000;
@@ -41,6 +42,10 @@ export const useStudySession = (searchParams) => {
     const [studentGoal, setStudentGoal] = useState('gate');
     const [knowledgeLevel, setKnowledgeLevel] = useState('intermediate');
     const [cognitiveLoad, setCognitiveLoad] = useState('medium');
+    const [loadScore, setLoadScore] = useState(35);          // 0-100, camera-fused when the sensor is on
+    const [behaviorScore, setBehaviorScore] = useState(35);  // 0-100, from quiz results and help requests only
+    const [quizReviews, setQuizReviews] = useState([]);      // per-quiz question review, used by the notes
+    const [lastGeneratedSlideId, setLastGeneratedSlideId] = useState(null);
 
     const [slides, setSlides] = useState([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -74,6 +79,8 @@ export const useStudySession = (searchParams) => {
     const sessionIdRef = useRef(null);
     const slidesRef = useRef([]);
     const loadRef = useRef('medium');
+    const loadScoreRef = useRef(35);
+    const externalLoadRef = useRef(null);     // { score, level } from the camera sensor, or null
     const slideTimerRef = useRef(null);
     const loadIntervalRef = useRef(null);
     const interactionTimesRef = useRef([]);
@@ -97,9 +104,20 @@ export const useStudySession = (searchParams) => {
         const lastQuiz = lastQuizRef.current;
         const recentQuiz = lastQuiz && now - lastQuiz.at < HELP_COOLDOWN_MS ? lastQuiz : null;
 
-        let next = 'medium';
-        if (recentStruggles >= 3 || (recentQuiz && recentQuiz.score < 50)) next = 'high';
-        else if (recentQuiz && recentQuiz.score >= 85 && recentStruggles === 0) next = 'low';
+        let behavior = 35 + Math.min(recentStruggles, 4) * 12;
+        if (recentQuiz) behavior += recentQuiz.score < 50 ? 35 : recentQuiz.score >= 85 ? -15 : 0;
+        behavior = Math.max(5, Math.min(95, behavior));
+        setBehaviorScore(behavior);
+
+        // With the camera on, the fused (emotion + posture + behaviour) reading drives the level
+        const external = externalLoadRef.current;
+        const score = Math.round(external ? external.score : behavior);
+        const next = external ? external.level : levelFor(behavior);
+
+        if (Math.abs(score - loadScoreRef.current) >= 2) {
+            loadScoreRef.current = score;
+            setLoadScore(score);
+        }
 
         if (next !== loadRef.current) {
             const previous = loadRef.current;
@@ -113,6 +131,12 @@ export const useStudySession = (searchParams) => {
             }
         }
     }, []);
+
+    /** Called with the camera sensor's fused reading ({score, level}) or null when the camera is off. */
+    const setExternalLoad = useCallback((reading) => {
+        externalLoadRef.current = reading && typeof reading.score === 'number' ? reading : null;
+        evaluateLoad();
+    }, [evaluateLoad]);
 
     const trackStudentInteraction = useCallback((actionType, data = {}) => {
         const interaction = {
@@ -188,6 +212,7 @@ export const useStudySession = (searchParams) => {
             setCurrentSlideData(slide);
             setCurrentTopicIndex(topicIndex);
             startSlideTimer();
+            setLastGeneratedSlideId(slide.id);
             if (actionType !== 'concept_explanation') {
                 trackStudentInteraction(actionType, { slideId: slide.id, topicIndex, context });
             }
@@ -377,16 +402,18 @@ export const useStudySession = (searchParams) => {
         return 'medium';
     };
 
-    const handleTakeQuiz = async () => {
+    // `recentContext` is text (e.g. the teacher's last minutes of audio). Click handlers pass an event, which is ignored.
+    const handleTakeQuiz = async (recentContext) => {
         const engine = engineRef.current;
         if (!engine || loading) return;
+        const extraContext = typeof recentContext === 'string' ? recentContext : '';
 
         setShowHelpOffer(false);
         setLoading(true);
         setLoadingMessage('Preparing your quiz...');
         try {
             const topic = engine.enhancedTopics[currentTopicIndex];
-            const result = await engine.generateQuiz(topic, getAdaptiveQuizDifficulty());
+            const result = await engine.generateQuiz(topic, getAdaptiveQuizDifficulty(), extraContext);
             const questions = result.quiz?.questions || [];
 
             if (questions.length === 0) {
@@ -465,6 +492,18 @@ export const useStudySession = (searchParams) => {
             difficulty: getAdaptiveQuizDifficulty()
         }]);
         lastQuizRef.current = { score, at: Date.now() };
+        setQuizReviews(prev => [...prev, {
+            topicIndex: currentTopicIndex,
+            topicTitle: topic?.title || 'Topic',
+            score,
+            items: quizData.map(q => ({
+                question: q.text,
+                correct: q.userAnswer === q.correctAnswer,
+                yourAnswer: q.options.find(o => o.id === q.userAnswer)?.text,
+                correctAnswer: q.options.find(o => o.id === q.correctAnswer)?.text,
+                explanation: q.explanation
+            }))
+        }]);
 
         if (topic) engineRef.current.updateTopicProgress(topic.id, { quizAttempted: true, quizScore: score });
         if (score >= 70) markTopicCompleted(currentTopicIndex);
@@ -524,6 +563,25 @@ export const useStudySession = (searchParams) => {
         setActiveView(null);
     };
 
+    /** Re-explain the current topic in simpler words (used for overloaded students and by the avatar). */
+    const handleSimplifiedExplanation = async (context) => {
+        setShowHelpOffer(false);
+        setActiveView(null);
+        return addSlide(currentTopicIndex, 'simplified-explanation', typeof context === 'string' ? context : '');
+    };
+
+    const getNotesData = () => ({
+        lectureTitle: lecturePlan?.topic,
+        instructor: lecturePlan?.instructor,
+        goal: studentGoal,
+        knowledgeLevel,
+        topics: engineRef.current?.enhancedTopics || [],
+        slides: slidesRef.current,
+        quizReviews,
+        quizHistory,
+        misconceptions: trackerRef.current?.getTopMisconceptions(10) || []
+    });
+
     const handleAskQuestion = async (question) => {
         const text = (question || '').trim();
         if (!text) return;
@@ -549,7 +607,7 @@ export const useStudySession = (searchParams) => {
         // State
         sessionId, loading, loadingMessage, error, fatalError,
         lecturePlan, totalTopics, currentTopicIndex, topicsCompleted,
-        studentGoal, knowledgeLevel, cognitiveLoad,
+        studentGoal, knowledgeLevel, cognitiveLoad, loadScore, behaviorScore, lastGeneratedSlideId,
         slides, currentSlideIndex, currentSlideData,
         quizStarted, quizData, quizCompleted, quizScore, currentQuestionIndex, selectedAnswer,
         activeView, userQuestion, showHelpOffer, showProgressModal,
@@ -564,6 +622,7 @@ export const useStudySession = (searchParams) => {
         handleNextSlide, handlePreviousSlide, jumpToTopic,
         handleTakeQuiz, handleQuizAnswer, handleSubmitAnswer, handleNextQuestion, handleRestartQuiz, handleClosePane,
         getAdaptiveQuizDifficulty,
-        handleExplainMore, handleAskQuestion, handleRestartSession, dismissError
+        handleExplainMore, handleAskQuestion, handleSimplifiedExplanation, handleRestartSession, dismissError,
+        setExternalLoad, getNotesData
     };
 };

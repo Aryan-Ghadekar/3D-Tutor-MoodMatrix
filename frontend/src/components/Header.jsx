@@ -2,11 +2,26 @@
 import { useTheme } from "../app/theme-provider";
 import { Moon, Sun, Home, Activity } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import * as Switch from "@radix-ui/react-switch";
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => (r.ok ? r.json() : { user: null }))
+      .then((d) => setUser(d.user))
+      .catch(() => setUser(null));
+  }, []);
+
+  const signOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    window.location.href = "/auth/login";
+  };
 
   return (
     <header
@@ -54,23 +69,39 @@ export default function Header() {
               Study Session
             </Link>
 
-            <Link
-              href="#"
-              className="hover:text-blue-500 transition"
-            >
-              Analytics
+            <Link href="/join" className="hover:text-blue-500 transition">
+              Join Class
             </Link>
 
-            <Link
-              href="#"
-              className="hover:text-blue-500 transition"
-            >
+            {user?.role === "teacher" && (
+              <Link href="/teacher" className="hover:text-blue-500 transition">
+                Teacher
+              </Link>
+            )}
+
+            <Link href="/settings" className="hover:text-blue-500 transition">
               Settings
             </Link>
           </nav>
 
           {/* ================= RIGHT: THEME TOGGLE ================= */}
           <div className="flex items-center gap-3">
+            {user ? (
+              <button
+                onClick={signOut}
+                className={`text-sm mr-2 hover:text-blue-500 transition ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                title={user.email}
+              >
+                Sign out ({user.name.split(" ")[0]})
+              </button>
+            ) : (
+              <Link
+                href="/auth/login"
+                className={`text-sm mr-2 hover:text-blue-500 transition ${isDark ? "text-gray-300" : "text-gray-600"}`}
+              >
+                Sign in
+              </Link>
+            )}
             <Sun className={`w-4 h-4 ${isDark ? "text-gray-400" : "text-gray-600"}`} />
 
             <Switch.Root
