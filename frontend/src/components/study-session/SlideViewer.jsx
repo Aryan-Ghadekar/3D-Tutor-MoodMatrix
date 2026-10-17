@@ -250,6 +250,23 @@ export default function SlideViewer({
                     <p className="text-gray-800 dark:text-gray-200 text-lg font-medium text-center py-2">{slideContent.memoryHook}</p>
                 </div>
             )}
+
+            {/* Lecture passages the answer was based on (retrieval) */}
+            {currentSlideData.metadata?.sources?.length > 0 && (
+                <details className="mt-6 text-sm" data-testid="slide-sources">
+                    <summary className="cursor-pointer font-semibold text-gray-700 dark:text-gray-300">
+                        Based on {currentSlideData.metadata.sources.length} passage{currentSlideData.metadata.sources.length > 1 ? 's' : ''} from the lecture
+                    </summary>
+                    <ul className="mt-2 space-y-2">
+                        {currentSlideData.metadata.sources.map((source, index) => (
+                            <li key={source.id || index} className="p-3 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300">
+                                <span className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mr-2">{source.kind}</span>
+                                {source.snippet}
+                            </li>
+                        ))}
+                    </ul>
+                </details>
+            )}
         </div>
     );
 }

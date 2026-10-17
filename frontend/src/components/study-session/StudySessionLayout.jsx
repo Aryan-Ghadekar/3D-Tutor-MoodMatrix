@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Camera, Sparkles, FileText, Download, Printer, Radio } from 'lucide-react';
 import { BrainCircuit, Brain, Target, BarChart, AlertOctagon, PieChart, RefreshCw, Power } from 'lucide-react';
 import Header from '../Header'; // Adjust path based on location
 import SlideViewer from './SlideViewer';
 import ControlBar from './ControlBar';
 import SidePanel from './SidePanel';
 import HelpOffer from './HelpOffer';
+import AvatarPanel from './AvatarPanel';
+import SensorPanel from './SensorPanel';
+import { buildNotes, markdownToHtml, downloadFile, printHtml, safeFilename } from '@/lib/notes';
 import Link from 'next/link';
 import { X as XIcon, CheckCircle, SkipBack, SkipForward } from 'lucide-react';
 
@@ -40,6 +44,31 @@ export default function StudySessionLayout(props) {
 
         // ... all other props passed down 
     } = props;
+
+    const classroom = props.classroom;
+    const sensor = props.sensor;
+    const [avatarOpen, setAvatarOpen] = useState(false);
+    const [sensorOpen, setSensorOpen] = useState(false);
+    const [notesOpen, setNotesOpen] = useState(false);
+
+    // The teacher's "pause and explain with the avatar" opens the avatar for everyone
+    useEffect(() => {
+        if (classroom?.paused && classroom.pauseMode === 'avatar') setAvatarOpen(true);
+    }, [classroom?.paused, classroom?.pauseMode]);
+
+    const newestSlide = props.slides.find(sl => sl.id === props.lastGeneratedSlideId) || null;
+
+    const notesTitle = `${props.lecturePlan?.topic || 'Lecture'} - Study Notes`;
+    const downloadNotes = () => {
+        downloadFile(`${safeFilename(props.lecturePlan?.topic)}-notes.md`, buildNotes(props.getNotesData()));
+        setNotesOpen(false);
+    };
+    const printNotes = () => {
+        if (!printHtml(markdownToHtml(buildNotes(props.getNotesData()), notesTitle))) {
+            window.alert('Allow pop-ups for this site to print your notes, or download the Markdown file instead.');
+        }
+        setNotesOpen(false);
+    };
 
     const loadColor = (() => {
         switch (cognitiveLoad) {
@@ -282,7 +311,46 @@ export default function StudySessionLayout(props) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setAvatarOpen(o => !o)}
+                        data-testid="btn-avatar"
+                        title="Avatar tutor"
+                        className={`p-2 lg:px-3 lg:py-2 rounded-lg flex items-center gap-2 text-sm font-semibold transition border ${avatarOpen ? 'bg-purple-600 text-white border-purple-700' : theme === 'light' ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        <span className="hidden lg:inline">Avatar</span>
+                    </button>
+                    <button
+                        onClick={() => setSensorOpen(o => !o)}
+                        data-testid="btn-camera"
+                        title="Camera load tracking"
+                        className={`p-2 lg:px-3 lg:py-2 rounded-lg flex items-center gap-2 text-sm font-semibold transition border ${sensor?.active ? 'bg-emerald-600 text-white border-emerald-700' : theme === 'light' ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
+                    >
+                        <Camera className="w-4 h-4" />
+                        <span className="hidden lg:inline">{sensor?.active ? 'Camera on' : 'Camera'}</span>
+                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setNotesOpen(o => !o)}
+                            data-testid="btn-notes"
+                            title="Download your notes"
+                            className={`p-2 lg:px-3 lg:py-2 rounded-lg flex items-center gap-2 text-sm font-semibold transition border ${theme === 'light' ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
+                        >
+                            <FileText className="w-4 h-4" />
+                            <span className="hidden lg:inline">Notes</span>
+                        </button>
+                        {notesOpen && (
+                            <div className="absolute right-0 mt-2 w-52 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-50 overflow-hidden">
+                                <button onClick={downloadNotes} data-testid="notes-md" className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <Download className="w-4 h-4" /> Download (.md)
+                                </button>
+                                <button onClick={printNotes} data-testid="notes-print" className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <Printer className="w-4 h-4" /> Print / save as PDF
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button
                         onClick={handleRestartSession}
                         className={`p-2 lg:px-4 lg:py-2 rounded-lg ${theme === 'light' ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600'} flex items-center gap-2 text-sm font-semibold transition`}
@@ -295,6 +363,34 @@ export default function StudySessionLayout(props) {
                     {/* Download button removed or needs props.handleDownloadPPT check */}
                 </div>
             </div>
+
+            {classroom?.inClass && (
+                <div
+                    data-testid="classroom-banner"
+                    className={`flex-shrink-0 flex items-center justify-between gap-4 px-6 py-2 border-b text-sm ${classroom.paused ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-300 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200'}`}
+                >
+                    <span className="flex items-center gap-2">
+                        <Radio className="w-4 h-4" />
+                        {classroom.ended
+                            ? 'This class has ended.'
+                            : classroom.error
+                                ? classroom.error
+                                : classroom.paused
+                                    ? `Class paused by your teacher: ${classroom.pauseMode === 'quiz' ? 'quick quiz' : 'avatar explanation'}`
+                                    : `Live class ${classroom.code}${classroom.teacherName ? ` with ${classroom.teacherName}` : ''}${classroom.connected ? ' - connected' : ' - connecting...'}`}
+                    </span>
+                    {classroom.error && !classroom.joined && <Link href="/join" className="underline">Join a class</Link>}
+                </div>
+            )}
+
+            {currentSlideData?.type === 'completion' && (
+                <div className="flex-shrink-0 flex items-center justify-between gap-4 px-6 py-2 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 text-sm text-green-800 dark:text-green-200">
+                    <span>You finished the lecture. Keep a copy of your notes.</span>
+                    <button onClick={downloadNotes} className="px-3 py-1 rounded bg-green-600 text-white font-medium flex items-center gap-2">
+                        <Download className="w-4 h-4" /> Download notes
+                    </button>
+                </div>
+            )}
 
             {error && (
                 <div role="alert" className="flex-shrink-0 flex items-center justify-between gap-4 px-6 py-2 bg-red-50 dark:bg-red-900/30 border-b border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">
@@ -333,7 +429,7 @@ export default function StudySessionLayout(props) {
                         currentTopicIndex={currentTopicIndex}
                         totalTopics={totalTopics}
                         nextLabel={props.nextLabel}
-                        canGoNext={props.canGoNext}
+                        canGoNext={props.canGoNext && !classroom?.paused && !classroom?.ended}
                         handlePreviousSlide={props.handlePreviousSlide}
                         handleNextSlide={props.handleNextSlide}
                         jumpToTopic={props.jumpToTopic}
@@ -384,12 +480,30 @@ export default function StudySessionLayout(props) {
 
             {renderProgressModal()}
 
+            {(avatarOpen || sensorOpen) && (
+                <div className="fixed bottom-20 left-4 z-40 flex flex-col gap-3 items-start">
+                    {sensorOpen && <SensorPanel sensor={sensor} onClose={() => setSensorOpen(false)} />}
+                    {avatarOpen && (
+                        <AvatarPanel
+                            slide={currentSlideData}
+                            newestSlide={newestSlide}
+                            cognitiveLoad={cognitiveLoad}
+                            busy={loading}
+                            onSimplify={() => props.handleSimplifiedExplanation(classroom?.recentTranscript || '')}
+                            onAsk={(text) => props.handleAskQuestion(text)}
+                            onClose={() => setAvatarOpen(false)}
+                        />
+                    )}
+                </div>
+            )}
+
             <HelpOffer
                 show={props.showHelpOffer && !loading}
                 cognitiveLoad={cognitiveLoad}
                 onClose={() => props.setShowHelpOffer(false)}
                 onQuiz={props.handleTakeQuiz}
                 onExplain={props.handleExplainMore}
+                onSimplify={() => { setAvatarOpen(true); props.handleSimplifiedExplanation(classroom?.recentTranscript || ''); }}
                 onAsk={() => { props.setShowHelpOffer(false); props.setActiveView('askQuestions'); }}
             />
         </div>

@@ -49,6 +49,11 @@ export default function LoginPage() {
         return;
       }
 
+      if (data.user?.role === "teacher") {
+        router.push("/teacher");
+        return;
+      }
+
       // Returning users who already chose a goal go straight to their lecture
       if (data.user?.goal) {
         localStorage.setItem("learning_goal", data.user.goal);

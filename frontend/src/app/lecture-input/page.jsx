@@ -141,10 +141,12 @@ export default function LectureInputPage() {
             
             console.log('Data saved to localStorage. Navigating...');
             
-            // Navigate to knowledge test
-            setTimeout(() => {
-                router.push(`/knowledge-test?lectureId=${lectureId}&sessionId=${sessionId}`);
-            }, 500);
+            // Teachers go on to start a live class; students take the knowledge test
+            const me = await fetch('/api/auth/me').then(r => r.json()).catch(() => ({ user: null }));
+            const next = me.user?.role === 'teacher'
+                ? '/teacher'
+                : `/knowledge-test?lectureId=${lectureId}&sessionId=${sessionId}`;
+            setTimeout(() => router.push(next), 500);
             
         } catch (error) {
             console.error('Processing failed:', error);

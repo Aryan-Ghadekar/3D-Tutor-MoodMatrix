@@ -1,22 +1,33 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTheme } from "../theme-provider";
 import { useStudySession } from "../../hooks/useStudySession";
+import { useCognitiveSensor } from "../../hooks/useCognitiveSensor";
+import { useClassroomStudent } from "../../hooks/useClassroomStudent";
 import StudySessionLayout from "../../components/study-session/StudySessionLayout";
 
 function StudySessionContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const { theme } = useTheme();
 
-  // Use the custom hook to manage all session state and logic
-  const sessionData = useStudySession(searchParams, router);
+  // All session state and logic lives in the hook; the camera sensor and the live class plug into it
+  const session = useStudySession(searchParams);
+  const sensor = useCognitiveSensor({ behaviorScore: session.behaviorScore });
+  const classroom = useClassroomStudent(session, searchParams.get("classroom"));
+
+  const { setExternalLoad } = session;
+  const { active, reading } = sensor;
+  useEffect(() => {
+    setExternalLoad(active && reading.score !== null ? { score: reading.score, level: reading.level } : null);
+  }, [active, reading.score, reading.level, setExternalLoad]);
 
   return (
     <StudySessionLayout
-      {...sessionData}
+      {...session}
+      sensor={sensor}
+      classroom={classroom}
       theme={theme}
     />
   );

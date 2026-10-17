@@ -1,10 +1,11 @@
 'use client';
 
-import { X, Brain, BookOpen, HelpCircle, Lightbulb, ChevronRight } from 'lucide-react';
+import { X, Brain, BookOpen, HelpCircle, Lightbulb, ChevronRight, Sparkles } from 'lucide-react';
 
 const OPTIONS = [
   { key: 'quiz', icon: BookOpen, title: 'Quick check quiz', text: 'Test your understanding of this topic', tone: 'blue' },
   { key: 'explain', icon: Lightbulb, title: 'Explain it differently', text: 'Get a deeper, alternative explanation', tone: 'purple' },
+  { key: 'simplify', icon: Sparkles, title: 'Have the avatar explain it simply', text: 'A shorter explanation with a real-world example, read aloud', tone: 'purple' },
   { key: 'ask', icon: HelpCircle, title: 'Ask a question', text: 'Get clarification on a specific point', tone: 'green' },
 ];
 
@@ -18,10 +19,10 @@ const TONES = {
  * Offers help when the student seems stuck (struggling on quizzes, asking for repeated
  * explanations, or idle on one slide for a while).
  */
-export default function HelpOffer({ show, cognitiveLoad, onQuiz, onExplain, onAsk, onClose }) {
+export default function HelpOffer({ show, cognitiveLoad, onQuiz, onExplain, onSimplify, onAsk, onClose }) {
   if (!show) return null;
 
-  const handlers = { quiz: onQuiz, explain: onExplain, ask: onAsk };
+  const handlers = { quiz: () => onQuiz(), explain: () => onExplain(), simplify: () => onSimplify(), ask: () => onAsk() };
   const message =
     cognitiveLoad === 'high'
       ? 'This topic seems challenging. Want some help?'
