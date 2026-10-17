@@ -54,16 +54,30 @@ npm run dev
 
 Without `DB_NAME` set it stores data in memory. To use MySQL, copy `backend/.env.example` to `backend/.env` and fill in the `DB_*` values.
 
-### Typical flow
+### Typical flow (student)
 1. Register / sign in, then pick a learning goal.
 2. Upload a PDF / PPTX (optionally with audio) or paste a YouTube link. A YouTube link or audio file alone is enough.
 3. Take the short knowledge test (or skip it). Its result sets the difficulty of what follows.
-4. Study: AI-generated slides per topic, plus *Explain More*, *Ask Questions* and adaptive quizzes.
+4. Study: AI-generated slides per topic, plus *Explain More*, *Ask Questions* and adaptive quizzes. Answers cite the lecture passages they are based on.
+5. Optional: **Avatar** (reads slides aloud, simplifies, takes voice questions), **Camera** (cognitive-load tracking), **Notes** (download Markdown or print to PDF).
+
+### Live classroom (teacher + students)
+1. Register as a **Teacher**, sign in (you land on `/teacher`), upload a lecture, then **Start class**. A 6-character code appears.
+2. Students open **Join Class** (`/join`), enter the code and study the teacher's lecture. They report only an anonymous load score.
+3. The dashboard shows the class's average load, how many students are overloaded and a warning when a large share are. You can set the current topic (students follow), **pause for a quiz** or **pause for an avatar explanation**, and resume.
+4. Turn on **Capture lecture audio** (Chrome / Edge) so pause quizzes and explanations can use what you said in the last 2-3 minutes.
+5. **End class** downloads a report.
+
+Classes live in the FastAPI process's memory; restarting the server ends them. Use one server process.
+
+### Camera load tracking
+The first time it is enabled the browser downloads two MediaPipe model files (about 10 MB, from Google's public model bucket, then cached). To host them yourself, set `NEXT_PUBLIC_MEDIAPIPE_MODEL_BASE`. The WASM runtime is copied into `frontend/public/mediapipe/` by `npm install` / `npm run dev` / `npm run build`. Video never leaves the browser.
 
 ### Tests
 ```bash
 pip install pytest httpx
-pytest backend/fastapi-service       # API tests with the LLM / network mocked
+pytest backend/fastapi-service       # API, retrieval and classroom tests with the LLM / network mocked
+cd frontend && npm test              # cognitive-load model, speech scripts, notes
 ```
 
 ### Environment variables

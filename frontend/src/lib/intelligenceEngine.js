@@ -737,12 +737,14 @@ export default class IntelligenceEngine {
 
     let slideContent;
     let images = [];
+    let sources = [];
     let source = 'ai_backend';
 
     try {
       const aiSlide = await this.requestAiSlide(topicIndex, actionType, context);
       slideContent = aiSlide.content;
       images = aiSlide.images || [];
+      sources = aiSlide.metadata?.sources || [];
     } catch (error) {
       console.warn('AI slide generation unavailable, using local content:', error.message);
       slideContent = this.generateLocalSlideContent(topic, actionType, context);
@@ -764,6 +766,7 @@ export default class IntelligenceEngine {
         actionType,
         context,
         adaptiveSettings: this.adaptiveSettings,
+        sources,
         source
       }
     };

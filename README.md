@@ -18,14 +18,16 @@ This README describes the full vision of the project. What is built and working 
 |---|---|
 | Lecture ingestion (PDF, PPTX, audio, YouTube) → topic plan with importance scores | Working |
 | Knowledge test that sets the student's starting level | Working |
-| AI slide generation per topic (concept, *explain more*, *ask a question*, quiz review, completion) with Wikimedia illustrations | Working |
-| Adaptive quizzes (difficulty follows the student's recent performance) and misconception tracking | Working |
-| Cognitive-load estimate from **behaviour** (wrong answers, repeated help requests, quiz scores) with a help offer | Working |
+| AI slide generation per topic (concept, *explain more*, *ask a question*, simplified, quiz review, completion) with Wikimedia illustrations | Working |
+| RAG: every lecture chunk, transcript and earlier explanation is indexed; answers cite the lecture passages they used | Working (dense embeddings when `sentence-transformers` is available, TF-IDF otherwise; local JSON store rather than a hosted vector DB) |
+| Adaptive quizzes and misconception tracking | Working |
+| Cognitive load from **camera** (facial-expression + posture, fused and smoothed) and from behaviour, with a help offer | Working. Runs in the browser with MediaPipe; the emotion model is a rule-based mapping of face blendshapes, not the trained Random Forest from the diagram |
+| Teacher login, live classroom: join code, class-wide load dashboard, overload alert, topic control, pause for a quiz or an avatar explanation, class report | Working (in-memory per class, single server) |
+| Teacher lecture-audio capture used as context for pause quizzes / explanations | Working in browsers with Web Speech recognition (Chrome, Edge) |
+| 3D avatar tutor with text-to-speech and voice questions | Working (procedural three.js avatar; speech uses the browser's voices and falls back to captions) |
+| Downloadable session notes (Markdown / print to PDF) and teacher class report | Working |
 | Accounts (student / teacher role) and learning-goal settings | Working (local file-backed store) |
-| Emotion and body-posture based cognitive load (camera) | **Planned**, not implemented |
-| Teacher dashboard / live classroom intervention | **Planned**, not implemented |
-| 3D avatar tutor, text-to-speech | **Planned**, not implemented |
-| Vector database / RAG over past explanations, downloadable session notes | **Planned**, not implemented |
+| Hosted vector database, unity/WebGL avatar model, PWA install | **Not implemented** |
 
 ---
 
