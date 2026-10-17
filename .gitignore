@@ -11,3 +11,6 @@ venv/
 # runtime data written by the services
 backend/fastapi-service/data/
 frontend/.data/
+
+# copied from node_modules by scripts/copy-mediapipe.mjs
+frontend/public/mediapipe/

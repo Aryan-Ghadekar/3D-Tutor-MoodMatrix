@@ -21,6 +21,9 @@ from pathlib import Path
 from pptx import Presentation
 import random
 
+import classroom
+from rag import VectorStore
+
 # Heavy ML dependencies (whisper, sentence-transformers, yt-dlp) are imported lazily
 # so the API starts fast and the non-ML endpoints keep working if they are missing.
 
@@ -45,6 +48,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(classroom.router)
 
 # =========================================================
 # PYDANTIC MODELS
@@ -81,6 +86,7 @@ class TopicQuizRequest(BaseModel):
     misconceptions: List[dict] = []
     previousPerformance: dict = {}
     cognitiveLoad: str = "medium"
+    recentContext: str = ""   # e.g. the last minutes of the teacher's live audio
 
 # =========================================================
 # ML MODELS (lazy)
@@ -472,6 +478,7 @@ def analyze_text(source_text, transcript):
 
     return {
         "chunks": top,
+        "all_chunks": chunks,
         "has_audio": transcript is not None,
         "total_chunks": len(analyzed),
         "word_count": len(source_text.split())
@@ -705,6 +712,8 @@ Each question has exactly 4 options and exactly one correct option."""
 Description: {topic.get('description', '')[:600]}
 Key insights: {'; '.join(topic.get('keyInsights', [])[:4])}
 Common misconceptions: {'; '.join(topic.get('commonMisconceptions', [])[:3])}"""
+    if req.recentContext.strip():
+        user += f"\nThe teacher just said (base some questions on this): {req.recentContext.strip()[:1200]}"
 
     payload = {
         "model": OPENROUTER_MODEL,
@@ -770,6 +779,37 @@ LECTURE_PLANS_FILE = DATA_DIR / "lecture_plans.json"
 QUIZ_RESULTS_FILE = DATA_DIR / "quiz_results.json"
 _file_lock = threading.Lock()
 
+# Retrieval index: lecture chunks, transcripts and previously generated explanations
+rag_store = VectorStore(DATA_DIR / "rag", model_getter=lambda: get_semantic_model())
+
+
+def snippet(text: str, limit: int = 220) -> str:
+    text = " ".join(text.split())
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "..."
+
+
+def index_lecture(plan: dict, analysis: dict, transcript: Optional[str]):
+    """Index every chunk of the lecture (not just the ones that became topics) for retrieval."""
+    topic_by_chunk = {c["index"]: f"topic-{i + 1}" for i, c in enumerate(analysis["chunks"][:20])}
+    docs = [
+        {"id": f"chunk-{i}", "text": text, "kind": "lecture",
+         "meta": {"chunkIndex": i, "topicId": topic_by_chunk.get(i)}}
+        for i, text in enumerate(analysis["all_chunks"])
+    ]
+    if transcript and transcript != "\n".join(analysis["all_chunks"]):
+        docs += [{"id": f"transcript-{i}", "text": text, "kind": "transcript", "meta": {"chunkIndex": i}}
+                 for i, text in enumerate(chunk_text(transcript))]
+    rag_store.add(plan["sessionId"], docs)
+
+
+def retrieve_reference(collection: Optional[str], query: str, include_explanations: bool):
+    """Fetch source passages (and earlier explanations) to ground a generated answer."""
+    if not collection:
+        return [], []
+    sources = rag_store.query(collection, query, k=4, kinds=["lecture", "transcript"])
+    earlier = rag_store.query(collection, query, k=2, kinds=["explanation"]) if include_explanations else []
+    return sources, earlier
+
 def _read_json_list(path: Path) -> list:
     if not path.exists():
         return []
@@ -809,7 +849,8 @@ def generate_slide_with_ai(
     student_goal: str,
     knowledge_state: dict,
     user_question: str = None,
-    context: str = ""
+    context: str = "",
+    reference: str = ""
 ) -> dict:
     """
     Generate complete slide content using AI based on:
@@ -1010,6 +1051,21 @@ Create a slide that:
 
 Be supportive but clear. Focus on learning from the mistake."""
 
+    elif action_type == 'simplified-explanation':
+        user_prompt = f"""The student is overloaded and struggling with this topic. Re-explain it so a tutor could say it aloud.
+
+TOPIC: {topic.get('title', 'Unknown Topic')}
+TOPIC DETAILS: {topic.get('description', topic.get('full_content', ''))[:500]}
+WHAT THE TEACHER SAID IN THE LAST FEW MINUTES: {context or 'not available'}
+
+STUDENT CONTEXT: {knowledge_level} level, preparing for {student_goal.upper()}
+
+Rules:
+1. Use short sentences and everyday words; one core idea in the narrative
+2. Give one concrete real-world example and one simple analogy
+3. End with a different phrasing of the key idea ("In other words...")
+4. Keep keyInsights to 3 very short points"""
+
     elif action_type == 'completion':
         user_prompt = f"""The student has finished the whole lecture. Create a COURSE COMPLETION SUMMARY slide.
 
@@ -1026,6 +1082,12 @@ Create a slide that congratulates the student, recaps the most important ideas a
         user_prompt = f"""Create an educational slide about: {topic.get('title', 'Topic')}
 
 For {student_goal.upper()} exam preparation at {knowledge_level} level."""
+
+    if reference:
+        user_prompt += (
+            "\n\nSOURCE MATERIAL FROM THE TEACHER'S LECTURE (ground your answer in this; "
+            "if it does not cover the point, say so instead of guessing):\n" + reference
+        )
 
     payload = {
         "model": OPENROUTER_MODEL,
@@ -1146,13 +1208,27 @@ def generate_dynamic_slide(
     if action_type == 'completion':
         context = context or ", ".join(t.get('title', '') for t in topics)
 
+    collection = lecture_plan.get('sessionId')
+    sources, earlier = [], []
+    if action_type in ('concept_explanation', 'explain-more', 'ask-question', 'simplified-explanation'):
+        query = user_question or f"{current_topic.get('title', '')} {current_topic.get('description', '')[:200]}"
+        sources, earlier = retrieve_reference(collection, query, include_explanations=action_type in ('ask-question', 'explain-more'))
+
+    reference = ""
+    if sources:
+        reference += "\n".join(f"[{i + 1}] {snippet(s['text'], 600)}" for i, s in enumerate(sources))
+    if earlier:
+        reference += "\n\nEARLIER EXPLANATIONS GIVEN TO THIS STUDENT (do not repeat them, build on them):\n"
+        reference += "\n".join(f"- {snippet(e['text'], 300)}" for e in earlier)
+
     slide_content = generate_slide_with_ai(
         topic=current_topic,
         action_type=action_type,
         student_goal=student_goal,
         knowledge_state=knowledge_state or {},
         user_question=user_question,
-        context=context
+        context=context,
+        reference=reference
     )
 
     images = get_wikimedia_images(current_topic, action_type)
@@ -1173,9 +1249,21 @@ def generate_dynamic_slide(
             "actionType": action_type,
             "hasImages": len(images) > 0,
             "generatedBy": "AI",
-            "aiModel": OPENROUTER_MODEL
+            "aiModel": OPENROUTER_MODEL,
+            "sources": [{"id": s["id"], "kind": s["kind"], "snippet": snippet(s["text"]), "score": s["score"]} for s in sources]
         }
     }
+
+    # Remember what was explained so later answers can build on it
+    if collection and action_type not in ('quiz-results', 'completion'):
+        explanation = " ".join(filter(None, [
+            slide_content.get('title', ''), slide_content.get('narrative', ''),
+            " ".join(str(i) for i in slide_content.get('keyInsights', [])[:4])
+        ]))
+        rag_store.add(collection, [{
+            "id": slide["id"], "text": explanation, "kind": "explanation",
+            "meta": {"topicIndex": current_topic_index, "action": action_type}
+        }])
 
     return {"success": True, "slide": slide, "message": f"AI-generated slide for {action_type}"}
 
@@ -1213,6 +1301,10 @@ def analyze_lecture(
     plan = build_lecture_plan(analysis)
 
     save_lecture_plan(plan)
+    try:
+        index_lecture(plan, analysis, transcript)
+    except Exception as e:  # retrieval is an enhancement; never fail the upload because of it
+        print(f"Could not index lecture for retrieval: {e}")
     return plan
 
 @app.post("/generate-diagnostic-mcq")
@@ -1254,6 +1346,17 @@ def generate_topic_quiz(request: TopicQuizRequest):
     if not quiz:
         raise HTTPException(status_code=503, detail="AI quiz generation is unavailable")
     return {"success": True, "quiz": quiz}
+
+class RagQuery(BaseModel):
+    collection: str
+    query: str
+    k: int = 4
+
+@app.post("/rag/query")
+def rag_query(req: RagQuery):
+    """Retrieve the most relevant lecture passages for a question."""
+    results = rag_store.query(req.collection, req.query, k=max(1, min(req.k, 10)))
+    return {"results": [{**r, "snippet": snippet(r["text"])} for r in results]}
 
 @app.post("/analyze-quiz-results")
 def analyze_quiz_results(request: AnswerAnalysisRequest):
@@ -1341,7 +1444,9 @@ def root():
             "/generate-topic-quiz",
             "/analyze-quiz-results",
             "/save-quiz-results",
-            "/get-lecture-plan"
+            "/get-lecture-plan",
+            "/rag/query",
+            "/classroom"
         ]
     }
 
