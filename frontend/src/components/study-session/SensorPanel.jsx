@@ -11,10 +11,8 @@ const LEVEL = {
 
 const POSTURE_LABELS = {
   slouch: 'Slouching',
-  leaningBack: 'Leaning back',
-  headOnHand: 'Head on hand',
+  handNearHead: 'Hand near head',
   fidget: 'Fidgeting',
-  gazeAway: 'Looking away',
 };
 
 /** Consent, live preview and readout for camera-based cognitive-load tracking. */

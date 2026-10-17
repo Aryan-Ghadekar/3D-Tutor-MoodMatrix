@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { blendshapesToMap, estimateEmotions, dominantEmotion, emotionLoad } from '@/lib/cognitive/emotion';
+import { MISSING_THRESHOLD, blendshapesToMap, estimateEmotions, dominantEmotion, EmotionLoadEstimator } from '@/lib/cognitive/emotion';
 import { PostureAnalyzer } from '@/lib/cognitive/posture';
 import { LoadFusion } from '@/lib/cognitive/fusion';
 
@@ -12,7 +12,6 @@ const POSE_MODEL = `${MODEL_BASE}/pose_landmarker/pose_landmarker_lite/float16/1
 
 const FRAME_INTERVAL_MS = 200;     // ~5 analysed frames per second is plenty and keeps the CPU cool
 const PUBLISH_INTERVAL_MS = 1000;  // React state updates at most once a second
-const FACE_LOST_AFTER_MS = 4000;
 
 const errorMessage = (err) => {
   if (err?.name === 'NotAllowedError') return 'Camera permission was denied. Allow it in your browser to use load tracking.';
@@ -40,7 +39,7 @@ export function useCognitiveSensor({ behaviorScore = null } = {}) {
   behaviorRef.current = behaviorScore;
 
   const runtime = useRef({ timer: null, video: null, face: null, pose: null, stream: null, starting: false });
-  const analysers = useRef({ posture: new PostureAnalyzer(), fusion: new LoadFusion() });
+  const analysers = useRef({ emotion: new EmotionLoadEstimator(), posture: new PostureAnalyzer(), fusion: new LoadFusion() });
 
   const stop = useCallback(() => {
     const rt = runtime.current;
@@ -52,6 +51,7 @@ export function useCognitiveSensor({ behaviorScore = null } = {}) {
     rt.pose?.close?.();
     if (rt.video) rt.video.srcObject = null;
     Object.assign(rt, { video: null, face: null, pose: null, stream: null });
+    analysers.current.emotion.reset();
     analysers.current.posture.reset();
     analysers.current.fusion.reset();
     setStream(null);
@@ -100,7 +100,6 @@ export function useCognitiveSensor({ behaviorScore = null } = {}) {
       rt.pose = await create(vision.PoseLandmarker, POSE_MODEL, { numPoses: 1 });
       if (!rt.starting) { stop(); return; }
 
-      let lastFace = 0;
       let lastPublish = 0;
       let lastVideoTime = -1;
       let latest = {};
@@ -114,13 +113,13 @@ export function useCognitiveSensor({ behaviorScore = null } = {}) {
         try {
           const faceResult = rt.face.detectForVideo(rt.video, ts);
           const categories = faceResult.faceBlendshapes?.[0]?.categories;
-          if (categories) {
-            lastFace = now;
-            const emotions = estimateEmotions(blendshapesToMap(categories));
-            latest.emotions = emotions;
-            latest.emotion = dominantEmotion(emotions);
-            latest.emotionScore = emotionLoad(emotions);
-          }
+          // MoodMatrix pipeline: one update per frame; with no face the estimator holds its last value and
+          // drops to 0 after MISSING_THRESHOLD frames.
+          const emotions = categories ? estimateEmotions(blendshapesToMap(categories)) : null;
+          latest.emotions = emotions;
+          latest.emotion = emotions ? dominantEmotion(emotions) : null;
+          latest.emotionScore = analysers.current.emotion.update(emotions);
+          latest.hasFace = !!emotions;
 
           const poseResult = rt.pose.detectForVideo(rt.video, ts);
           const posture = analysers.current.posture.update(poseResult.landmarks?.[0] || null);
@@ -130,14 +129,14 @@ export function useCognitiveSensor({ behaviorScore = null } = {}) {
           return;
         }
 
-        const hasFace = now - lastFace < FACE_LOST_AFTER_MS;
-        if (!hasFace) { latest.emotions = null; latest.emotion = null; latest.emotionScore = null; }
+        const hasFace = !!latest.hasFace;
+        const sawFace = analysers.current.emotion.missingFrames < MISSING_THRESHOLD;
 
         const fused = analysers.current.fusion.update({
-          emotion: hasFace ? latest.emotionScore : undefined,
-          posture: latest.posture?.calibrated ? latest.posture.score : undefined,
+          emotion: sawFace ? latest.emotionScore : undefined,
+          posture: latest.posture ? latest.posture.score : undefined,
           behavior: behaviorRef.current ?? undefined,
-        }, now);
+        });
 
         if (now - lastPublish >= PUBLISH_INTERVAL_MS) {
           lastPublish = now;

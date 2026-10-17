@@ -1,69 +1,54 @@
-// Weighted fusion of the cognitive-load signals, followed by temporal smoothing.
+// Final cognitive load = emotion load + body-posture load, ported from MoodMatrix
+// (backend/cognitive_load_fusion.py, "FUSED FINAL CL").
 //
-// Signals are 0-100 scores; any of them may be missing (camera off, no face in view...). Missing signals are
-// dropped and the remaining weights are renormalised. The fused score is smoothed with a time-based
-// exponential moving average so a single odd frame cannot flip the level, and the level uses hysteresis.
+//   emotion > 52% and body < 45%  ->  0.95 emotion + 0.05 body   (strong facial signal, calm body)
+//   otherwise                     ->  0.50 emotion + 0.50 body
+//   level                         ->  "high" at 52.5% and above, otherwise "low"
+//
+// MoodMatrix has no behavioural signal. 3D Tutor does (quiz results, help requests), so when one is passed
+// it is blended in with weight BEHAVIOR_WEIGHT; without it the result is exactly the MoodMatrix formula.
+// A missing camera signal is dropped and the other one used on its own.
 
-export const FUSION_WEIGHTS = { emotion: 0.5, posture: 0.3, behavior: 0.2 };
+export const EMOTION_HIGH = 52;       // emotion_norm > 0.52
+export const BODY_LOW = 45;           // body_norm < 0.45
+export const HIGH_THRESHOLD = 52.5;   // cl_status_final
+export const BEHAVIOR_WEIGHT = 0.2;
 
-export const HIGH_ENTER = 65;
-export const HIGH_EXIT = 55;
-export const LOW_ENTER = 30;
-export const LOW_EXIT = 40;
+const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 
-export function fuse(signals, weights = FUSION_WEIGHTS) {
-  let total = 0;
-  let weightSum = 0;
-  for (const [name, weight] of Object.entries(weights)) {
-    const value = signals[name];
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      total += weight * value;
-      weightSum += weight;
-    }
-  }
-  return weightSum > 0 ? total / weightSum : null;
+/** @returns {number|null} 0-100 fused score, or null when no signal is available */
+export function fuse({ emotion, posture, behavior } = {}) {
+  let camera = null;
+  if (isNum(emotion) && isNum(posture)) {
+    const [we, wb] = emotion > EMOTION_HIGH && posture < BODY_LOW ? [0.95, 0.05] : [0.5, 0.5];
+    camera = we * emotion + wb * posture;
+  } else if (isNum(emotion)) camera = emotion;
+  else if (isNum(posture)) camera = posture;
+
+  if (isNum(behavior)) return camera === null ? behavior : (1 - BEHAVIOR_WEIGHT) * camera + BEHAVIOR_WEIGHT * behavior;
+  return camera;
 }
 
-/** Level for a score without any history. */
+/** MoodMatrix reports only Low / High. */
 export function levelFor(score) {
-  return score >= HIGH_ENTER ? 'high' : score <= LOW_ENTER ? 'low' : 'medium';
+  return score >= HIGH_THRESHOLD ? 'high' : 'low';
 }
 
 export class LoadFusion {
-  /** @param {number} tauMs smoothing time constant: after tauMs about 63% of a step change is reflected */
-  constructor({ tauMs = 6000, weights = FUSION_WEIGHTS } = {}) {
-    this.tauMs = tauMs;
-    this.weights = weights;
-    this.score = null;
-    this.level = 'medium';
-    this.lastAt = null;
+  constructor() {
+    this.reset();
   }
 
   reset() {
     this.score = null;
-    this.level = 'medium';
-    this.lastAt = null;
+    this.level = 'medium'; // "no reading yet"
   }
 
-  update(signals, now = Date.now()) {
-    const fused = fuse(signals, this.weights);
+  update(signals) {
+    const fused = fuse(signals);
     if (fused === null) return { score: this.score, level: this.level };
-
-    if (this.score === null) {
-      this.score = fused;
-    } else {
-      const dt = Math.max(0, now - this.lastAt);
-      const alpha = 1 - Math.exp(-dt / this.tauMs);
-      this.score += alpha * (fused - this.score);
-    }
-    this.lastAt = now;
-    this.level = this.nextLevel(this.score);
-    return { score: Math.round(this.score), level: this.level };
-  }
-
-  nextLevel(score) {
-    if (this.level === 'high') return score < HIGH_EXIT ? levelFor(score) : 'high';
-    if (this.level === 'low') return score > LOW_EXIT ? levelFor(score) : 'low';
-    return levelFor(score);
+    this.score = Math.round(fused);
+    this.level = levelFor(fused);
+    return { score: this.score, level: this.level };
   }
 }
