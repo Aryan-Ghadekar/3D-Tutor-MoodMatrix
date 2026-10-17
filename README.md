@@ -10,6 +10,25 @@ The platform supports **two distinct logins**:
 
 ---
 
+## 🔹 Implementation Status
+
+This README describes the full vision of the project. What is built and working today:
+
+| Area | Status |
+|---|---|
+| Lecture ingestion (PDF, PPTX, audio, YouTube) → topic plan with importance scores | Working |
+| Knowledge test that sets the student's starting level | Working |
+| AI slide generation per topic (concept, *explain more*, *ask a question*, quiz review, completion) with Wikimedia illustrations | Working |
+| Adaptive quizzes (difficulty follows the student's recent performance) and misconception tracking | Working |
+| Cognitive-load estimate from **behaviour** (wrong answers, repeated help requests, quiz scores) with a help offer | Working |
+| Accounts (student / teacher role) and learning-goal settings | Working (local file-backed store) |
+| Emotion and body-posture based cognitive load (camera) | **Planned**, not implemented |
+| Teacher dashboard / live classroom intervention | **Planned**, not implemented |
+| 3D avatar tutor, text-to-speech | **Planned**, not implemented |
+| Vector database / RAG over past explanations, downloadable session notes | **Planned**, not implemented |
+
+---
+
 ## 🔹 Problem Statement
 Traditional classroom teaching faces key challenges:
 - Teachers lack **real-time visibility into student cognitive overload**

@@ -165,6 +165,11 @@ export const useStudySession = (searchParams) => {
     const findConceptSlide = (topicIndex) =>
         slidesRef.current.findIndex(s => s.metadata?.topicIndex === topicIndex && s.type === 'concept_explanation');
 
+    /** Highest topic index that already has its main slide (the student may have navigated back since). */
+    const furthestTopicWithSlide = (deck = slidesRef.current) =>
+        deck.reduce((max, s) => (s.type === 'concept_explanation' && typeof s.metadata?.topicIndex === 'number'
+            ? Math.max(max, s.metadata.topicIndex) : max), -1);
+
     /** Generate a slide for a topic and append it to the deck. Returns the slide, or null on failure. */
     const addSlide = async (topicIndex, actionType = 'concept_explanation', context = '') => {
         const engine = engineRef.current;
@@ -331,12 +336,10 @@ export const useStudySession = (searchParams) => {
         if (currentSlideData?.type === 'completion') return;
 
         markTopicCompleted(currentTopicIndex);
-        const nextTopic = currentTopicIndex + 1;
+        const nextTopic = furthestTopicWithSlide() + 1;
 
         if (nextTopic < totalTopics) {
-            const existing = findConceptSlide(nextTopic);
-            if (existing !== -1) showSlide(existing);
-            else await addSlide(nextTopic);
+            await addSlide(nextTopic);
         } else {
             await addSlide(currentTopicIndex, 'completion');
         }
@@ -360,7 +363,7 @@ export const useStudySession = (searchParams) => {
         else await addSlide(topicIndex);
     };
 
-    const isLastTopic = currentTopicIndex >= totalTopics - 1;
+    const isLastTopic = furthestTopicWithSlide(slides) >= totalTopics - 1;
     const atEnd = currentSlideIndex >= slides.length - 1;
     const canGoNext = !loading && !(atEnd && currentSlideData?.type === 'completion');
     const nextLabel = !atEnd ? 'Next Slide' : isLastTopic ? 'Finish Lecture' : 'Next Topic';

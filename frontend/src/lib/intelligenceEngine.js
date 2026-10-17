@@ -29,7 +29,17 @@ export function normalizeQuiz(quiz) {
   const questions = (quiz.questions || [])
     .map((q, index) => {
       const rawOptions = (q.options || []).filter(o => o && (o.text || typeof o === 'string'));
-      const options = rawOptions.map(o => (typeof o === 'string' ? { text: o } : o));
+      const seen = new Set();
+      const options = rawOptions
+        .map(o => (typeof o === 'string' ? { text: o } : o))
+        // templates can repeat a distractor; a correct option always wins over a duplicate
+        .sort((a, b) => Number(!!b.isCorrect) - Number(!!a.isCorrect))
+        .filter(o => {
+          const key = String(o.text).trim().toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
 
       let correctIndex = options.findIndex(o => o.isCorrect);
       if (correctIndex === -1 && q.correctAnswer !== undefined) {

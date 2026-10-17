@@ -220,3 +220,10 @@ def test_analyze_quiz_results_matches_answers_by_id():
     answers = [{"questionId": "q2", "selectedAnswer": "B"}]  # q1 unanswered
     r = client.post("/analyze-quiz-results", json={"session_id": "s", "questions": questions, "answers": answers}).json()
     assert r["correct"] == 1 and r["weakTopics"] == ["T1"]
+
+
+def test_corrupt_uploads_return_422_with_a_message():
+    bad_pdf = client.post("/analyze-lecture", files={"pdf": ("bad.pdf", b"not a pdf", "application/pdf")})
+    assert bad_pdf.status_code == 422 and "PDF" in bad_pdf.json()["detail"]
+    bad_ppt = client.post("/analyze-lecture", files={"ppt": ("bad.pptx", b"not a pptx", "application/octet-stream")})
+    assert bad_ppt.status_code == 422 and "PowerPoint" in bad_ppt.json()["detail"]
