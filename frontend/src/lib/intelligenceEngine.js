@@ -1,23 +1,78 @@
 /**
- * COMPLETE REGENERATED VERSION - INTELLIGENT LEARNING ENGINE
- * Uses REAL lecture plan data with intelligent enhancements
+ * INTELLIGENT LEARNING ENGINE
+ * Loads the lecture plan produced by the backend, enriches its topics, and generates
+ * slides and quizzes (AI-generated through the Next.js API routes, with local fallbacks).
  */
 
-// =========================================================
-// DEPENDENCIES AND IMPORTS
-// =========================================================
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
+import { BACKEND_URL } from '@/lib/config';
+import { QuizStorage } from '@/app/lib/quiz-storage';
+
+export const NO_LECTURE_ERROR = 'No lecture found. Upload a lecture first so the tutor has something to teach.';
+
+const OPTION_IDS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+// Fisher-Yates; Array.sort(() => Math.random() - 0.5) is biased.
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+/**
+ * Make any quiz source (AI backend, route templates, local templates) use the same shape:
+ * options get ids A, B, C... in random order and `correctAnswer` is the id of the correct option.
+ */
+export function normalizeQuiz(quiz) {
+  const questions = (quiz.questions || [])
+    .map((q, index) => {
+      const rawOptions = (q.options || []).filter(o => o && (o.text || typeof o === 'string'));
+      const options = rawOptions.map(o => (typeof o === 'string' ? { text: o } : o));
+
+      let correctIndex = options.findIndex(o => o.isCorrect);
+      if (correctIndex === -1 && q.correctAnswer !== undefined) {
+        // correctAnswer may be an id ("B"), an option id from the source, or a numeric index
+        correctIndex = options.findIndex(o => o.id !== undefined && String(o.id) === String(q.correctAnswer));
+        if (correctIndex === -1 && /^\d+$/.test(String(q.correctAnswer))) correctIndex = Number(q.correctAnswer);
+        if (correctIndex === -1 && /^[A-Fa-f]$/.test(String(q.correctAnswer))) correctIndex = OPTION_IDS.indexOf(String(q.correctAnswer).toUpperCase());
+      }
+      if (options.length < 2 || correctIndex < 0 || correctIndex >= options.length) return null;
+
+      const tagged = options.map((o, i) => ({ text: o.text, isCorrect: i === correctIndex }));
+      const shuffled = shuffle(tagged).map((o, i) => ({ id: OPTION_IDS[i], text: o.text, isCorrect: o.isCorrect }));
+      const text = q.text || q.question || `Question ${index + 1}`;
+
+      return {
+        ...q,
+        id: q.id ?? `q${index + 1}`,
+        text,
+        question: text,
+        options: shuffled,
+        correctAnswer: shuffled.find(o => o.isCorrect).id,
+      };
+    })
+    .filter(Boolean);
+
+  return { ...quiz, questions, totalQuestions: questions.length };
+}
 
 // =========================================================
 // INTELLIGENCE ENGINE CLASS
 // =========================================================
 export default class IntelligenceEngine {
+  /**
+   * @param {string} sessionId study-session id (not the lecture's)
+   * @param {object} config { lectureSessionId, lectureId, maxTopics, ... }
+   */
   constructor(sessionId, config = {}) {
     this.sessionId = sessionId;
     this.config = {
       backendUrl: BACKEND_URL,
-      maxTopics: 6,
+      maxTopics: 20,
       defaultGoal: 'gate',
+      lectureSessionId: null,
       ...config
     };
 
@@ -42,9 +97,6 @@ export default class IntelligenceEngine {
 
     // Services
     this.sessionStorage = this.initializeSessionStorage();
-    this.imageGenerator = this.initializeImageGenerator();
-
-    console.log(`IntelligenceEngine v3.0 initialized for session: ${sessionId}`);
   }
 
   // =========================================================
@@ -52,52 +104,30 @@ export default class IntelligenceEngine {
   // =========================================================
 
   async initialize(goal = null, knowledgeTestResults = null) {
-    console.log('Initializing IntelligenceEngine v3.0...');
-
     try {
-      // Set student goal
       this.studentGoal = goal || await this.loadStudentGoal() || this.config.defaultGoal;
 
-      // Load knowledge test results if provided
       if (knowledgeTestResults) {
         this.knowledgeLevel = knowledgeTestResults.knowledgeLevel || 'intermediate';
         this.misconceptions = knowledgeTestResults.misconceptions || [];
       }
 
-      // Load REAL lecture plan from backend
       await this.loadRealLecturePlan();
 
-      // If no real plan exists, create educational mock (not generic!)
       if (!this.lecturePlan || !this.lecturePlan.impTopics || this.lecturePlan.impTopics.length === 0) {
-        console.log('No real lecture plan found, creating educational mock');
-        this.lecturePlan = await this.createEducationalMockPlan();
+        return this.createEmergencyAnalysis(NO_LECTURE_ERROR);
       }
 
-      // Enhance topics with educational intelligence
       await this.enhanceTopicsWithIntelligence();
-
-      // Initialize topic progress tracking
       this.initializeTopicProgress();
-
-      // Generate adaptive settings
       this.generateAdaptiveSettings();
-
-      // Save initial state
       await this.saveSessionState();
-
-      console.log('IntelligenceEngine initialized:', {
-        topics: this.lecturePlan.impTopics.length,
-        enhancedTopics: this.enhancedTopics.length,
-        studentGoal: this.studentGoal,
-        knowledgeLevel: this.knowledgeLevel,
-        adaptiveSettings: this.adaptiveSettings
-      });
 
       return this.getInitialAnalysis();
 
     } catch (error) {
       console.error('IntelligenceEngine initialization failed:', error);
-      return this.createEmergencyAnalysis();
+      return this.createEmergencyAnalysis(error.message);
     }
   }
 
@@ -105,365 +135,115 @@ export default class IntelligenceEngine {
   // LECTURE PLAN MANAGEMENT
   // =========================================================
 
-  async loadRealLecturePlan() {
-    console.log('Loading REAL lecture plan from backend...');
-
+  async fetchPlanFromBackend(query) {
     try {
-      // Check if we should force refresh (new content uploaded: PDF, PPT, audio, YouTube)
-      const forceRefresh = typeof window !== 'undefined' && 
-                          localStorage.getItem('force_lecture_plan_refresh') === 'true';
-      
-      if (forceRefresh) {
-        console.log('Force refresh detected, clearing cached lecture plans');
-        localStorage.removeItem('current_lecture_plan');
-        localStorage.removeItem('force_lecture_plan_refresh');
-      }
-
-      // Try to get lecture plan by session ID
-      let lecturePlan = null;
-
-      // First try: Get by session ID
-      if (this.sessionId) {
-        const response = await fetch(
-          `${this.config.backendUrl}/get-lecture-plan?sessionId=${this.sessionId}`,
-          { signal: AbortSignal.timeout(10000) }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.lecturePlan) {
-            lecturePlan = data.lecturePlan;
-            console.log('Loaded lecture plan by session ID:', lecturePlan.topic);
-          }
-        }
-      }
-
-      // Second try: Get latest lecture plan
-      if (!lecturePlan) {
-        const response = await fetch(
-          `${this.config.backendUrl}/get-lecture-plan?latest=true`,
-          { signal: AbortSignal.timeout(10000) }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.lecturePlan) {
-            lecturePlan = data.lecturePlan;
-            console.log('Loaded latest lecture plan:', lecturePlan.topic);
-          }
-        }
-      }
-
-      // Third try: Check local storage
-      if (!lecturePlan && typeof window !== 'undefined') {
-        const savedPlan = localStorage.getItem('current_lecture_plan');
-        if (savedPlan) {
-          try {
-            lecturePlan = JSON.parse(savedPlan);
-            console.log('Loaded lecture plan from localStorage');
-          } catch (e) {
-            console.warn('Failed to parse localStorage lecture plan:', e);
-          }
-        }
-      }
-
-      if (lecturePlan) {
-        // Clean and validate the lecture plan
-        this.lecturePlan = this.cleanAndValidateLecturePlan(lecturePlan);
-        return true;
-      }
-
-      return false;
-
+      const response = await fetch(`${this.config.backendUrl}/get-lecture-plan?${query}`, {
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) return null;
+      const plan = await response.json();
+      return plan && Array.isArray(plan.impTopics) ? plan : null;
     } catch (error) {
-      console.error('Error loading lecture plan:', error);
-      return false;
+      console.warn('Could not reach the lecture service:', error.message);
+      return null;
     }
   }
 
-  cleanAndValidateLecturePlan(plan) {
-    if (!plan || typeof plan !== 'object') {
-      return null;
-    }
-
-    // Ensure impTopics exists and is array
-    if (!plan.impTopics || !Array.isArray(plan.impTopics)) {
-      plan.impTopics = [];
-    }
-
-    // Clean each topic
-    plan.impTopics = plan.impTopics.map((topic, index) => {
-      if (!topic || typeof topic !== 'object') {
-        return this.createDefaultTopic(index, plan);
+  readStoredPlan() {
+    if (typeof window === 'undefined') return null;
+    try {
+      const wantedId = this.config.lectureSessionId;
+      const lectureData = JSON.parse(localStorage.getItem('lectureData') || 'null');
+      if (lectureData?.lecturePlan && (!wantedId || lectureData.sessionId === wantedId || lectureData.lecturePlan.sessionId === wantedId)) {
+        return lectureData.lecturePlan;
       }
+      if (!wantedId) return JSON.parse(localStorage.getItem('current_lecture_plan') || 'null');
+    } catch (e) {
+      console.warn('Failed to parse stored lecture plan:', e);
+    }
+    return null;
+  }
 
-      // Ensure required fields
-      return {
-        id: topic.id || `topic-${index + 1}`,
-        title: this.cleanTopicTitle(topic.title || topic.name || `Topic ${index + 1}`),
-        description: topic.description || topic.text || topic.full_text || '',
-        importance: topic.importance || 'medium',
-        weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
-        difficulty: topic.difficulty || 'medium',
+  async loadRealLecturePlan() {
+    if (typeof window !== 'undefined' && localStorage.getItem('force_lecture_plan_refresh') === 'true') {
+      localStorage.removeItem('current_lecture_plan');
+      localStorage.removeItem('force_lecture_plan_refresh');
+    }
 
-        // Educational fields (may be empty initially)
-        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights :
-          Array.isArray(topic.key_insights) ? topic.key_insights : [],
+    const wantedId = this.config.lectureSessionId;
+    let plan = this.readStoredPlan();
 
-        commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions :
-          Array.isArray(topic.common_misconceptions) ? topic.common_misconceptions : [],
+    if (!plan && wantedId) plan = await this.fetchPlanFromBackend(`sessionId=${encodeURIComponent(wantedId)}`);
+    if (!plan) plan = await this.fetchPlanFromBackend('latest=true');
+    if (!plan && typeof window !== 'undefined') {
+      try {
+        plan = JSON.parse(localStorage.getItem('current_lecture_plan') || 'null');
+      } catch { /* ignore corrupt cache */ }
+    }
 
-        realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications :
-          Array.isArray(topic.real_world_applications) ? topic.real_world_applications : [],
+    if (plan) {
+      this.lecturePlan = this.cleanAndValidateLecturePlan(plan);
+      return true;
+    }
+    return false;
+  }
 
-        prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
+  cleanAndValidateLecturePlan(plan) {
+    if (!plan || typeof plan !== 'object') return null;
+    if (!Array.isArray(plan.impTopics)) plan.impTopics = [];
 
-        // Metadata
-        estimatedTime: topic.estimated_time || topic.estimatedTime || '25-35 minutes',
-        educationalValue: topic.educational_value || topic.educationalValue || {},
+    const garbageStart = /^(fig(ure)?\.?|table|activity|exercise|question|answer|solution|blank)\b|cid:/i;
 
-        // Keep original for reference
-        originalData: topic
-      };
-    }).filter(topic => {
-      // Filter out topics with garbage titles
-      const title = topic.title.toLowerCase();
-      const garbagePatterns = [
-        'fig', 'table', 'cid:', 'activity', 'exercise',
-        'question', 'answer', 'solution', 'blank'
-      ];
+    plan.impTopics = plan.impTopics
+      .map((topic, index) => {
+        if (!topic || typeof topic !== 'object') return null;
+        const list = (a, b) => (Array.isArray(topic[a]) ? topic[a] : Array.isArray(topic[b]) ? topic[b] : []);
 
-      return !garbagePatterns.some(pattern => title.includes(pattern)) &&
-        topic.title.length > 5 &&
-        topic.title.split(' ').length <= 10;
-    });
+        return {
+          id: topic.id || `topic-${index + 1}`,
+          title: this.cleanTopicTitle(topic.title || topic.name || `Topic ${index + 1}`),
+          description: topic.description || topic.text || topic.full_text || topic.full_content || '',
+          importance: topic.importance || 'medium',
+          weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
+          difficulty: topic.difficulty || 'medium',
+          keyInsights: list('keyInsights', 'key_insights'),
+          commonMisconceptions: list('commonMisconceptions', 'common_misconceptions'),
+          realWorldApplications: list('realWorldApplications', 'real_world_applications'),
+          prerequisites: list('prerequisites', 'prerequisites'),
+          estimatedTime: topic.estimated_time || topic.estimatedTime || '25-35 minutes',
+          educationalValue: topic.educational_value || topic.educationalValue || {},
+        };
+      })
+      .filter(topic => topic && topic.title.length > 3 && !garbageStart.test(topic.title))
+      .slice(0, this.config.maxTopics);
 
-    // Limit to max topics
-    plan.impTopics = plan.impTopics.slice(0, this.config.maxTopics);
-
-    // Add metadata if missing
     if (!plan.metadata) plan.metadata = {};
     plan.metadata.cleanedAt = new Date().toISOString();
     plan.metadata.totalValidTopics = plan.impTopics.length;
-
     return plan;
   }
 
   cleanTopicTitle(title) {
-    if (!title || typeof title !== 'string') {
-      return 'Learning Topic';
-    }
+    if (!title || typeof title !== 'string') return 'Learning Topic';
 
     let clean = title
-      // Remove PDF artifacts
       .replace(/\(cid:\d+\)/g, '')
-      .replace(/Fig\.?\s*\d+[\.\d]*\s*[:–-]\s*/gi, '')
-      .replace(/Table\s*\d+[\.\d]*\s*[:–-]\s*/gi, '')
-      .replace(/\b\d+\.\d+\s*[-–]\s*/g, '')
       .replace(/^\s*[•\-*]\s*/, '')
-
-      // Remove numbering
-      .replace(/^(Chapter|Section|Topic|Unit|Module|Activity)\s*\d+[\.\d]*\s*[:–-]\s*/gi, '')
-      .replace(/^\d+[\.\)\s]*/, '')
-
-      // Clean up whitespace
+      .replace(/^(Chapter|Section|Topic|Unit|Module)\s*\d+[\.\d]*\s*[:–-]\s*/i, '')
+      .replace(/^\d+[\.\)]\s+/, '')
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Ensure proper sentence ending
-    if (clean && !clean.endsWith('.') && !clean.endsWith('?') && !clean.endsWith('!')) {
-      clean = clean + '.';
+    // Drop dangling connectors left over from truncated text ("... of the")
+    const connectors = new Set(['a', 'an', 'the', 'and', 'but', 'or', 'for', 'with', 'of', 'in', 'on', 'at', 'to']);
+    let words = clean.split(' ');
+    while (words.length > 1 && connectors.has(words[words.length - 1].toLowerCase().replace(/[.,;:]$/, ''))) {
+      words.pop();
     }
+    if (words.length > 12) words = [...words.slice(0, 10), '...'];
+    clean = words.join(' ');
 
-    // Remove incomplete endings
-    const incompleteEndings = [' a', ' an', ' the', ' and', ' but', ' or', ' for', ' with', ' of', ' in', ' on', ' at'];
-    incompleteEndings.forEach(ending => {
-      if (clean.toLowerCase().endsWith(ending + '.')) {
-        clean = clean.substring(0, clean.length - ending.length - 1) + '.';
-      }
-    });
-
-    // Capitalize properly
-    if (clean.length > 0) {
-      clean = clean.charAt(0).toUpperCase() + clean.slice(1);
-    }
-
-    // Limit length
-    const words = clean.split(' ');
-    if (words.length > 10) {
-      clean = words.slice(0, 8).join(' ') + '...';
-    }
-
-    return clean || 'Important Concept';
-  }
-
-  async createDefaultTopic(index, actualPlan = null) {
-    // Try to use actual lecture plan content first
-    if (actualPlan && actualPlan.impTopics && actualPlan.impTopics[index]) {
-      const topic = actualPlan.impTopics[index];
-      return {
-        id: topic.id || `topic-${index + 1}`,
-        title: topic.title || `Topic ${index + 1}`,
-        description: topic.description || `This topic covers important concepts related to ${topic.title || 'this topic'}.`,
-        importance: topic.importance || 'medium',
-        weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
-        difficulty: topic.difficulty || 'medium',
-        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights : [],
-        commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions : [],
-        realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications : [],
-        prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
-        estimatedTime: topic.estimatedTime || topic.estimated_time || '25-35 minutes',
-        educationalValue: topic.educationalValue || topic.educational_value || {},
-        isDefault: true
-      };
-    }
-    
-    // Only use generic fallback if no actual plan available
-    const genericTopics = [
-      "Computer Architecture Fundamentals",
-      "Processor Design and Organization",
-      "Memory Systems and Hierarchy",
-      "Instruction Set Architecture",
-      "Pipelining and Parallel Processing",
-      "Hardware-Software Interface"
-    ];
-
-    const title = index < defaultTopics.length ? defaultTopics[index] : `Topic ${index + 1}`;
-
-    return {
-      id: `topic-${index + 1}`,
-      title: title,
-      description: `This topic covers important concepts related to ${title.toLowerCase()}.`,
-      importance: 'medium',
-      weightage: 50,
-      difficulty: 'medium',
-      keyInsights: [],
-      commonMisconceptions: [],
-      realWorldApplications: [],
-      prerequisites: [],
-      estimatedTime: '25-35 minutes',
-      educationalValue: {},
-      isDefault: true
-    };
-  }
-
-  async createEducationalMockPlan() {
-    console.log('Creating educational mock plan from actual lecture data...');
-    
-    // Try to load the latest actual lecture plan first
-    let actualPlan = null;
-    try {
-      const response = await fetch(
-        `${this.config.backendUrl}/get-lecture-plan?latest=true`,
-        { signal: AbortSignal.timeout(10000) }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        // Backend returns lecture plan directly, not wrapped in response object
-        if (data && (data.lecturePlan || data.impTopics)) {
-          actualPlan = data.lecturePlan || data;
-          console.log('Using actual lecture plan for mock:', actualPlan.topic);
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load actual plan for mock:', error);
-    }
-    
-    // If we have actual plan content, use it
-    if (actualPlan && actualPlan.impTopics && actualPlan.impTopics.length > 0) {
-      const educationalTopics = actualPlan.impTopics.map((topic, index) => ({
-        id: topic.id || `topic-${index + 1}`,
-        title: topic.title || `Topic ${index + 1}`,
-        description: topic.description || `This topic covers important concepts related to ${topic.title || 'this topic'}.`,
-        importance: topic.importance || 'medium',
-        weightage: typeof topic.weightage === 'number' ? topic.weightage : 50,
-        difficulty: topic.difficulty || 'medium',
-        keyInsights: Array.isArray(topic.keyInsights) ? topic.keyInsights : [],
-        commonMisconceptions: Array.isArray(topic.commonMisconceptions) ? topic.commonMisconceptions : [],
-        realWorldApplications: Array.isArray(topic.realWorldApplications) ? topic.realWorldApplications : [],
-        prerequisites: Array.isArray(topic.prerequisites) ? topic.prerequisites : [],
-        estimatedTime: topic.estimatedTime || topic.estimated_time || '25-35 minutes',
-        educationalValue: topic.educationalValue || topic.educational_value || {
-          conceptualDepth: 0.7,
-          practicalRelevance: 0.8,
-          examImportance: 0.85
-        },
-        isMock: true
-      }));
-      
-      return {
-        sessionId: this.sessionId,
-        lectureId: `mock_lecture_${Date.now()}`,
-        topic: actualPlan.topic || "Computer Science Topics",
-        duration: actualPlan.duration || "90 minutes",
-        date: new Date().toISOString().split('T')[0],
-        instructor: actualPlan.instructor || "AI Learning Assistant",
-        studentGoal: this.studentGoal,
-        impTopics: educationalTopics,
-        totalTopics: educationalTopics.length,
-        metadata: {
-          isMock: true,
-          basedOnActualPlan: true,
-          originalTopic: actualPlan.topic,
-          generatedAt: new Date().toISOString()
-        }
-      };
-    }
-    
-    // Only use generic fallback if no actual plan available
-    console.log('No actual plan found, using generic educational topics');
-    const genericTopics = [
-      {
-        id: "topic-1",
-        title: "Computer Architecture Fundamentals",
-        description: "Fundamental concepts of computer organization, including CPU structure, memory hierarchy, and instruction execution.",
-        importance: "high",
-        weightage: 90,
-        difficulty: "medium",
-        keyInsights: [
-          "CPU components and their functions",
-          "Memory hierarchy and performance",
-          "Instruction cycle and execution flow",
-          "Hardware-software interaction"
-        ],
-        commonMisconceptions: [
-          "Confusing RAM with cache memory",
-          "Thinking clock speed alone determines performance",
-          "Believing all instructions take same time"
-        ],
-        realWorldApplications: [
-          "Processor design optimization",
-          "System performance tuning",
-          "Embedded system development"
-        ],
-        prerequisites: ["Basic Computing Concepts"],
-        estimatedTime: "35-45 minutes",
-        educationalValue: {
-          conceptualDepth: 0.8,
-          practicalRelevance: 0.9,
-          examImportance: 0.95
-        },
-        isMock: true
-      }
-    ];
-
-    return {
-      sessionId: this.sessionId,
-      lectureId: `mock_lecture_${Date.now()}`,
-      topic: "Computer Science Fundamentals",
-      duration: "90 minutes",
-      date: new Date().toISOString().split('T')[0],
-      instructor: "AI Learning Assistant",
-      studentGoal: this.studentGoal,
-      impTopics: genericTopics,
-      totalTopics: genericTopics.length,
-      metadata: {
-        isMock: true,
-        basedOnActualPlan: false,
-        generatedAt: new Date().toISOString()
-      }
-    };
+    return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : 'Important Concept';
   }
 
   // =========================================================
@@ -808,7 +588,7 @@ export default class IntelligenceEngine {
       'semester': { difficulty: 'medium', pace: 'moderate', teachingStyle: 'comprehensive' }
     };
 
-    this.adaptiveSettings = goalSettings[this.studentGoal] || goalSettings.gate;
+    this.adaptiveSettings = { ...(goalSettings[this.studentGoal] || goalSettings.gate) };
 
     // Adjust based on knowledge level
     if (this.knowledgeLevel === 'beginner') {
@@ -867,130 +647,142 @@ export default class IntelligenceEngine {
   // SLIDE GENERATION
   // =========================================================
 
+  buildKnowledgeState() {
+    const profile = QuizStorage.getStudentProfile();
+    const engineMisconceptions = (this.misconceptions || []).map(m => ({
+      concept: m.concept || m.topic || 'general',
+      type: m.type || 'knowledge_gap',
+      description: m.description || m.misconception || m.question || ''
+    }));
+
+    return {
+      knowledgeLevel: this.knowledgeLevel,
+      averageScore: profile.averageScore || 0,
+      weakTopics: profile.weakTopics || [],
+      misconceptions: engineMisconceptions,
+      topicsCompleted: Array.from(this.completedTopics),
+      recentQuizzes: this.quizHistory.slice(-5)
+    };
+  }
+
+  async requestAiSlide(topicIndex, actionType, context) {
+    const response = await fetch('/api/generate-slide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: this.sessionId,
+        lecturePlan: this.lecturePlan,
+        goal: this.studentGoal,
+        knowledgeState: this.buildKnowledgeState(),
+        currentTopicIndex: topicIndex,
+        actionType,
+        userQuestion: actionType === 'ask-question' ? context : null,
+        context: actionType === 'ask-question' ? '' : context
+      }),
+      signal: AbortSignal.timeout(75000)
+    });
+
+    if (!response.ok) throw new Error(`AI slide request failed (${response.status})`);
+    const data = await response.json();
+    if (!data.success || !data.slide?.content) throw new Error(data.error || 'AI returned no slide');
+    return data.slide;
+  }
+
+  generateLocalSlideContent(topic, actionType, context) {
+    switch (actionType) {
+      case 'explain-more':
+        return this.generateExplainMoreSlide(topic, context);
+      case 'ask-question':
+        return this.generateQuestionAnswerSlide(topic, context);
+      case 'quiz-results':
+      case 'mistake-explanation':
+        return this.generateQuizResultsSlide(topic, context);
+      case 'completion':
+        return this.generateCompletionSlide();
+      default:
+        return this.generateConceptSlide(topic);
+    }
+  }
+
+  /**
+   * Generate a slide for `topicIndex`. Uses the AI backend and falls back to local content
+   * when the AI is unavailable.
+   */
   async generateSlideContent(topicIndex, actionType = 'concept_explanation', context = '') {
-    console.log(`Generating slide for topic ${topicIndex}, action: ${actionType}`);
+    actionType = actionType || 'concept_explanation';
+    context = context || '';
+
+    const topic = this.enhancedTopics[topicIndex];
+    if (!topic) {
+      throw new Error(`Topic at index ${topicIndex} not found`);
+    }
+
+    this.currentTopicIndex = topicIndex;
+    this.updateTopicProgress(topic.id, {
+      started: true,
+      slidesViewed: (this.topicProgress[topic.id]?.slidesViewed || 0) + 1
+    });
+
+    let slideContent;
+    let images = [];
+    let source = 'ai_backend';
 
     try {
-      // Get the topic
-      const topic = this.enhancedTopics[topicIndex];
-      if (!topic) {
-        throw new Error(`Topic at index ${topicIndex} not found`);
-      }
-
-      // Update progress
-      this.updateTopicProgress(topic.id, {
-        started: true,
-        slidesViewed: (this.topicProgress[topic.id]?.slidesViewed || 0) + 1
-      });
-
-      // Try to generate from backend API first (with knowledge state and misconceptions)
-      let slideContent;
-      let images = [];
-      let backendSuccess = false;
-
-      try {
-        // Prepare knowledge state
-        const knowledgeState = {
-          level: this.knowledgeLevel,
-          misconceptions: this.misconceptions || [],
-          topicsCompleted: Array.from(this.completedTopics),
-          quizHistory: this.quizHistory.slice(-5) // Last 5 quizzes
-        };
-
-        // Prepare misconceptions list
-        const misconceptionsList = (this.misconceptions || []).map(m => ({
-          concept: m.concept || m.type || 'general',
-          description: m.description || m.question || '',
-          topic: topic.title
-        }));
-
-        // Call backend API
-        const backendResponse = await fetch(`${this.config.backendUrl}/generate-dynamic-slide`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            session_id: this.sessionId,
-            lecture_plan: this.lecturePlan,
-            student_goal: this.studentGoal,
-            knowledge_state: {
-              knowledgeLevel: this.knowledgeLevel,
-              misconceptions: misconceptionsList,
-              previousSlides: this.learningHistory.slice(-3)
-            },
-            current_topic_index: this.currentTopicIndex || 0,
-            action_type: actionType,
-            user_question: context || null,
-            context: context || ''
-          }),
-          signal: AbortSignal.timeout(15000) // 15 second timeout
-        });
-
-        if (backendResponse.ok) {
-          const backendData = await backendResponse.json();
-          if (backendData.success && backendData.slide) {
-            slideContent = backendData.slide.content;
-            images = backendData.slide.images || [];
-            backendSuccess = true;
-            console.log('Slide generated from backend API');
-          }
-        }
-      } catch (backendError) {
-        console.warn('Backend API failed, using local generation:', backendError.message);
-      }
-
-      // Fallback to local generation if backend failed
-      if (!backendSuccess) {
-        if (actionType === 'explain-more') {
-          slideContent = this.generateExplainMoreSlide(topic, context);
-        } else if (actionType === 'ask-question') {
-          slideContent = this.generateQuestionAnswerSlide(topic, context);
-        } else if (actionType === 'quiz-results' || actionType === 'mistake-explanation') {
-          slideContent = this.generateQuizResultsSlide(topic, context);
-        } else {
-          slideContent = this.generateConceptSlide(topic);
-        }
-
-        // Generate images locally
-        images = await this.generateSlideImages(topic, slideContent);
-      }
-
-      // Create complete slide object
-      const slide = {
-        id: `slide_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        title: slideContent.title || topic.title,
-        type: actionType,
-        content: slideContent,
-        images: images,
-        metadata: {
-          generatedAt: new Date().toISOString(),
-          topicId: topic.id,
-          topicIndex: topicIndex,
-          studentGoal: this.studentGoal,
-          knowledgeLevel: this.knowledgeLevel,
-          actionType: actionType,
-          context: context,
-          adaptiveSettings: this.adaptiveSettings,
-          source: backendSuccess ? 'backend_api' : 'intelligence_engine_v3',
-          hasKnowledgeState: backendSuccess
-        }
-      };
-
-      // Track in learning history
-      this.learningHistory.push({
-        timestamp: new Date().toISOString(),
-        slideId: slide.id,
-        topicId: topic.id,
-        actionType: actionType,
-        slideTitle: slide.title
-      });
-
-      console.log(`Slide generated: ${slide.title} (${slide.metadata.source})`);
-      return slide;
-
+      const aiSlide = await this.requestAiSlide(topicIndex, actionType, context);
+      slideContent = aiSlide.content;
+      images = aiSlide.images || [];
     } catch (error) {
-      console.error('Slide generation failed:', error);
-      return this.createEmergencySlide(topicIndex, actionType, context);
+      console.warn('AI slide generation unavailable, using local content:', error.message);
+      slideContent = this.generateLocalSlideContent(topic, actionType, context);
+      source = 'local_fallback';
     }
+
+    const slide = {
+      id: `slide_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      title: slideContent.title || topic.title,
+      type: actionType,
+      content: slideContent,
+      images,
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        topicId: topic.id,
+        topicIndex,
+        studentGoal: this.studentGoal,
+        knowledgeLevel: this.knowledgeLevel,
+        actionType,
+        context,
+        adaptiveSettings: this.adaptiveSettings,
+        source
+      }
+    };
+
+    this.learningHistory.push({
+      timestamp: new Date().toISOString(),
+      slideId: slide.id,
+      topicId: topic.id,
+      actionType,
+      slideTitle: slide.title
+    });
+
+    return slide;
+  }
+
+  generateCompletionSlide() {
+    const topics = this.enhancedTopics;
+    const completed = topics.filter(t => this.topicProgress[t.id]?.completed).length;
+    const scores = this.calculateAverageQuizScore();
+
+    return {
+      title: 'Lecture Complete',
+      narrative: `You have worked through all ${topics.length} topics of this lecture${completed ? ` and mastered ${completed} of them` : ''}${scores ? ` with an average quiz score of ${scores}%` : ''}. Use the topic list to revisit anything that still feels shaky.`,
+      keyInsights: topics.slice(0, 6).map(t => `${t.title}: ${t.keyInsights?.[0] || t.description?.slice(0, 120) || 'review this topic'}`),
+      analogies: [],
+      realWorldScenario: null,
+      interactiveElement: 'Which topic would you like to revisit first?',
+      examRelevance: `Spend your remaining ${this.studentGoal.toUpperCase()} preparation time on topics where your quiz scores were lowest.`,
+      commonTraps: ['Re-reading instead of testing yourself', 'Skipping topics that felt easy once'],
+      memoryHook: 'Learn → Quiz → Review → Repeat'
+    };
   }
 
   generateConceptSlide(topic) {
@@ -1185,31 +977,6 @@ export default class IntelligenceEngine {
     return hooks[Math.floor(Math.random() * hooks.length)];
   }
 
-  async generateSlideImages(topic, slideContent) {
-    try {
-      // Use educational image generator with Wikimedia + CLIP verification
-      if (this.imageGenerator) {
-        const images = await this.imageGenerator.getEducationalImages(
-          topic.title,
-          2,
-          slideContent.narrative
-        );
-
-        if (images && images.length > 0) {
-          console.log(`Generated ${images.length} verified images for: ${topic.title}`);
-          return images;
-        }
-      }
-
-      console.log(`No verified images available for: ${topic.title}`);
-      return [];
-
-    } catch (error) {
-      console.warn('Image generation failed:', error.message);
-      return [];
-    }
-  }
-
   createEmergencySlide(topicIndex, actionType, context) {
     const topic = this.enhancedTopics[topicIndex] || { title: 'Learning Content' };
 
@@ -1279,32 +1046,28 @@ export default class IntelligenceEngine {
         misconceptions: this.misconceptions,
         previousPerformance: this.getPreviousPerformance(),
         cognitiveLoad: this.estimateCognitiveLoad(),
-        lecturePlan: this.lecturePlan
+        lecturePlan: { topic: this.lecturePlan?.topic, impTopics: this.lecturePlan?.impTopics?.map(t => ({ id: t.id, title: t.title })) }
       };
 
-      // Try backend first
+      // Try the AI-backed route first, fall back to local templates
       let quiz;
       try {
         const response = await fetch('/api/generate-quiz', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(quizData),
-          signal: AbortSignal.timeout(15000)
+          signal: AbortSignal.timeout(75000)
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.quiz) {
-            quiz = data.quiz;
-          } else {
-            throw new Error('Backend quiz generation failed');
-          }
-        } else {
-          throw new Error(`Backend error: ${response.status}`);
+        const data = response.ok ? await response.json() : null;
+        if (!data?.success || !data.quiz) {
+          throw new Error(`Quiz service unavailable (${response.status})`);
         }
+        quiz = normalizeQuiz(data.quiz);
+        if (quiz.questions.length === 0) throw new Error('Quiz service returned no usable questions');
       } catch (backendError) {
-        console.log('Backend quiz failed, generating locally:', backendError.message);
-        quiz = this.generateLocalQuiz(topicData, difficulty);
+        console.warn('Quiz service failed, generating locally:', backendError.message);
+        quiz = normalizeQuiz(this.generateLocalQuiz(topicData, difficulty));
       }
 
       // Track quiz generation
@@ -1324,7 +1087,7 @@ export default class IntelligenceEngine {
       return {
         success: false,
         error: error.message,
-        quiz: this.generateFallbackQuiz(topic)
+        quiz: normalizeQuiz(this.generateFallbackQuiz(topic))
       };
     }
   }
@@ -1530,7 +1293,7 @@ export default class IntelligenceEngine {
     };
   }
 
-  createEmergencyAnalysis() {
+  createEmergencyAnalysis(message = 'Learning system initialization failed. Please try again.') {
     return {
       success: false,
       lecturePlan: null,
@@ -1542,10 +1305,11 @@ export default class IntelligenceEngine {
       recommendations: [{
         type: 'emergency',
         priority: 'high',
-        message: 'Learning system initialization failed. Please try again.',
+        message,
         action: 'Restart learning session'
       }],
       isEmergency: true,
+      error: message,
       metadata: {
         generatedAt: new Date().toISOString(),
         sessionId: this.sessionId,
@@ -1585,17 +1349,6 @@ export default class IntelligenceEngine {
           localStorage.setItem(`session_${this.sessionId}`, JSON.stringify(sessionData));
         }
         return sessionData;
-      }
-    };
-  }
-
-  initializeImageGenerator() {
-    // Return a simple image generator
-    return {
-      getEducationalImages: async (topic, count, context) => {
-        // This would integrate with your actual image server
-        // For now, return conceptual images
-        return [];
       }
     };
   }

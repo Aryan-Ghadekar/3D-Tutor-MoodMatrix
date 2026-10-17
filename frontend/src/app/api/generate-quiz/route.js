@@ -7,11 +7,11 @@
  */
 
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/lib/config';
 
 // =========================================================
 // CONFIGURATION
 // =========================================================
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8001";
 const USE_EXTERNAL_APIS = false; // Set to true to enable OpenRouter, etc.
 
 // =========================================================
@@ -129,7 +129,7 @@ export async function POST(request) {
     console.error('FATAL ERROR in quiz generation:', error);
 
     // Intelligent emergency fallback
-    const emergencyQuiz = createIntelligentEmergencyQuiz(error, request);
+    const emergencyQuiz = await createIntelligentEmergencyQuiz(error, request);
 
     return NextResponse.json({
       success: false,
@@ -529,23 +529,18 @@ async function generateFromBackendWithRealTopic(
     studentGoal,
     numberOfQuestions,
     sessionId,
-    misconceptions,
+    misconceptions: misconceptions.filter(m => m && typeof m === 'object'),
     previousPerformance,
-    cognitiveLoad,
-    metadata: {
-      enhancedTopic: true,
-      quizGenerationTime: new Date().toISOString(),
-      topicComplexity: enhancedTopic.quizMetadata?.difficultyIndicators || []
-    }
+    cognitiveLoad
   };
 
-  const response = await fetch(`${BACKEND_URL}/api/generate-quiz`, {
+  const response = await fetch(`${BACKEND_URL}/generate-topic-quiz`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
-    timeout: 30000 // 30 second timeout
+    signal: AbortSignal.timeout(60000)
   });
 
   if (!response.ok) {
