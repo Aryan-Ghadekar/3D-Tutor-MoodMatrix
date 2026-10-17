@@ -22,7 +22,10 @@ endpoints.
   "metadata": {
     "analysisDepth": "signal-weighted-enhanced",
     "confidenceScore": 0.57,      // mean importance score of selected chunks
-    "fallbackUsed": true,         // true when there was no transcript (not an error flag)
+    "transcriptUsed": false,      // audio / video speech was available
+    "aiCalls": { "succeeded": 28, "failed": 0 },
+    "aiGenerated": true,          // at least one LLM call succeeded
+    "fallbackUsed": false,        // true when any field is extractive text because the AI failed / is absent
     "totalTopicsGenerated": 5,
     "wordCount": 780,
     "processingVersion": "2.1"
@@ -124,6 +127,8 @@ Elements of `questions` from `POST /generate-diagnostic-mcq`.
   "topicId": "topic-1",
   "topicName": "string",
   "diagnosticFocus": "knowledge_verification",
+  "type": "conceptual | application | misconception | definition | analysis | practical | evaluation",
+  "assessedSkill": "conceptual_understanding | practical_application | misconception_identification | definitional_knowledge | analytical_thinking | practical_reasoning | evaluative_judgment",
   "source": "ai | template"
 }
 ```

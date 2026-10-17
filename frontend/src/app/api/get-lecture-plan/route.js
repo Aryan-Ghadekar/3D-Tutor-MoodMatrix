@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '@/lib/config';
+import { backendFetch, unreachableMessage } from '@/lib/server/backend';
 
 // Looks a saved lecture plan up in the FastAPI service by sessionId / lectureId.
 // Pass latest=true to fall back to the most recent plan.
@@ -11,10 +11,7 @@ export async function GET(request) {
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/get-lecture-plan?${params}`, {
-      signal: AbortSignal.timeout(10000),
-      cache: 'no-store',
-    });
+    const response = await backendFetch(`/get-lecture-plan?${params}`, { signal: AbortSignal.timeout(10000), cache: 'no-store' });
 
     if (response.status === 404) {
       return NextResponse.json({ success: false, error: 'Lecture plan not found' }, { status: 404 });
@@ -25,9 +22,6 @@ export async function GET(request) {
 
     return NextResponse.json({ success: true, lecturePlan: await response.json() });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: `Cannot reach the lecture service at ${BACKEND_URL}: ${error.message}` },
-      { status: 503 }
-    );
+    return NextResponse.json({ success: false, error: unreachableMessage(error) }, { status: 503 });
   }
 }

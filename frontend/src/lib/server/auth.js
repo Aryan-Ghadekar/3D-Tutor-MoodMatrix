@@ -7,14 +7,21 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), '.data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const SESSION_COOKIE = 'mm_session';
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const SESSION_TTL_MS = 12 * 60 * 60 * 1000;            // normal session: 12 hours
+const REMEMBER_TTL_MS = 30 * 24 * 60 * 60 * 1000;      // "Remember me": 30 days
 
-const SECRET = process.env.SESSION_SECRET || 'dev-only-insecure-secret-change-me';
-if (!process.env.SESSION_SECRET && process.env.NODE_ENV === 'production') {
-  console.warn('SESSION_SECRET is not set; session cookies are signed with an insecure default.');
+export { SESSION_COOKIE, SESSION_TTL_MS, REMEMBER_TTL_MS };
+
+// The signing secret must be provided in production. In development a random secret is generated once per
+// process (kept on globalThis so hot reloads do not log everyone out); it is never a fixed, guessable value.
+function getSecret() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET is not set. Set it to a long random string before running in production.');
+  }
+  globalThis.__devSessionSecret ||= crypto.randomBytes(32).toString('hex');
+  return globalThis.__devSessionSecret;
 }
-
-export { SESSION_COOKIE, SESSION_TTL_MS };
 
 async function readUsers() {
   try {
@@ -107,10 +114,10 @@ export async function findUser(id) {
   return publicUser(users.find((u) => u.id === id));
 }
 
-const sign = (payload) => crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');
+const sign = (payload) => crypto.createHmac('sha256', getSecret()).update(payload).digest('base64url');
 
-export function createSessionToken(userId) {
-  const payload = Buffer.from(JSON.stringify({ uid: userId, exp: Date.now() + SESSION_TTL_MS })).toString('base64url');
+export function createSessionToken(userId, ttlMs = SESSION_TTL_MS) {
+  const payload = Buffer.from(JSON.stringify({ uid: userId, exp: Date.now() + ttlMs })).toString('base64url');
   return `${payload}.${sign(payload)}`;
 }
 
@@ -132,12 +139,14 @@ export async function getSessionUser(request) {
   return uid ? findUser(uid) : null;
 }
 
-export function setSessionCookie(response, userId) {
-  response.cookies.set(SESSION_COOKIE, createSessionToken(userId), {
+/** Without "remember", the cookie is a browser-session cookie (gone when the browser closes). */
+export function setSessionCookie(response, userId, { remember = false } = {}) {
+  const ttl = remember ? REMEMBER_TTL_MS : SESSION_TTL_MS;
+  response.cookies.set(SESSION_COOKIE, createSessionToken(userId, ttl), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: SESSION_TTL_MS / 1000,
+    ...(remember ? { maxAge: ttl / 1000 } : {}),
   });
 }

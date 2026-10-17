@@ -1,0 +1,14 @@
+{
+  "name": "moodmatrix-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Browser end-to-end tests (Playwright) that run the whole stack against a mock LLM",
+  "scripts": {
+    "install-browser": "playwright install chromium",
+    "test": "node run.mjs",
+    "test:dev": "node run.mjs --dev"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

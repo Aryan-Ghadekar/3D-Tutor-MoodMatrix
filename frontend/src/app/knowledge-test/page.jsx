@@ -4,7 +4,6 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Brain, Check, HelpCircle, Timer, ArrowLeft, Home } from 'lucide-react';
 import Header from '../../components/Header';
-import { BACKEND_URL } from '@/lib/config';
 import { QuizStorage } from '@/app/lib/quiz-storage';
 
 function readStoredLecture(sessionId) {
@@ -49,7 +48,7 @@ function KnowledgeTest() {
     setGeneratingQuestions(true);
     try {
       // Call AI question generation API
-      const response = await fetch(`${BACKEND_URL}/generate-diagnostic-mcq`, {
+      const response = await fetch('/api/diagnostic-questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -585,17 +584,17 @@ function KnowledgeTest() {
     const userAnswerLower = userAnswer.toLowerCase();
 
     if (questionType === 'conceptual') {
-      if ('only about theoretical' in userAnswerLower) return 'theoretical_only';
-      if ('complicate simple' in userAnswerLower) return 'overcomplication';
-      if ('without studying' in userAnswerLower) return 'fundamentals_missing';
+      if (userAnswerLower.includes('only about theoretical')) return 'theoretical_only';
+      if (userAnswerLower.includes('complicate simple')) return 'overcomplication';
+      if (userAnswerLower.includes('without studying')) return 'fundamentals_missing';
     } else if (questionType === 'application') {
-      if ('cannot be used' in userAnswerLower) return 'application_rejection';
-      if ('only in academic' in userAnswerLower) return 'limited_scope';
-      if ('specialized equipment' in userAnswerLower) return 'resource_assumption';
+      if (userAnswerLower.includes('cannot be used')) return 'application_rejection';
+      if (userAnswerLower.includes('only in academic')) return 'limited_scope';
+      if (userAnswerLower.includes('specialized equipment')) return 'resource_assumption';
     } else if (questionType === 'definition') {
-      if ('collection of unrelated' in userAnswerLower) return 'fragmented_understanding';
-      if ('only mathematical' in userAnswerLower) return 'domain_confusion';
-      if ('programming language' in userAnswerLower) return 'category_error';
+      if (userAnswerLower.includes('collection of unrelated')) return 'fragmented_understanding';
+      if (userAnswerLower.includes('only mathematical')) return 'domain_confusion';
+      if (userAnswerLower.includes('programming language')) return 'category_error';
     }
 
     return 'general_misunderstanding';
@@ -650,104 +649,6 @@ function KnowledgeTest() {
     });
 
     return recommendations;
-  };
-
-  const saveTestResultsToFile = async (testResults) => {
-    try {
-      // Create a comprehensive report
-      const report = {
-        metadata: {
-          testId: `test_${Date.now()}`,
-          timestamp: new Date().toISOString(),
-          lectureId: testResults.lectureId,
-          sessionId: testResults.sessionId,
-          topic: testResults.topic,
-          sourceType: testResults.sourceType,
-          totalQuestions: testResults.totalQuestions,
-          score: testResults.score,
-          correctAnswers: testResults.correctAnswers
-        },
-        knowledgeAnalysis: testResults.knowledgeAnalysis,
-        detailedResults: testResults.questionDetails,
-        summary: {
-          strengths: testResults.knowledgeAnalysis.strengths,
-          weaknesses: testResults.knowledgeAnalysis.weaknesses,
-          misconceptions: testResults.knowledgeAnalysis.misconceptions,
-          detailedMisunderstandings: testResults.knowledgeAnalysis.detailedMisunderstandings,
-          recommendations: testResults.knowledgeAnalysis.recommendations,
-          skillPerformance: Object.entries(testResults.knowledgeAnalysis.skillLevels).map(([skill, data]) => ({
-            skill,
-            accuracy: data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0,
-            correct: data.correct,
-            total: data.total
-          })),
-          topicPerformance: Object.entries(testResults.knowledgeAnalysis.topicPerformance).map(([topicId, performance]) => ({
-            topicId,
-            topicName: performance.topicName,
-            accuracy: performance.total > 0 ? Math.round((performance.correct / performance.total) * 100) : 0,
-            correct: performance.correct,
-            total: performance.total,
-            questionsAnswered: performance.questions.length
-          }))
-        }
-      };
-
-      // Save to localStorage as backup
-      if (typeof window !== 'undefined') {
-        const existingResults = JSON.parse(localStorage.getItem('allTestResults') || '[]');
-        existingResults.push(report);
-        localStorage.setItem('allTestResults', JSON.stringify(existingResults));
-
-        // Also save current test for immediate access
-        localStorage.setItem('currentTestResults', JSON.stringify(report));
-
-        // Save detailed misunderstandings separately for targeted remediation
-        const misunderstandings = testResults.knowledgeAnalysis.detailedMisunderstandings || [];
-        if (misunderstandings.length > 0) {
-          const existingMisunderstandings = JSON.parse(localStorage.getItem('studentMisunderstandings') || '[]');
-          existingMisunderstandings.push(...misunderstandings);
-          localStorage.setItem('studentMisunderstandings', JSON.stringify(existingMisunderstandings));
-        }
-      }
-
-      // Try to save to backend
-      try {
-        const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            session_id: testResults.sessionId || 'unknown',
-            lecture_id: testResults.lectureId || 'unknown',
-            score: testResults.score || 0,
-            correct: testResults.correctAnswers || 0,
-            total: testResults.totalQuestions || 0,
-            questions: testResults.questionDetails || [],
-            answers: Object.entries(testResults.answers || {}).map(([qId, answer]) => ({
-              questionId: qId,
-              selectedAnswer: answer
-            })),
-            misconceptions: testResults.knowledgeAnalysis?.misconceptions || [],
-            weak_topics: testResults.knowledgeAnalysis?.weaknesses || [],
-            recommendations: testResults.knowledgeAnalysis?.recommendations || []
-          })
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Quiz results saved:', result);
-        } else {
-          console.warn('Backend save failed:', await response.text());
-        }
-      } catch (apiError) {
-        console.log('API not available, using localStorage only:', apiError.message);
-      }
-
-    } catch (error) {
-      console.error('Error saving test results to file:', error);
-    }
   };
 
   const handleSubmit = async () => {
@@ -811,7 +712,7 @@ function KnowledgeTest() {
       };
 
       console.log('Sending to backend:', {
-        endpoint: `${BACKEND_URL}/save-quiz-results`,
+        endpoint: '/api/save-quiz-results',
         dataStructure: {
           session_id: saveData.session_id,
           lecture_id: saveData.lecture_id,
@@ -832,7 +733,7 @@ function KnowledgeTest() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
+        const response = await fetch('/api/save-quiz-results', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

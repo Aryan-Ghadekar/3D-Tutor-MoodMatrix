@@ -30,7 +30,14 @@ feature code ──► llm_message(payload, timeout) ──► make_openrouter_r
 | Other HTTP error (402, 404, 429, 5xx) | `requests.HTTPError` from `raise_for_status()` |
 | Reply without `choices[0].message` | `Invalid API response format` |
 
-There are **no retries** and no rate limiting in the service.
+There are **no retries**. A semaphore (`LLM_CONCURRENCY`, default 4) limits how many requests are in flight at
+once, which protects the provider rate limit when several topics are processed in parallel.
+
+### Success / failure statistics
+
+While a lecture plan is built, every title / summary / list call reports success or failure into a per-request
+counter (`contextvars` shared with the worker threads). The totals end up in the plan's `metadata.aiCalls`,
+`aiGenerated` and `fallbackUsed` ([topic-scoring §5](topic-scoring-and-plans.md#5-plan-metadata)).
 
 ## 2. Timeouts and sampling by call
 

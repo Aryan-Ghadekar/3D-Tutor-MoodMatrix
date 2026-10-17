@@ -12,6 +12,8 @@ response or in the service's console.
 | Uvicorn started on port 8000 | `uvicorn main:app` without `--port` | add `--port 8001` or use `python main.py` |
 | `ModuleNotFoundError: pdfplumber / pptx / dotenv` | Dependencies not installed | `pip install -r requirements.txt` in the service folder |
 | Browser console: CORS error | The page origin is not allowed | Add it to `CORS_ORIGINS` (comma-separated) and restart |
+| Every request returns `401 Missing or invalid API key.` | `API_TOKEN` is set on the service but the caller does not send it | Set the same value as `BACKEND_API_TOKEN` in `frontend/.env.local`, or unset `API_TOKEN` for local development |
+| Web app: `SESSION_SECRET is not set` when signing in under `npm start` | Production mode needs a signing secret | Set `SESSION_SECRET` to a long random string in `frontend/.env.local` |
 | Port already in use | Another process on 8001 / 5000 | Stop it, or set `PORT` |
 
 ## Lecture analysis
@@ -27,7 +29,8 @@ response or in the service's console.
 | `openai-whisper is not installed; ...` (501) | Audio / caption-less video without Whisper | `pip install openai-whisper` and install ffmpeg |
 | `This video has no captions and yt-dlp is not installed.` (501) | | `pip install yt-dlp` |
 | Audio upload returns 500 and the console mentions ffmpeg | ffmpeg not on `PATH` | Install ffmpeg and restart the shell |
-| Upload takes minutes | Many topics × LLM latency, or a long transcription | Normal. Use a smaller `WHISPER_MODEL`; the proxy waits up to 10 minutes |
+| `413 ... larger than the 50 MB limit` | File above `MAX_UPLOAD_MB` | Compress the file or raise `MAX_UPLOAD_MB` (and any proxy limit) |
+| Upload takes minutes | Many topics × LLM latency, or a long transcription | Normal. Use a smaller `WHISPER_MODEL`; raise `LLM_CONCURRENCY` if your provider allows it; the proxy waits up to 10 minutes |
 | Topic titles are the first words of the text and insight lists are empty | No / invalid API key, LLM errors | Check `GET /` → `ai_configured`, the key, credits, and the console lines starting `Title generation failed` / `Structured content generation failed` |
 | `OpenRouter API returned 401 Unauthorized` (console) | Invalid key | Replace the key |
 | `OpenRouter API request timed out after 30s` | Slow model or network | Retry; choose a faster `OPENROUTER_MODEL` |
@@ -41,7 +44,7 @@ response or in the service's console.
 | 400 `Invalid topic index: N` | Index outside `impTopics` | Send a valid index (0-based) |
 | `POST /generate-topic-quiz` → 503 | No AI, or the reply had no valid questions | Expected without AI; the caller falls back. With AI, check the console line `LLM quiz generation failed` |
 | Quiz returned fewer questions than requested | Some LLM questions failed validation (not 4 options, not exactly one correct) | Retry; use a model that follows the JSON format |
-| Slide has no `images` | No relevant Commons result, offline, or a cached failure | See [images §3](../features/images.md#3-caching-and-its-trade-off); restart the service after a network outage |
+| Slide has no `images` | No relevant Commons result for the topic title, or Wikimedia was unreachable | Failed lookups are not cached, so images return when the network does. "Nothing relevant" is remembered for an hour ([images §3](../features/images.md#3-caching-and-its-trade-off)) |
 | `metadata.sources` is always empty | The lecture was analysed before retrieval existed, the collection was deleted, or the question shares no words with the lecture (TF-IDF mode) | Re-upload the lecture; install `sentence-transformers` for semantic matching |
 
 ## Retrieval

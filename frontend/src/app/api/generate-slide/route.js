@@ -3,7 +3,7 @@
  * and the client (IntelligenceEngine) falls back to locally generated content.
  */
 import { NextResponse } from 'next/server';
-import { BACKEND_URL } from '@/lib/config';
+import { backendFetch, readJson, unreachableMessage } from '@/lib/server/backend';
 
 export const maxDuration = 90;
 
@@ -19,7 +19,7 @@ export async function POST(request) {
   if (!data.lecturePlan) return NextResponse.json({ success: false, error: 'Missing lecturePlan' }, { status: 400 });
 
   try {
-    const backendResponse = await fetch(`${BACKEND_URL}/generate-dynamic-slide`, {
+    const response = await backendFetch('/generate-dynamic-slide', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -35,25 +35,17 @@ export async function POST(request) {
       signal: AbortSignal.timeout(60000),
     });
 
-    if (!backendResponse.ok) {
-      const errorText = await backendResponse.text();
-      return NextResponse.json(
-        { success: false, error: `AI backend error ${backendResponse.status}: ${errorText.slice(0, 200)}` },
-        { status: 502 }
-      );
+    const body = await readJson(response);
+    if (!response.ok || !body.success || !body.slide) {
+      const detail = typeof body.detail === 'string' ? body.detail : body.message || 'AI generation failed';
+      return NextResponse.json({ success: false, error: `AI backend error ${response.status}: ${detail}`.slice(0, 300) }, { status: 502 });
     }
-
-    const result = await backendResponse.json();
-    if (!result.success || !result.slide) {
-      return NextResponse.json({ success: false, error: result.message || 'AI generation failed' }, { status: 502 });
-    }
-
-    return NextResponse.json({ success: true, slide: result.slide });
+    return NextResponse.json({ success: true, slide: body.slide });
   } catch (error) {
-    return NextResponse.json({ success: false, error: `AI backend unreachable: ${error.message}` }, { status: 502 });
+    return NextResponse.json({ success: false, error: unreachableMessage(error) }, { status: 502 });
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ status: 'active', service: 'AI slide generation proxy', backend: BACKEND_URL });
+  return NextResponse.json({ status: 'active', service: 'AI slide generation proxy' });
 }

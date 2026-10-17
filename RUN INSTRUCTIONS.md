@@ -76,8 +76,12 @@ The first time it is enabled the browser downloads two MediaPipe model files (ab
 ### Tests
 ```bash
 pip install pytest httpx
-pytest backend/fastapi-service       # API, retrieval and classroom tests with the LLM / network mocked
-cd frontend && npm test              # cognitive-load model, speech scripts, notes
+pytest backend/fastapi-service       # 65 API / retrieval / classroom / security tests, LLM and network mocked
+cd frontend && npm test              # cognitive-load model, levels, speech scripts, notes, offline content, rate limits
+
+# Browser end-to-end tests (real browsers, the whole stack, a mock LLM; never calls OpenRouter)
+cd e2e && npm install && npx playwright install chromium
+PYTHON=path/to/python node run.mjs   # scenarios: auth, student, classroom, offline
 ```
 
 ### Environment variables
@@ -86,8 +90,22 @@ cd frontend && npm test              # cognitive-load model, speech scripts, not
 |---|---|---|
 | `OPENROUTER_API_KEY` | `backend/fastapi-service/.env` | LLM access |
 | `OPENROUTER_MODEL`, `WHISPER_MODEL`, `PORT`, `CORS_ORIGINS`, `DATA_DIR` | same | optional overrides |
+| `API_TOKEN` | `backend/fastapi-service/.env` | shared secret: when set, the AI service refuses requests without `X-API-Key` (see below) |
+| `MAX_UPLOAD_MB`, `LLM_CONCURRENCY` | same | upload limit (default 50) and simultaneous model requests (default 4) |
 | `BACKEND_URL` / `NEXT_PUBLIC_BACKEND_URL` | `frontend/.env.local` | FastAPI URL (default `http://localhost:8001`) |
-| `SESSION_SECRET` | `frontend/.env.local` | signs login cookies |
+| `BACKEND_API_TOKEN` | `frontend/.env.local` | must equal the service's `API_TOKEN`; used only on the server |
+| `SESSION_SECRET` | `frontend/.env.local` | signs login cookies. **Required for `npm start`** (production); in `npm run dev` a random one is used |
+
+### Before exposing the app to other people
+1. Set `API_TOKEN` (backend) and the same value as `BACKEND_API_TOKEN` (frontend). Only the web app's server then
+   talks to the AI service, and the key never reaches a browser.
+2. Set `SESSION_SECRET` to a long random string and serve the site over HTTPS.
+3. Revoke any API key that was ever committed to git; history still contains it.
+4. Accounts are stored in `frontend/.data/users.json` and classes live in memory: fine for a classroom pilot, not
+   for a public service. Login is limited to 5 wrong passwords per address and email per 15 minutes.
+5. `npm audit`: production dependencies of the web app are clean. The backend reports an advisory in `uuid`
+   (inside Sequelize, only reachable through an API this project does not call) and both packages report
+   dev-tooling advisories (file watchers, Tailwind's glob matching) that do not run in production.
 
 ### More documentation
 Backend architecture, API reference, per-feature internals and troubleshooting: [`backend/docs`](backend/docs/README.md).

@@ -69,8 +69,8 @@ curl -F "ppt=@lecture.pptx" http://localhost:8001/analyze-lecture
   `python backend/fastapi-service/export_openapi.py`.
 * Example payloads in these docs were captured from the running service (with the LLM mocked), so field
   names and shapes are real. If you change a response shape, update [reference/data-models.md](reference/data-models.md).
-* The behaviours described here are covered by the automated tests; see [guides/testing.md](guides/testing.md)
-  for which test protects which behaviour.
+* The behaviours described here are covered by the automated tests (65 backend tests plus browser end-to-end
+  scenarios in `e2e/`); see [guides/testing.md](guides/testing.md) for which test protects which behaviour.
 
 ## Conventions used in these docs
 

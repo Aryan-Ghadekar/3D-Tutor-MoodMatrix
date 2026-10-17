@@ -29,7 +29,7 @@ For every chunk four features in [0, 1] are computed:
 | `semantic` | Cosine similarity between the chunk's embedding and the **mean embedding of all chunks** (how central the chunk is to the lecture). Model: `all-MiniLM-L6-v2`. **Without the model the value is a constant 0.5** | 0.35 |
 | `audio` | Overlap with what was *emphasised aloud*. Take the transcript sentences (split on `. ! ?`) that contain any keyword below; collect their words of ≥4 letters/digits; `audio = min(|chunk words ∩ spoken words| / max(0.3 × |chunk words|, 1), 1)`. `0` when there is no transcript | 0.25 |
 | `duration` | `min(words in chunk / 150, 1)`: favours full-size chunks over a short tail | 0.20 |
-| `keyword` | Sum of the weights of the keywords found in the chunk (case-insensitive **substring** match), capped at 1 | 0.20 |
+| `keyword` | Sum of the weights of the keywords found in the chunk, capped at 1. Matching is by **whole word** (case-insensitive, a plural `s`/`es` is allowed) | 0.20 |
 
 ```
 score = 0.35·semantic + 0.25·audio + 0.20·duration + 0.20·keyword
@@ -37,8 +37,8 @@ score = 0.35·semantic + 0.25·audio + 0.20·duration + 0.20·keyword
 
 Keyword weights (`KEYWORDS`): `important` 1.0, `critical` 0.9, `exam` 0.9, `chapter` 0.85, `unit` 0.8,
 `essential` 0.8, `remember` 0.8, `concept` 0.75, `key` 0.7, `main` 0.7, `section` 0.7, `note` 0.6.
-Because matching is by substring, `key` also matches "monkey" and `note` matches "denote"; this is a known
-approximation.
+Matching uses word boundaries, so `key` matches "key" and "keys" but not "monkey", and `note` does not match
+"denote".
 
 **Importance label** from the score: `high` ≥ 0.70, `medium` ≥ 0.45, otherwise `low`.
 The plan's `weightage` is `round(score × 100, 2)`.
@@ -64,8 +64,9 @@ then **re-sorted into their original order**, so topics follow the lecture's flo
 
 ## 4. Building each topic: LLM calls and fallbacks
 
-`build_topic` runs five LLM calls **in parallel** for each selected chunk. Topics themselves are processed one
-after another.
+`build_topic` runs five LLM calls **in parallel** for each selected chunk, and up to six topics are built at the
+same time (results are collected in submission order, so topics stay in lecture order). A semaphore limits the
+total number of simultaneous model requests to `LLM_CONCURRENCY` (default 4).
 
 | Field | Prompt goal | Temp. | Max tokens | Fallback when the LLM is unavailable |
 |---|---|---|---|---|
@@ -97,7 +98,10 @@ After the topics, three more calls describe the **whole lecture** using the firs
 "metadata": {
   "analysisDepth": "signal-weighted-enhanced",
   "confidenceScore": 0.57,
-  "fallbackUsed": true,
+  "transcriptUsed": false,
+  "aiCalls": { "succeeded": 28, "failed": 0 },
+  "aiGenerated": true,
+  "fallbackUsed": false,
   "totalTopicsGenerated": 5,
   "wordCount": 780,
   "processingVersion": "2.1"
@@ -107,7 +111,10 @@ After the topics, three more calls describe the **whole lecture** using the firs
 | Field | Meaning |
 |---|---|
 | `confidenceScore` | Mean importance score (0-1, 2 decimals) of the selected chunks |
-| `fallbackUsed` | `true` when **no transcript was available** (the audio signal was not used). Despite its name it does not indicate an LLM failure |
+| `transcriptUsed` | `true` when audio or YouTube speech was available (the audio signal took part in scoring) |
+| `aiCalls` | How many LLM calls succeeded / failed while building this plan |
+| `aiGenerated` | `true` when at least one LLM call succeeded |
+| `fallbackUsed` | `true` when any field is extractive text because an LLM call failed, or when no call succeeded at all (for example no API key) |
 | `wordCount` | Words in the lecture text (not counting a separate transcript) |
 | `processingVersion` | Version of the plan format |
 
@@ -127,7 +134,8 @@ latest.
 * Titles are not de-duplicated: two chunks about the same idea can get the same title (this is visible in the
   mocked examples in these docs).
 * Scoring favours central, keyword-rich, full-length chunks; short but important endings can be skipped.
-* Analysis time grows linearly with the number of topics (sequential topics, parallel fields).
+* Analysis time still grows with the number of topics, but topics are built concurrently, so the speed-up is
+  bounded by `LLM_CONCURRENCY` and your provider's rate limits.
 
 ## 8. Tests
 

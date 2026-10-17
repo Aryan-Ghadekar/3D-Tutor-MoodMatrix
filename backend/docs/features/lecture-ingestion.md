@@ -90,7 +90,7 @@ and removed in a `finally` block, including on errors. YouTube downloads use `Te
 | Whisper not installed | 501 |
 | ffmpeg missing | Audio: 500. YouTube fallback: 422 |
 | Video with no captions and yt-dlp missing | 501 |
-| Very large uploads | No size limit in the service; the whole file is read into memory. Enforce limits at the proxy |
+| Upload larger than `MAX_UPLOAD_MB` (default 50) | 413. Rejected from the `Content-Length` header when possible, otherwise while the file is copied to disk; the partial temp file is removed |
 | Very long audio | The request simply takes long; no progress reporting |
 
 ## 6. Tests

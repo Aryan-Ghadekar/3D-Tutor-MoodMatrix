@@ -5,7 +5,7 @@
 ```bash
 cd backend/fastapi-service
 pip install pytest httpx           # plus requirements.txt
-pytest -q                          # 47 tests, about 3 seconds
+pytest -q                          # 65 tests, about 3 seconds
 pytest test_features.py -k classroom
 ```
 
@@ -43,6 +43,18 @@ status codes and JSON shapes are exercised exactly as in production.
 | LLM parsing | `test_parse_llm_json_variants` |
 | Results | `test_save_quiz_results_round_trip`, `test_analyze_quiz_results_matches_answers_by_id` |
 
+### `test_hardening.py` (18 tests)
+
+| Area | Tests |
+|---|---|
+| API key | `test_api_key_protects_everything_except_health_docs_and_classroom`, `test_api_key_must_match_exactly`, `test_cors_preflight_is_not_blocked_by_the_key`, `test_open_service_when_no_key_is_configured` |
+| Upload limit | `test_oversized_upload_is_rejected_before_parsing`, `test_upload_slightly_over_the_limit_is_rejected_while_saving`, `test_upload_under_the_limit_still_works` |
+| Keyword scoring | `test_keywords_match_whole_words_only`, `test_keyword_score_ignores_substrings` |
+| Image cache | `test_failed_image_lookups_are_not_remembered`, `test_genuine_misses_are_cached_but_expire`, `test_irrelevant_file_names_are_skipped` |
+| Question styles | `test_requested_question_styles_are_cycled_and_reported`, `test_default_style_is_conceptual_and_the_prompt_mentions_the_style` |
+| Plan metadata | `test_plan_metadata_tells_the_truth_about_ai_use`, `test_plan_metadata_flags_fallbacks`, `test_partial_ai_failure_is_reported` |
+| Concurrency | `test_topics_are_built_in_parallel_but_model_requests_are_bounded_and_order_is_kept` |
+
 ### `test_features.py` (21 tests)
 
 | Area | Tests |
@@ -64,8 +76,24 @@ status codes and JSON shapes are exercised exactly as in production.
 | Express MySQL mode | start with `DB_*` set and exercise `/api/cognitive/record` |
 | Multi-process behaviour | not supported |
 
-The repository's end-to-end browser checks (teacher + two students, camera, avatar, notes) were run with a
-mock LLM server; they live outside the repository and are not part of `pytest`.
+## 4a. Browser end-to-end tests
+
+`e2e/` at the repository root starts the whole stack (a mock LLM, FastAPI **with `API_TOKEN` enabled**, the
+Next.js app) and drives real browsers with Playwright:
+
+```bash
+cd e2e && npm install && npx playwright install chromium
+PYTHON=path/to/python node run.mjs            # all scenarios (production build)
+node run.mjs auth student                     # a subset: auth | student | classroom | offline
+node run.mjs --dev                            # against `next dev`
+```
+
+| Scenario | Covers |
+|---|---|
+| `auth` | cookie lifetime ("Remember me"), login lock-out (429), no dead links, the AI service refusing calls without the key |
+| `student` | register → goal → upload → knowledge test → slides → quiz → completion → restart; the browser never calls the AI service directly |
+| `classroom` | teacher + two students: topic sync, overload alert, pause quiz / avatar, camera sensor, notes, class report |
+| `offline` | AI service running without any LLM: lecture-based fallback slides and quizzes |
 
 ## 5. Writing a new test
 

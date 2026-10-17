@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
 import { createUser } from '@/lib/server/auth';
+import { createRateLimiter, clientKey } from '@/lib/server/ratelimit';
+
+// At most 10 account creations per hour from one address.
+const limiter = globalThis.__registerLimiter ||= createRateLimiter({ max: 10, windowMs: 60 * 60_000 });
 
 export async function POST(request) {
+  const allowed = limiter.take(clientKey(request));
+  if (!allowed.allowed) {
+    return NextResponse.json(
+      { error: 'Too many accounts created from this address. Try again later.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(allowed.retryAfterMs / 1000)) } }
+    );
+  }
+
   let body;
   try {
     body = await request.json();

@@ -48,9 +48,11 @@ See [express](express.md): `GET /health`, `GET /api/health`, `/api/quiz/*`, `/ap
 | Status | Meaning in this service |
 |---|---|
 | 400 | Missing or invalid input the service checked itself (no files, bad topic index, bad control action) |
+| 401 | `API_TOKEN` is configured and the `X-API-Key` header is missing or wrong |
 | 403 | Missing / wrong `X-Teacher-Token` |
 | 404 | Unknown class code, student, or lecture plan |
 | 410 | Class has ended (join, control) |
+| 413 | Upload larger than `MAX_UPLOAD_MB` |
 | 422 | Either FastAPI **request validation** (then `detail` is an *array* of `{loc, msg, type}` objects) or **unreadable input** raised by the service (corrupt PDF/PPTX, no text, bad YouTube link, transcription failed; then `detail` is a *string*). Clients should handle both |
 | 501 | An optional component is not installed (Whisper, yt-dlp) |
 | 502 | The LLM call for a slide failed or returned unusable output |
@@ -64,11 +66,16 @@ LLM timeouts (30-45 s).
 **Idempotency.** `analyze-lecture` creates a new plan (new ids) every call. `save-quiz-results` appends every
 call. Classroom `join` creates a new student every call. `control`, `end` and `result` are safe to repeat.
 
-**Authentication.** Only the three teacher endpoints and the dashboard check a token; everything else is open.
+**Authentication.**
+* If the service was started with `API_TOKEN`, every endpoint except `/`, `/health`, `/docs`, `/redoc`,
+  `/openapi.json` and `/classroom/*` needs the header `X-API-Key: <token>`. Without `API_TOKEN` they are open.
+* The classroom endpoints use their own model: the join code, and for teacher actions (the dashboard,
+  `control`, `transcript`, `end`) the `X-Teacher-Token` returned when the class was created.
+
 See [architecture §6](../architecture.md#6-security-model).
 
 **CORS.** Browser calls are allowed from `CORS_ORIGINS` with any method and header (including
-`X-Teacher-Token`).
+`X-Teacher-Token` and `X-API-Key`). Preflight (`OPTIONS`) requests are never blocked by the API key.
 
 ## Common request fragments
 

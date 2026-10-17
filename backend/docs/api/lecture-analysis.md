@@ -60,7 +60,10 @@ curl -X POST "http://localhost:8001/analyze-lecture?yt_link=https://youtu.be/dQw
   "metadata": {
     "analysisDepth": "signal-weighted-enhanced",
     "confidenceScore": 0.57,
-    "fallbackUsed": true,
+    "transcriptUsed": false,
+    "aiCalls": { "succeeded": 28, "failed": 0 },
+    "aiGenerated": true,
+    "fallbackUsed": false,
     "totalTopicsGenerated": 5,
     "wordCount": 780,
     "processingVersion": "2.1"
@@ -86,7 +89,12 @@ the same plan.
 | 422 | `Could not transcribe the YouTube video: ...` | No captions and the audio fallback failed |
 | 501 | `openai-whisper is not installed; ...` | Audio / caption-less video without Whisper |
 | 501 | `This video has no captions and yt-dlp is not installed.` | |
+| 413 | `Upload is larger than the N MB limit.` / `'<file>' is larger than ...` | A file or the whole request exceeds `MAX_UPLOAD_MB` |
 | 500 | | Direct audio upload that Whisper/ffmpeg cannot decode |
+
+`metadata` tells you how trustworthy the text is: `aiGenerated` is true when at least one LLM call succeeded,
+`aiCalls` counts the calls, and `fallbackUsed` is true when **any** field fell back to extracted text (including
+when there is no API key at all). `transcriptUsed` says whether audio/video speech took part.
 
 **Side effects:** writes `data/lecture_plans.json` (keeps the 10 newest) and `data/rag/<sessionId>.json`.
 A failure while *indexing* is logged and ignored: the call still succeeds.

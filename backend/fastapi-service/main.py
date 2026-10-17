@@ -3,11 +3,15 @@ warnings.filterwarnings("ignore")
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.requests import Request
 from pydantic import BaseModel
 from typing import Optional, List
 from concurrent.futures import ThreadPoolExecutor
-from functools import lru_cache
 import re
+import time
+import secrets
+import contextvars
 import uuid
 import tempfile
 import threading
@@ -35,10 +39,40 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 PORT = int(os.getenv("PORT", "8001"))
 
+# Optional shared secret. When set, every endpoint except the health banner, the interactive docs and the
+# classroom router (which has its own join-code / teacher-token model) requires the header `X-API-Key`.
+# The Next.js server adds it (BACKEND_API_TOKEN) so the key never reaches the browser.
+API_TOKEN = os.getenv("API_TOKEN") or None
+MAX_UPLOAD_MB = float(os.getenv("MAX_UPLOAD_MB", "50"))
+MAX_UPLOAD_BYTES = int(MAX_UPLOAD_MB * 1024 * 1024)
+LLM_CONCURRENCY = max(1, int(os.getenv("LLM_CONCURRENCY", "4")))
+
 # =========================================================
 # APP INIT
 # =========================================================
 app = FastAPI(title="Study Plan Generator API")
+
+_OPEN_PATHS = {"/", "/health", "/docs", "/redoc", "/openapi.json"}
+
+
+@app.middleware("http")
+async def guard_requests(request: Request, call_next):
+    """Reject oversized uploads early and enforce the optional API key. Registered before CORS so that
+    CORS stays the outermost layer and error responses still carry CORS headers."""
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    declared = request.headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > MAX_UPLOAD_BYTES + 1024 * 1024:
+        return JSONResponse(status_code=413, content={"detail": f"Upload is larger than the {MAX_UPLOAD_MB:g} MB limit."})
+
+    path = request.url.path
+    if API_TOKEN and path not in _OPEN_PATHS and not path.startswith("/classroom"):
+        if not secrets.compare_digest(request.headers.get("x-api-key", ""), API_TOKEN):
+            return JSONResponse(status_code=401, content={"detail": "Missing or invalid API key."})
+
+    return await call_next(request)
+
 
 _default_origins = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
 app.add_middleware(
@@ -141,15 +175,37 @@ KEYWORDS = {
     "key": 0.7, "essential": 0.8, "critical": 0.9, "main": 0.7,
     "chapter": 0.85, "section": 0.7, "unit": 0.8, "concept": 0.75
 }
+# Whole words (plural allowed): "key" matches "keys" but not "monkey"; "note" does not match "denote".
+KEYWORD_PATTERNS = {k: re.compile(rf"\b{re.escape(k)}(?:s|es)?\b") for k in KEYWORDS}
+
+
+def keyword_hits(text: str) -> list:
+    lowered = text.lower()
+    return [k for k, pattern in KEYWORD_PATTERNS.items() if pattern.search(lowered)]
 
 # =========================================================
 # EXTRACTION HELPERS
 # =========================================================
 def _save_upload(upload: UploadFile, default_suffix: str) -> str:
+    """Copy an upload to a temp file (size-limited). The caller deletes the file."""
     suffix = Path(upload.filename or "").suffix or default_suffix
+    written = 0
+    too_big = False
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(upload.file.read())
-        return tmp.name
+        while True:
+            chunk = upload.file.read(1024 * 1024)
+            if not chunk:
+                break
+            written += len(chunk)
+            if written > MAX_UPLOAD_BYTES:
+                too_big = True
+                break
+            tmp.write(chunk)
+        path = tmp.name
+    if too_big:
+        os.unlink(path)
+        raise HTTPException(status_code=413, detail=f"'{upload.filename}' is larger than the {MAX_UPLOAD_MB:g} MB limit.")
+    return path
 
 def extract_pdf_text(pdf_file: UploadFile) -> str:
     text = ""
@@ -276,7 +332,7 @@ def extract_features(chunks, transcript):
     spoken_key_words = set()
     if transcript:
         for sentence in re.split(r"[.!?]", transcript):
-            if any(k in sentence.lower() for k in KEYWORDS):
+            if keyword_hits(sentence):
                 spoken_key_words |= _words(sentence)
 
     features = []
@@ -286,7 +342,7 @@ def extract_features(chunks, transcript):
             semantic = float(util.cos_sim(embeddings[i], doc_embedding)[0][0])
         else:
             semantic = 0.5
-        keyword = min(sum(v for k, v in KEYWORDS.items() if k in chunk.lower()), 1.0)
+        keyword = min(sum(KEYWORDS[k] for k in keyword_hits(chunk)), 1.0)
         duration = min(len(chunk.split()) / 150, 1.0)
 
         audio = 0.0
@@ -358,9 +414,26 @@ def make_openrouter_request(payload, timeout=30):
     except requests.exceptions.ConnectionError as e:
         raise Exception(f"Cannot connect to OpenRouter API: {str(e)}")
 
+# At most LLM_CONCURRENCY model requests are in flight at once, however many topics are built in parallel.
+_llm_slots = threading.BoundedSemaphore(LLM_CONCURRENCY)
+
+# Per-request success / failure counts for AI calls (see build_lecture_plan). A ContextVar holding a shared dict
+# is copied into worker threads with contextvars.copy_context().
+_ai_stats = contextvars.ContextVar("ai_stats", default=None)
+_ai_stats_lock = threading.Lock()
+
+
+def note_ai_call(ok: bool) -> None:
+    stats = _ai_stats.get()
+    if stats is not None:
+        with _ai_stats_lock:
+            stats["succeeded" if ok else "failed"] += 1
+
+
 def llm_message(payload, timeout=30) -> str:
     """Send a chat payload and return the reply text."""
-    result = make_openrouter_request(payload, timeout=timeout)
+    with _llm_slots:
+        result = make_openrouter_request(payload, timeout=timeout)
     choices = result.get("choices") or []
     if not choices or not choices[0].get("message"):
         raise Exception("Invalid API response format")
@@ -404,9 +477,11 @@ def generate_topic_title(text):
     try:
         title = llm_message(payload).replace('"', '').strip().rstrip('.')
         if title:
+            note_ai_call(True)
             return title[:100]
     except Exception as e:
         print(f"Title generation failed: {e}")
+    note_ai_call(False)
     return " ".join(text.split()[:8])
 
 def generate_summary(text):
@@ -424,9 +499,11 @@ def generate_summary(text):
     try:
         summary = llm_message(payload)
         if summary:
+            note_ai_call(True)
             return summary
     except Exception as e:
         print(f"Summary generation failed: {e}")
+    note_ai_call(False)
     return first_sentences(text, 3, 400)
 
 def generate_structured_content(prompt, text):
@@ -443,6 +520,7 @@ def generate_structured_content(prompt, text):
 
     try:
         content = llm_message(payload)
+        note_ai_call(True)
         try:
             parsed = parse_llm_json(content)
             if isinstance(parsed, list):
@@ -453,6 +531,7 @@ def generate_structured_content(prompt, text):
             return [item for item in items if item][:4]
     except Exception as e:
         print(f"Structured content generation failed: {e}")
+        note_ai_call(False)
         return []
 
 # =========================================================
@@ -484,14 +563,19 @@ def analyze_text(source_text, transcript):
         "word_count": len(source_text.split())
     }
 
+def _submit(pool, fn, *args):
+    """Run fn in a worker thread inside a copy of the current context (so AI-call statistics are shared)."""
+    return pool.submit(contextvars.copy_context().run, fn, *args)
+
+
 def build_topic(i, c):
     text = c["text"]
     with ThreadPoolExecutor(max_workers=5) as pool:
-        f_title = pool.submit(generate_topic_title, text)
-        f_summary = pool.submit(generate_summary, text)
-        f_prereq = pool.submit(generate_structured_content, "List 2-3 key prerequisites or background knowledge needed to understand this topic", text)
-        f_misc = pool.submit(generate_structured_content, "List 2-3 common misconceptions or mistakes students make about this topic", text)
-        f_insights = pool.submit(generate_structured_content, "List 2-3 key insights, takeaways, or important points from this topic", text)
+        f_title = _submit(pool, generate_topic_title, text)
+        f_summary = _submit(pool, generate_summary, text)
+        f_prereq = _submit(pool, generate_structured_content, "List 2-3 key prerequisites or background knowledge needed to understand this topic", text)
+        f_misc = _submit(pool, generate_structured_content, "List 2-3 common misconceptions or mistakes students make about this topic", text)
+        f_insights = _submit(pool, generate_structured_content, "List 2-3 key insights, takeaways, or important points from this topic", text)
 
         return {
             "id": f"topic-{i+1}",
@@ -510,17 +594,25 @@ def build_lecture_plan(data):
     chunks = data["chunks"][:20]
     print(f"Generating {len(chunks)} topics from {data.get('word_count', 0)} words...")
 
-    topics = [build_topic(i, c) for i, c in enumerate(chunks)]
+    stats = {"succeeded": 0, "failed": 0}
+    token = _ai_stats.set(stats)
+    try:
+        # Topics are independent, so build them concurrently; LLM_CONCURRENCY caps real model requests.
+        with ThreadPoolExecutor(max_workers=max(1, min(len(chunks), 6))) as pool:
+            futures = [_submit(pool, build_topic, i, c) for i, c in enumerate(chunks)]
+            topics = [f.result() for f in futures]
 
-    all_text = " ".join(c["text"] for c in chunks[:5])
+        all_text = " ".join(c["text"] for c in chunks[:5])
 
-    overall_topic = generate_topic_title(all_text) if all_text else "Lecture"
-    duration = (generate_structured_content(
-        "Estimate lecture duration based on content complexity. Return a JSON array with a single string like \"45-60 minutes\"",
-        all_text) or ["30-45 minutes"])[0]
-    instructor = (generate_structured_content(
-        "Suggest appropriate instructor role/expertise for this content. Return a JSON array with a single string like \"Computer Architecture Professor\"",
-        all_text) or ["Subject Matter Expert"])[0]
+        overall_topic = generate_topic_title(all_text) if all_text else "Lecture"
+        duration = (generate_structured_content(
+            "Estimate lecture duration based on content complexity. Return a JSON array with a single string like \"45-60 minutes\"",
+            all_text) or ["30-45 minutes"])[0]
+        instructor = (generate_structured_content(
+            "Suggest appropriate instructor role/expertise for this content. Return a JSON array with a single string like \"Computer Architecture Professor\"",
+            all_text) or ["Subject Matter Expert"])[0]
+    finally:
+        _ai_stats.reset(token)
 
     return {
         "sessionId": str(uuid.uuid4()),
@@ -535,7 +627,11 @@ def build_lecture_plan(data):
             "confidenceScore": round(
                 sum(c["score"] for c in chunks) / max(len(chunks), 1), 2
             ),
-            "fallbackUsed": not data["has_audio"],
+            "transcriptUsed": data["has_audio"],
+            "aiCalls": {"succeeded": stats["succeeded"], "failed": stats["failed"]},
+            "aiGenerated": stats["succeeded"] > 0,
+            # True when any part of the plan is extractive text instead of AI output
+            "fallbackUsed": stats["failed"] > 0 or stats["succeeded"] == 0,
             "totalTopicsGenerated": len(topics),
             "wordCount": data.get("word_count", 0),
             "processingVersion": "2.1"
@@ -546,6 +642,18 @@ def build_lecture_plan(data):
 # MCQ GENERATION
 # =========================================================
 OPTION_IDS = ["A", "B", "C", "D"]
+
+# Question styles a caller can request (MCQRequest.question_types): hint for the LLM and the skill assessed.
+QUESTION_STYLES = {
+    "conceptual": ("tests understanding of the core idea", "conceptual_understanding"),
+    "application": ("asks the student to apply the idea to a concrete scenario", "practical_application"),
+    "misconception": ("makes the correct option the accurate understanding that contradicts a common misconception", "misconception_identification"),
+    "definition": ("asks which statement defines or describes the concept most accurately", "definitional_knowledge"),
+    "analysis": ("asks the student to analyse components, causes or relationships", "analytical_thinking"),
+    "practical": ("asks which approach would work best in practice", "practical_reasoning"),
+    "evaluation": ("asks the student to judge which option is most effective or appropriate", "evaluative_judgment"),
+}
+DEFAULT_STYLE = "conceptual"
 
 def normalize_mcq(mcq):
     """Validate an LLM MCQ and shuffle its options so the answer position is random.
@@ -597,7 +705,7 @@ Return ONLY valid JSON in this exact format:
   "explanation": "Why the correct answer is correct"
 }"""
 
-def generate_mcq_with_llm(topic_title, content, insights):
+def generate_mcq_with_llm(topic_title, content, insights, style=DEFAULT_STYLE):
     """Generate a single MCQ with the LLM. Returns a normalized MCQ or None."""
     payload = {
         "model": OPENROUTER_MODEL,
@@ -608,6 +716,8 @@ def generate_mcq_with_llm(topic_title, content, insights):
 Content: {content[:800]}
 
 Key Points: {', '.join(insights[:2]) if insights else 'See content above'}
+
+Question style ({style}): the question {QUESTION_STYLES.get(style, QUESTION_STYLES[DEFAULT_STYLE])[0]}.
 
 Generate a multiple choice question testing this concept."""}
         ],
@@ -629,11 +739,13 @@ def _candidate_statements(topic):
         statements.append(description)
     return statements
 
-def create_diagnostic_question(qid, topic, content, insights, other_topics=()):
+def create_diagnostic_question(qid, topic, content, insights, other_topics=(), style=DEFAULT_STYLE):
     """Create a diagnostic MCQ: LLM-generated when possible, otherwise template-based."""
     title = topic.get('title', 'Topic')
+    style = style if style in QUESTION_STYLES else DEFAULT_STYLE
+    skill = QUESTION_STYLES[style][1]
 
-    llm_mcq = generate_mcq_with_llm(title, content, insights)
+    llm_mcq = generate_mcq_with_llm(title, content, insights, style)
     if llm_mcq:
         correct_answer = next(o["id"] for o in llm_mcq["options"] if o["isCorrect"])
         return {
@@ -647,6 +759,8 @@ def create_diagnostic_question(qid, topic, content, insights, other_topics=()):
             "topicId": topic.get('id'),
             "topicName": title,
             "diagnosticFocus": "knowledge_verification",
+            "type": style,
+            "assessedSkill": skill,
             "source": "ai"
         }
 
@@ -690,6 +804,8 @@ def create_diagnostic_question(qid, topic, content, insights, other_topics=()):
         "topicId": topic.get('id'),
         "topicName": title,
         "diagnosticFocus": "knowledge_verification",
+        "type": style,
+        "assessedSkill": skill,
         "source": "template"
     }
 
@@ -1127,12 +1243,16 @@ COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 COMMONS_HEADERS = {"User-Agent": "MoodMatrixTutor/1.0 (educational project; contact: project maintainers)"}
 IMAGE_MIMES = {"image/jpeg", "image/png", "image/gif", "image/svg+xml"}
 
-@lru_cache(maxsize=256)
-def search_commons_image(query: str, stems: tuple = ()):
-    """Find one relevant image on Wikimedia Commons. Returns a dict or None.
+IMAGE_HIT_TTL = 24 * 3600     # a found image is reused for a day
+IMAGE_MISS_TTL = 3600         # "nothing relevant exists" is remembered for an hour
+IMAGE_CACHE_MAX = 256
+_image_cache: dict = {}
+_image_cache_lock = threading.Lock()
 
-    `stems` are word prefixes of the topic; a result is only accepted if its file name contains one.
-    """
+
+def _fetch_commons_image(query: str, stems: tuple):
+    """Return (result, definitive). definitive is False when the lookup itself failed (network, API error),
+    so the caller does not remember the failure."""
     params = {
         "action": "query", "format": "json", "generator": "search",
         "gsrsearch": f"{query} filetype:bitmap|drawing", "gsrnamespace": 6, "gsrlimit": 6,
@@ -1144,15 +1264,41 @@ def search_commons_image(query: str, stems: tuple = ()):
         pages = sorted((r.json().get("query", {}).get("pages", {})).values(), key=lambda p: p.get("index", 0))
     except Exception as e:
         print(f"Wikimedia search failed for '{query}': {e}")
-        return None
+        return None, False
 
     for page in pages:
         info = (page.get("imageinfo") or [{}])[0]
         file_name = page.get("title", "").lower().replace("_", " ")
         relevant = not stems or any(stem in file_name for stem in stems)
         if relevant and info.get("mime") in IMAGE_MIMES and info.get("width", 0) >= 300 and info.get("thumburl"):
-            return {"url": info["thumburl"], "title": page.get("title", ""), "page": info.get("descriptionurl", "")}
-    return None
+            return {"url": info["thumburl"], "title": page.get("title", ""), "page": info.get("descriptionurl", "")}, True
+    return None, True
+
+
+def search_commons_image(query: str, stems: tuple = ()):
+    """Find one relevant image on Wikimedia Commons. Returns a dict or None.
+
+    `stems` are word prefixes of the topic; a result is only accepted if its file name contains one.
+    Results are cached (hits for a day, genuine misses for an hour); failed lookups are never cached.
+    """
+    key = (query, stems)
+    now = time.time()
+    with _image_cache_lock:
+        cached = _image_cache.get(key)
+        if cached and cached[0] > now:
+            return cached[1]
+
+    result, definitive = _fetch_commons_image(query, stems)
+    if definitive:
+        with _image_cache_lock:
+            if len(_image_cache) >= IMAGE_CACHE_MAX:
+                _image_cache.pop(min(_image_cache, key=lambda k: _image_cache[k][0]))
+            _image_cache[key] = (now + (IMAGE_HIT_TTL if result else IMAGE_MISS_TTL), result)
+    return result
+
+
+search_commons_image.cache_clear = _image_cache.clear
+
 
 def get_wikimedia_images(topic: dict, action_type: str) -> list:
     """Return up to one relevant Wikimedia Commons image for the topic (empty list if none found)."""
@@ -1326,10 +1472,13 @@ def generate_diagnostic_mcq(request: MCQRequest):
     plan = [topics[i % len(topics)] for i in range(num_questions)]
     plan.sort(key=lambda t: topics.index(t))
 
+    # Requested styles are cycled over the questions; unknown names are ignored
+    styles = [t for t in request.question_types if t in QUESTION_STYLES] or [DEFAULT_STYLE]
+
     def make(args):
         qid, topic = args
         content = topic.get('full_content') or topic.get('description', '')
-        return create_diagnostic_question(qid, topic, content, topic.get('keyInsights', []), topics)
+        return create_diagnostic_question(qid, topic, content, topic.get('keyInsights', []), topics, styles[(qid - 1) % len(styles)])
 
     with ThreadPoolExecutor(max_workers=4) as pool:
         questions = list(pool.map(make, enumerate(plan, start=1)))
@@ -1443,6 +1592,7 @@ def root():
         "message": "Study Plan Generator API",
         "version": "2.1",
         "ai_configured": bool(OPENROUTER_API_KEY),
+        "auth_required": bool(API_TOKEN),
         "endpoints": [
             "/analyze-lecture",
             "/generate-diagnostic-mcq",

@@ -3,7 +3,7 @@ import MisconceptionTracker from "@/lib/misconception-tracker";
 import SessionStorage from "@/lib/session-storage";
 import IntelligenceEngine from "@/lib/intelligenceEngine";
 import { QuizStorage } from "@/app/lib/quiz-storage";
-import { levelFor } from "@/lib/cognitive/fusion";
+import { behaviorScore as computeBehaviorScore, sessionLevel, quizDifficultyFor } from "@/lib/cognitive/levels";
 
 const SESSION_KEY = 'current_intelligent_session';
 const SESSION_MAX_AGE_MS = 2 * 60 * 60 * 1000;
@@ -104,15 +104,11 @@ export const useStudySession = (searchParams) => {
         const lastQuiz = lastQuizRef.current;
         const recentQuiz = lastQuiz && now - lastQuiz.at < HELP_COOLDOWN_MS ? lastQuiz : null;
 
-        let behavior = 35 + Math.min(recentStruggles, 4) * 12;
-        if (recentQuiz) behavior += recentQuiz.score < 50 ? 35 : recentQuiz.score >= 85 ? -15 : 0;
-        behavior = Math.max(5, Math.min(95, behavior));
+        const behavior = computeBehaviorScore({ recentStruggles, lastQuizScore: recentQuiz ? recentQuiz.score : null });
         setBehaviorScore(behavior);
 
         // With the camera on, the fused (emotion + posture + behaviour) reading drives the level
-        const external = externalLoadRef.current;
-        const score = Math.round(external ? external.score : behavior);
-        const next = external ? external.level : levelFor(behavior);
+        const { score, level: next } = sessionLevel({ external: externalLoadRef.current, behavior });
 
         if (Math.abs(score - loadScoreRef.current) >= 2) {
             loadScoreRef.current = score;
@@ -396,11 +392,7 @@ export const useStudySession = (searchParams) => {
     // =========================================================
     // QUIZ
     // =========================================================
-    const getAdaptiveQuizDifficulty = () => {
-        if (cognitiveLoad === 'high') return 'easy';
-        if (cognitiveLoad === 'low') return 'hard';
-        return 'medium';
-    };
+    const getAdaptiveQuizDifficulty = () => quizDifficultyFor(cognitiveLoad);
 
     // `recentContext` is text (e.g. the teacher's last minutes of audio). Click handlers pass an event, which is ignored.
     const handleTakeQuiz = async (recentContext) => {

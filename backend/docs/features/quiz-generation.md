@@ -34,6 +34,25 @@ Accepted questions are rebuilt as `{question, options, explanation}`:
 (`topics[i % len(topics)]`) and then grouped by topic. Example: 3 topics, 7 questions → topic 1 ×3,
 topic 2 ×2, topic 3 ×2.
 
+### 2.1a Question styles
+
+`question_types` selects the styles and they are cycled over the questions in order (question *n* uses
+`styles[(n-1) % len(styles)]`; unknown names are ignored; no valid style means `conceptual`):
+
+| Style | The question... | `assessedSkill` |
+|---|---|---|
+| `conceptual` | tests understanding of the core idea | `conceptual_understanding` |
+| `application` | asks the student to apply the idea to a concrete scenario | `practical_application` |
+| `misconception` | makes the correct option the accurate understanding that contradicts a common misconception | `misconception_identification` |
+| `definition` | asks which statement defines the concept most accurately | `definitional_knowledge` |
+| `analysis` | asks to analyse components, causes or relationships | `analytical_thinking` |
+| `practical` | asks which approach works best in practice | `practical_reasoning` |
+| `evaluation` | asks to judge which option is most effective | `evaluative_judgment` |
+
+The style is passed to the LLM ("Question style (application): the question asks the student to apply...") and
+returned as `type` and `assessedSkill` on every question, so the knowledge test can report which *skills* a
+student is weak at. Template fallback questions carry the same fields.
+
 ### 2.2 AI path
 
 `generate_mcq_with_llm` sends the topic title, the first 800 characters of the topic's content

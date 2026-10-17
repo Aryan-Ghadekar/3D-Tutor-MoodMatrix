@@ -15,7 +15,7 @@ Never fails because of the LLM: each question falls back to a template built fro
 |---|---|---|---|
 | `lecture_plan` | object | *required* | A [lecture plan](../reference/data-models.md#lecture-plan) with non-empty `impTopics` |
 | `num_questions` | integer | `10` | Clamped to **1-30** |
-| `question_types` | string[] | `[]` | Accepted for compatibility; **currently ignored** |
+| `question_types` | string[] | `[]` | Question styles to cycle through: `conceptual`, `application`, `misconception`, `definition`, `analysis`, `practical`, `evaluation`. Unknown names are ignored; empty means all `conceptual` |
 
 Questions are spread round-robin over the topics (`topics[i % len(topics)]`), then ordered by topic. With 5
 topics and 2 questions you get topics 1 and 2; with 3 topics and 7 questions you get 3/2/2.
@@ -42,6 +42,8 @@ topics and 2 questions you get topics 1 and 2; with 3 topics and 7 questions you
       "topicId": "topic-1",
       "topicName": "Hash Tables and Collision Handling",
       "diagnosticFocus": "knowledge_verification",
+      "type": "conceptual",
+      "assessedSkill": "conceptual_understanding",
       "source": "ai"
     }
   ],
@@ -55,6 +57,8 @@ topics and 2 questions you get topics 1 and 2; with 3 topics and 7 questions you
 | `options` | Always exactly four, ids `A`-`D`, **shuffled**, exactly one `isCorrect` |
 | `correctAnswer` | The **option id** (letter) of the correct option |
 | `difficulty` | Copies the topic's *importance* (`high` / `medium` / `low`), not an easy/hard rating |
+| `type` | The question style requested for this position (styles are cycled over the questions) |
+| `assessedSkill` | Skill the style measures: `conceptual_understanding`, `practical_application`, `misconception_identification`, `definitional_knowledge`, `analytical_thinking`, `practical_reasoning`, `evaluative_judgment` |
 | `source` | `"ai"` (LLM wrote it) or `"template"` (fallback) |
 
 **Errors:** 400 `No topics found in lecture plan`; 422 validation. Slow only when the LLM is slow: up to 4

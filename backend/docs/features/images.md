@@ -54,18 +54,23 @@ The slide's `images` array holds this one object, or is `[]`. There are **no pla
 
 ## 3. Caching and its trade-off
 
-`search_commons_image` is decorated with `@lru_cache(maxsize=256)`, keyed by `(query, stems)`. Repeated topics
-cost no extra request.
+`search_commons_image` keeps an in-memory cache keyed by `(query, stems)`:
 
-**Known limitation:** a *failed* lookup (timeout, network error) also returns `None` and is cached, so that
-query keeps returning no image until the process restarts. Restart the service, or clear the cache with
-`main.search_commons_image.cache_clear()`, if images stop appearing after a network outage.
+| Outcome | Cached? | For how long |
+|---|---|---|
+| An image was found | yes | 24 hours (`IMAGE_HIT_TTL`) |
+| The search worked but nothing relevant exists | yes | 1 hour (`IMAGE_MISS_TTL`) |
+| The lookup **failed** (timeout, network or API error) | **no** | retried on the next request |
+
+At most 256 entries (`IMAGE_CACHE_MAX`) are kept; the entry closest to expiry is dropped first. So images come
+back as soon as the network does, and repeated topics still cost no extra request.
+`main.search_commons_image.cache_clear()` empties the cache.
 
 ## 4. Failure modes
 
 | Situation | Result |
 |---|---|
-| No network / Wikimedia error / 8 s timeout | `None` → no image; the slide is otherwise unaffected |
+| No network / Wikimedia error / 8 s timeout | no image for this slide; not cached, so the next request tries again |
 | No file name matches the topic words | no image (by design) |
 | Topic title in a script without 4+ Latin letters (e.g. Devanagari) | no significant words → the full title is searched with no relevance stems; results are unfiltered |
 

@@ -7,11 +7,13 @@ flowchart LR
     subgraph Browser
         UI[Next.js pages & hooks]
     end
-    subgraph Next["Next.js server (port 3000)"]
+    subgraph Next["Next.js server (port 3000) - holds the API key"]
         R1["/api/analyze-lecture"]
         R2["/api/generate-slide"]
         R3["/api/generate-quiz"]
         R4["/api/get-lecture-plan"]
+        R5["/api/diagnostic-questions"]
+        R6["/api/save-quiz-results"]
     end
     subgraph FastAPI["FastAPI service (port 8001)"]
         EP["Endpoints (main.py)"]
@@ -27,10 +29,9 @@ flowchart LR
     end
     EXP["Express API (port 5000)<br/>optional"]
 
-    UI --> R1 & R2 & R3 & R4
-    UI -- "direct: knowledge test,<br/>engine plan lookup,<br/>classroom" --> EP
-    UI -- direct --> CL
-    R1 & R2 & R3 & R4 --> EP
+    UI --> R1 & R2 & R3 & R4 & R5 & R6
+    UI -- "classroom only<br/>(join code + teacher token)" --> CL
+    R1 & R2 & R3 & R4 & R5 & R6 -- "X-API-Key" --> EP
     EP --> RAG
     EP --> FS
     RAG --> FS
@@ -42,9 +43,10 @@ flowchart LR
     UI -. unused by the UI today .-> EXP
 ```
 
-* The browser reaches FastAPI **two ways**: through thin Next.js proxy routes (lecture upload, slides, quizzes,
-  plan lookup) and **directly** (knowledge test, classroom polling). That is why FastAPI enables CORS for the
-  web origin (`CORS_ORIGINS`).
+* Every AI endpoint is reached through a thin Next.js proxy route, which adds the `X-API-Key` header
+  (`BACKEND_API_TOKEN`) on the server. Only the **classroom** endpoints are called from the browser directly
+  (they are protected by the join code and the teacher token and involve no AI), which is why FastAPI enables
+  CORS for the web origin (`CORS_ORIGINS`).
 * `classroom.py` is a FastAPI `APIRouter` mounted into the same app (`app.include_router(classroom.router)`),
   so there is still only one Python process.
 * The Express API is independent of FastAPI. Nothing in the current web UI calls it.
@@ -61,6 +63,7 @@ backend/
 │  ├─ export_openapi.py       regenerates docs/openapi.json
 │  ├─ test_api.py             lecture / MCQ / quiz / slide / storage tests (26)
 │  ├─ test_features.py        retrieval, classroom, grounding tests (21)
+│  ├─ test_hardening.py       API key, upload limit, keywords, caching, question styles, AI metadata, concurrency (18)
 │  ├─ requirements.txt
 │  └─ .env.example
 ├─ src/                       Express API (server.js, routes/, models/, config/)
@@ -147,14 +150,19 @@ sequenceDiagram
   `generate_dynamic_slide`, `generate_diagnostic_mcq`, `generate_topic_quiz`, `rag_query` and all classroom
   endpoints.
 * Inside one request:
-  * `build_topic` runs its **5 LLM calls in parallel** (`ThreadPoolExecutor(max_workers=5)`); topics are
-    built one after another, so analysing N topics makes about `5N + 3` LLM calls.
+  * `build_topic` runs its **5 LLM calls in parallel** (`ThreadPoolExecutor(max_workers=5)`) and up to 6 topics
+    are built at the same time, so analysing N topics makes `5N + 3` LLM calls. A semaphore
+    (`LLM_CONCURRENCY`, default 4) caps how many model requests are in flight at once, so parallel topic
+    building speeds things up without flooding the provider. Results are collected in submission order, so
+    topics stay in lecture order.
   * `generate_diagnostic_mcq` generates questions in parallel (`max_workers=4`).
 * Shared state is protected by locks:
 
 | Lock | Protects |
 |---|---|
 | `_model_lock` | one-time loading of the Whisper and sentence-transformers models |
+| `_llm_slots` (semaphore) | the number of simultaneous LLM requests |
+| `_image_cache_lock` | the image-search cache |
 | `_file_lock` | read-modify-write of `lecture_plans.json` and `quiz_results.json` |
 | `VectorStore._lock` (re-entrant) | collections in memory and their JSON files |
 | `classroom._lock` (re-entrant) | the whole live-class registry |
@@ -171,7 +179,7 @@ sequenceDiagram
 | `ffmpeg` not installed | Whisper cannot decode audio → request fails with a transcription error (**422** for YouTube, 500 for direct audio) | [lecture-ingestion](features/lecture-ingestion.md) |
 | `sentence-transformers` not installed / fails to load | Importance uses a constant semantic score of 0.5; retrieval uses TF-IDF | `get_semantic_model` |
 | `yt-dlp` not installed | YouTube videos *with* captions still work; others return **501** | `process_yt_link` |
-| Wikimedia unreachable | Slides have no image (`images: []`) | `search_commons_image` |
+| Wikimedia unreachable | Slides have no image (`images: []`); the failed lookup is **not** cached, so images return when the network does | `search_commons_image` |
 | Data directory not writable | `save-quiz-results` returns 500; plan saving raises (the upload fails) | [storage](features/storage.md) |
 | Retrieval indexing raises | Logged and ignored; the upload still succeeds | `analyze_lecture` |
 
@@ -179,11 +187,11 @@ sequenceDiagram
 
 | Concern | Current behaviour |
 |---|---|
-| Authentication on lecture / slide / quiz endpoints | **None.** The service trusts its caller (the Next.js app). Do not expose port 8001 publicly without a gateway that authenticates requests |
+| Authentication on lecture / slide / quiz endpoints | Optional shared secret: set `API_TOKEN` and every endpoint except `/`, `/health`, the docs and `/classroom/*` requires `X-API-Key` (compared in constant time; 401 otherwise). Without `API_TOKEN` the service trusts its caller, so do not expose it without one. The web app sends the key from its server, never from the browser |
 | Classroom authorisation | Teacher actions need the `X-Teacher-Token` returned when the class was created (`secrets.token_urlsafe(24)`, compared with `secrets.compare_digest`). Students are identified only by a random id |
 | Student privacy in a class | The dashboard returns **aggregates only**. Names and per-student signals are stored in memory but no endpoint returns them |
 | CORS | Allowed origins from `CORS_ORIGINS` (default `localhost:3000/3001`, `127.0.0.1:3000`); credentials allowed |
 | Secrets | Only `OPENROUTER_API_KEY`, read from the environment / `.env`. It is never logged and never returned by any endpoint (`GET /` only exposes a boolean `ai_configured`) |
-| Uploads | Written to a temp file, parsed, then deleted in a `finally` block. No size limit is enforced by the service; put one in the reverse proxy |
+| Uploads | Rejected above `MAX_UPLOAD_MB` (413): first by `Content-Length`, then while copying to a temp file, which is always deleted in a `finally` block |
 | Prompt content | Lecture text and student questions are sent to the configured LLM provider. Treat uploaded material as shared with that provider |
 | Outbound requests | Only OpenRouter (`OPENROUTER_URL`), Wikimedia Commons, YouTube (captions / yt-dlp) |

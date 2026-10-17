@@ -28,6 +28,7 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [remember, setRemember] = useState(false);
 
   const isDark = theme === "dark";
 
@@ -40,7 +41,7 @@ export default function LoginPage() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, role: userType }),
+        body: JSON.stringify({ ...formData, role: userType, remember }),
       });
       const data = await response.json().catch(() => ({}));
 
@@ -229,6 +230,8 @@ export default function LoginPage() {
           <label className="flex items-center">
             <input
               type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
               className={`w-3 h-3 rounded border mr-2
                 ${isDark
                   ? "bg-gray-800 border-gray-700 text-blue-500"
@@ -239,13 +242,6 @@ export default function LoginPage() {
               Remember me
             </span>
           </label>
-          <Link
-            href="#"
-            className={`font-medium transition-colors
-              ${isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"}`}
-          >
-            Forgot password?
-          </Link>
         </div>
 
         <button

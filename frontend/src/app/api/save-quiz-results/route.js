@@ -1,85 +1,30 @@
 import { NextResponse } from 'next/server';
+import { backendFetch, readJson, unreachableMessage } from '@/lib/server/backend';
 
-// Backend configuration
-const BACKEND_URL = "http://localhost:8001";  // Change to 8001 if needed
-
+// Stores a finished quiz (for example the knowledge test) in the FastAPI service.
+// Body uses the backend's field names: session_id, lecture_id, score, correct, total, questions, answers,
+// misconceptions, weak_topics, recommendations.
 export async function POST(request) {
+  let body;
   try {
-    const body = await request.json();
-    
-    const {
-      sessionId,
-      lectureId,
-      score,
-      correct,
-      total,
-      questions,
-      answers,
-      misconceptions,
-      weakTopics,
-      recommendations
-    } = body;
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ success: false, error: 'Invalid request body' }, { status: 400 });
+  }
 
-    // Validate required fields
-    if (!sessionId || !lectureId || score === undefined) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    console.log(`Saving quiz results for session: ${sessionId}`);
-    
-    const response = await fetch(`${BACKEND_URL}/save-quiz-results`, {
+  try {
+    const response = await backendFetch('/save-quiz-results', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        session_id: sessionId,
-        lecture_id: lectureId,
-        score: score,
-        correct: correct,
-        total: total,
-        questions: questions || [],
-        answers: answers || [],
-        misconceptions: misconceptions || [],
-        weak_topics: weakTopics || [],
-        recommendations: recommendations || []
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
     });
-
+    const data = await readJson(response);
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Backend error:', errorData);
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: errorData.detail || 'Failed to save results to backend' 
-        },
-        { status: response.status }
-      );
+      return NextResponse.json({ success: false, error: typeof data.detail === 'string' ? data.detail : 'Could not save the results' }, { status: response.status });
     }
-
-    const data = await response.json();
-    
-    console.log(`Quiz results saved successfully`);
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Quiz results saved successfully',
-      savedPath: data.saved_path
-    });
-
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error in save-quiz-results API:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Internal server error while saving results',
-        details: error.message 
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: unreachableMessage(error) }, { status: 503 });
   }
 }

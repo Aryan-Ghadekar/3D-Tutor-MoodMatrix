@@ -16,6 +16,9 @@ environment variables win over the file). Copy `.env.example` to `.env` to start
 | `PORT` | `8001` | Port used by `python main.py` (not by `uvicorn main:app`, which uses `--port`) |
 | `CORS_ORIGINS` | `http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000` | Comma-separated list of browser origins allowed to call the service |
 | `DATA_DIR` | `backend/fastapi-service/data` | Where plans, quiz results and the vector index are stored. Read once at import time |
+| `API_TOKEN` | *(unset)* | **Shared secret.** When set, every endpoint except `/`, `/health`, `/docs`, `/redoc`, `/openapi.json` and `/classroom/*` requires the header `X-API-Key: <value>`, otherwise **401**. The web app's server sends it (`BACKEND_API_TOKEN` in `frontend/.env.local`), so it never reaches a browser. Strongly recommended whenever port 8001 is reachable by anyone else |
+| `MAX_UPLOAD_MB` | `50` | Largest accepted upload (**413** above it). Checked first from the `Content-Length` header, then while the file is copied |
+| `LLM_CONCURRENCY` | `4` | Maximum simultaneous requests to the language model. Raise it if your provider allows more parallelism |
 
 ### 1.2 Running
 
@@ -67,11 +70,14 @@ data/
 | Words per chunk | 150 | `chunk_text(max_tokens=150)` |
 | Max topics per lecture | 20 | `calculate_topic_count`, `build_lecture_plan` |
 | LLM timeout (default / MCQ / slide / topic quiz) | 30 s / 30 s / 45 s / 45 s | `make_openrouter_request`, call sites |
+| Simultaneous LLM requests | 4 (`LLM_CONCURRENCY`) | `_llm_slots` semaphore |
+| Topics built in parallel | up to 6 (each uses 5 field calls, all bounded by the semaphore above) | `build_lecture_plan` |
+| Upload size | 50 MB (`MAX_UPLOAD_MB`) | `guard_requests`, `_save_upload` |
 | Diagnostic MCQs per request | 1-30 | `generate_diagnostic_mcq` |
 | Topic-quiz questions per request | 1-10 | `generate_topic_quiz_with_llm` |
 | Retrieval results per query | 1-10 (`/rag/query`); 4 sources + 2 earlier explanations (slides) | `rag_query`, `retrieve_reference` |
 | Wikimedia lookup timeout | 8 s | `search_commons_image` |
-| Image-search cache | 256 entries | `@lru_cache(maxsize=256)` |
+| Image-search cache | 256 entries; hits kept 24 h, "nothing found" 1 h, failed lookups never cached | `IMAGE_CACHE_MAX`, `IMAGE_HIT_TTL`, `IMAGE_MISS_TTL` |
 | Live classes | 200 concurrently, 12 h lifetime | `classroom.MAX_CLASSES`, `CLASS_TTL_S` |
 | Student "active" window | 20 s without a heartbeat | `classroom.ACTIVE_WINDOW_S` |
 | Class transcript window | 180 s (last 1800 characters) | `classroom.TRANSCRIPT_WINDOW_S` |
@@ -102,4 +108,15 @@ The service always sends `Authorization: Bearer <key>`, `HTTP-Referer: http://lo
 cd backend && npm install && npm run dev      # nodemon; `npm start` for plain node
 ```
 
-`GET /api/health` reports `"storage": "memory"` or `"mysql"`. Details: [features/express-service.md](features/express-service.md).
+`GET /api/health` reports `"storage": "memory"` or `"mysql"`.
+
+## 3. Web app (Next.js) variables that affect the backend
+
+| Variable | Purpose |
+|---|---|
+| `BACKEND_URL` / `NEXT_PUBLIC_BACKEND_URL` | Where the FastAPI service is (default `http://localhost:8001`) |
+| `BACKEND_API_TOKEN` | Must equal the FastAPI `API_TOKEN`. Server-side only (no `NEXT_PUBLIC_` prefix) |
+| `SESSION_SECRET` | Signs login cookies. **Required in production** (`npm start` refuses to sign sessions without it); in development a random per-run secret is used |
+
+Only the live-classroom calls go from the browser straight to FastAPI; every AI call goes through a Next.js
+route, which is what lets `API_TOKEN` stay secret. Details: [features/express-service.md](features/express-service.md).

@@ -11,6 +11,7 @@ Service banner. Useful to check that the service is up **and** whether an AI key
   "message": "Study Plan Generator API",
   "version": "2.1",
   "ai_configured": true,
+  "auth_required": false,
   "endpoints": [
     "/analyze-lecture", "/generate-diagnostic-mcq", "/generate-dynamic-slide", "/generate-topic-quiz",
     "/analyze-quiz-results", "/save-quiz-results", "/get-lecture-plan", "/rag/query", "/classroom"
@@ -22,6 +23,7 @@ Service banner. Useful to check that the service is up **and** whether an AI key
 |---|---|
 | `version` | API version string (`2.1`). The lecture-plan `metadata.processingVersion` is versioned separately |
 | `ai_configured` | `true` when `OPENROUTER_API_KEY` is non-empty. It does **not** verify that the key is valid |
+| `auth_required` | `true` when `API_TOKEN` is set, i.e. callers must send `X-API-Key` (this endpoint itself stays open) |
 
 ## `GET /health`
 

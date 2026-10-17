@@ -4,8 +4,8 @@
  * slides and quizzes (AI-generated through the Next.js API routes, with local fallbacks).
  */
 
-import { BACKEND_URL } from '@/lib/config';
 import { QuizStorage } from '@/app/lib/quiz-storage';
+import * as offline from '@/lib/offlineContent';
 
 export const NO_LECTURE_ERROR = 'No lecture found. Upload a lecture first so the tutor has something to teach.';
 
@@ -79,7 +79,6 @@ export default class IntelligenceEngine {
   constructor(sessionId, config = {}) {
     this.sessionId = sessionId;
     this.config = {
-      backendUrl: BACKEND_URL,
       maxTopics: 20,
       defaultGoal: 'gate',
       lectureSessionId: null,
@@ -147,12 +146,10 @@ export default class IntelligenceEngine {
 
   async fetchPlanFromBackend(query) {
     try {
-      const response = await fetch(`${this.config.backendUrl}/get-lecture-plan?${query}`, {
-        signal: AbortSignal.timeout(10000)
-      });
+      const response = await fetch(`/api/get-lecture-plan?${query}`, { signal: AbortSignal.timeout(10000) });
       if (!response.ok) return null;
-      const plan = await response.json();
-      return plan && Array.isArray(plan.impTopics) ? plan : null;
+      const data = await response.json();
+      return data?.lecturePlan && Array.isArray(data.lecturePlan.impTopics) ? data.lecturePlan : null;
     } catch (error) {
       console.warn('Could not reach the lecture service:', error.message);
       return null;
@@ -316,145 +313,32 @@ export default class IntelligenceEngine {
     console.log(`Enhanced ${this.enhancedTopics.length} topics with educational intelligence`);
   }
 
+  // Statements come from the lecture's own text. Nothing is invented: missing misconceptions / applications /
+  // analogies stay empty and the UI simply hides those sections.
   generateKeyInsights(topic) {
-    const insights = [];
-    const title = topic.title.toLowerCase();
-    const desc = topic.description.toLowerCase();
-
-    // Generate insights based on topic content
-    if (desc.includes('synchronization') || desc.includes('concurrent')) {
-      insights.push(
-        "Critical section coordination prevents race conditions",
-        "Semaphores and mutexes provide synchronization mechanisms",
-        "Deadlock requires four necessary conditions simultaneously"
-      );
-    } else if (desc.includes('memory') || desc.includes('storage')) {
-      insights.push(
-        "Virtual memory allows programs to exceed physical memory limits",
-        "Page replacement algorithms optimize memory usage",
-        "Memory fragmentation affects allocation efficiency"
-      );
-    } else if (desc.includes('scheduling') || desc.includes('algorithm')) {
-      insights.push(
-        "Different scheduling algorithms optimize different metrics",
-        "Preemptive scheduling allows higher priority process interruption",
-        "Response time differs from turnaround time in scheduling"
-      );
-    } else {
-      // Generic but meaningful insights
-      insights.push(
-        `Fundamental principles of ${topic.title}`,
-        "Key applications and use cases",
-        "Important relationships with related concepts",
-        "Common implementation approaches"
-      );
-    }
-
-    return insights.slice(0, 4);
+    return offline.statementsFrom(topic).slice(0, 4);
   }
 
-  generateCommonMisconceptions(topic) {
-    const misconceptions = [];
-    const title = topic.title.toLowerCase();
-    const desc = topic.description.toLowerCase();
-
-    if (desc.includes('synchronization') || desc.includes('deadlock')) {
-      misconceptions.push(
-        "Thinking mutex and semaphore are always interchangeable",
-        "Believing deadlock avoidance guarantees no deadlocks",
-        "Confusing race condition with deadlock"
-      );
-    } else if (desc.includes('memory') || desc.includes('virtual')) {
-      misconceptions.push(
-        "Confusing physical and virtual memory addresses",
-        "Thinking all page replacement algorithms are equally efficient",
-        "Believing more memory always improves performance"
-      );
-    } else if (desc.includes('scheduling')) {
-      misconceptions.push(
-        "Thinking Shortest Job First always gives optimal waiting time",
-        "Confusing turnaround time with response time",
-        "Believing Round Robin scheduling has no starvation"
-      );
-    } else {
-      misconceptions.push(
-        "Overlooking fundamental assumptions",
-        "Confusing similar terminology",
-        "Misapplying concepts in wrong contexts"
-      );
-    }
-
-    return misconceptions.slice(0, 3);
+  generateCommonMisconceptions() {
+    return [];
   }
 
-  generateRealWorldApplications(topic) {
-    const applications = [];
-    const title = topic.title.toLowerCase();
-
-    if (title.includes('synchronization') || title.includes('process')) {
-      applications.push(
-        "Database transaction management systems",
-        "Multi-threaded web server request handling",
-        "Real-time operating system task coordination"
-      );
-    } else if (title.includes('memory')) {
-      applications.push(
-        "Operating system memory allocation",
-        "Database buffer pool management",
-        "Web browser tab isolation mechanisms"
-      );
-    } else if (title.includes('scheduling')) {
-      applications.push(
-        "OS process and thread scheduling",
-        "Cloud computing resource allocation",
-        "Real-time system task management"
-      );
-    } else {
-      applications.push(
-        "System design and architecture",
-        "Problem-solving in technical domains",
-        "Algorithm implementation and optimization"
-      );
-    }
-
-    return applications.slice(0, 2);
+  generateRealWorldApplications() {
+    return [];
   }
 
   generateQuestionSeeds(topic) {
     return [
-      `What is the fundamental concept of ${topic.title}?`,
-      `How is ${topic.title} applied in practice?`,
-      `What are the key differences in approaches to ${topic.title}?`,
-      `Why is ${topic.title} important for system design?`,
-      `What common mistakes occur when implementing ${topic.title}?`
+      `What is the main idea of ${topic.title}?`,
+      `How is ${topic.title} used or applied?`,
+      `What are the key terms in ${topic.title}?`,
+      `Why does ${topic.title} matter?`,
+      `What mistakes do people make with ${topic.title}?`
     ];
   }
 
-  generateAnalogySeeds(topic) {
-    const analogies = [];
-    const title = topic.title.toLowerCase();
-
-    if (title.includes('synchronization') || title.includes('coordination')) {
-      analogies.push({
-        domain: "Traffic Control",
-        comparison: "Like traffic lights coordinating multiple roads",
-        lesson: "Coordination prevents collisions and ensures smooth flow"
-      });
-    } else if (title.includes('memory') || title.includes('storage')) {
-      analogies.push({
-        domain: "Warehouse Management",
-        comparison: "Like organizing inventory for efficient access",
-        lesson: "Proper organization maximizes space and access efficiency"
-      });
-    } else {
-      analogies.push({
-        domain: "Building Construction",
-        comparison: "Like constructing a building from foundation to roof",
-        lesson: "Strong fundamentals support advanced structures"
-      });
-    }
-
-    return analogies;
+  generateAnalogySeeds() {
+    return [];
   }
 
   determineExamRelevance(topic) {
@@ -492,16 +376,9 @@ export default class IntelligenceEngine {
 
   calculateComplexity(text) {
     if (!text) return 0.5;
-
-    const complexIndicators = ['algorithm', 'synchronization', 'architecture',
-      'optimization', 'complexity', 'implementation'];
-
-    const words = text.toLowerCase().split(' ');
-    const complexCount = words.filter(word =>
-      complexIndicators.some(indicator => word.includes(indicator))
-    ).length;
-
-    return Math.min(complexCount / 10, 1.0);
+    const words = text.split(/\s+/).filter(Boolean);
+    const long = words.filter(word => word.length >= 9).length;
+    return Math.min(long / Math.max(words.length, 1) * 4, 1.0);
   }
 
   // =========================================================
@@ -701,18 +578,23 @@ export default class IntelligenceEngine {
   generateLocalSlideContent(topic, actionType, context) {
     switch (actionType) {
       case 'explain-more':
-        return this.generateExplainMoreSlide(topic, context);
+        return offline.explainMoreSlide(topic);
       case 'ask-question':
-        return this.generateQuestionAnswerSlide(topic, context);
+        return offline.questionSlide(topic, context, this.enhancedTopics);
       case 'quiz-results':
       case 'mistake-explanation':
-        return this.generateQuizResultsSlide(topic, context);
+        return offline.quizResultsSlide(topic, context);
       case 'simplified-explanation':
-        return this.generateSimplifiedSlide(topic, context);
+        return offline.simplifiedSlide(topic, context);
       case 'completion':
-        return this.generateCompletionSlide();
+        return offline.completionSlide({
+          topics: this.enhancedTopics,
+          completed: this.enhancedTopics.filter(t => this.topicProgress[t.id]?.completed).length,
+          averageScore: this.calculateAverageQuizScore(),
+          goal: this.studentGoal
+        });
       default:
-        return this.generateConceptSlide(topic);
+        return offline.conceptSlide(topic, this.studentGoal);
     }
   }
 
@@ -782,277 +664,6 @@ export default class IntelligenceEngine {
     return slide;
   }
 
-  generateSimplifiedSlide(topic, context) {
-    const sentences = (topic.description || '').split(/(?<=[.!?])\s+/).filter(Boolean);
-    const heard = context ? ` The teacher just said: "${context.slice(-240)}".` : '';
-    return {
-      title: `In simple terms: ${topic.title}`,
-      narrative: `${sentences.slice(0, 2).join(' ') || `Let us go back to the basics of ${topic.title}.`}${heard}`,
-      keyInsights: (topic.keyInsights || []).slice(0, 3),
-      analogies: [{ domain: 'Everyday life', comparison: `Think of ${topic.title} as a simple everyday routine: one clear step after another.`, lesson: 'Take it one step at a time.' }],
-      realWorldScenario: topic.realWorldApplications?.[0]
-        ? { situation: topic.realWorldApplications[0], application: 'See how the idea is used.', outcome: 'It becomes easier to remember.' }
-        : null,
-      interactiveElement: 'Can you say the main idea in one sentence?',
-      examRelevance: topic.examRelevance || '',
-      commonTraps: (topic.commonMisconceptions || []).slice(0, 2),
-      memoryHook: 'One idea at a time.'
-    };
-  }
-
-  generateCompletionSlide() {
-    const topics = this.enhancedTopics;
-    const completed = topics.filter(t => this.topicProgress[t.id]?.completed).length;
-    const scores = this.calculateAverageQuizScore();
-
-    return {
-      title: 'Lecture Complete',
-      narrative: `You have worked through all ${topics.length} topics of this lecture${completed ? ` and mastered ${completed} of them` : ''}${scores ? ` with an average quiz score of ${scores}%` : ''}. Use the topic list to revisit anything that still feels shaky.`,
-      keyInsights: topics.slice(0, 6).map(t => `${t.title}: ${t.keyInsights?.[0] || t.description?.slice(0, 120) || 'review this topic'}`),
-      analogies: [],
-      realWorldScenario: null,
-      interactiveElement: 'Which topic would you like to revisit first?',
-      examRelevance: `Spend your remaining ${this.studentGoal.toUpperCase()} preparation time on topics where your quiz scores were lowest.`,
-      commonTraps: ['Re-reading instead of testing yourself', 'Skipping topics that felt easy once'],
-      memoryHook: 'Learn → Quiz → Review → Repeat'
-    };
-  }
-
-  generateConceptSlide(topic) {
-    return {
-      title: topic.title,
-      narrative: this.createConceptNarrative(topic),
-      keyInsights: topic.keyInsights,
-      analogies: this.generateEducationalAnalogies(topic),
-      realWorldScenario: topic.realWorldApplications[0] ? {
-        situation: topic.realWorldApplications[0],
-        application: "Applied in practical problem-solving",
-        outcome: "Leads to efficient and effective solutions"
-      } : null,
-      interactiveElement: this.generateInteractiveElement(topic),
-      examRelevance: topic.examRelevance,
-      commonTraps: topic.commonMisconceptions,
-      memoryHook: this.createMemoryHook(topic)
-    };
-  }
-
-  generateExplainMoreSlide(topic, context) {
-    return {
-      title: `Deep Dive: ${topic.title}`,
-      narrative: `Let's explore ${topic.title} in greater detail. This advanced explanation covers underlying mechanisms, complex applications, and deeper insights for mastery.`,
-      keyInsights: [
-        "Advanced theoretical foundations",
-        "Complex implementation details",
-        "Edge cases and special considerations",
-        "Integration with related advanced topics"
-      ],
-      analogies: this.generateAdvancedAnalogies(topic),
-      realWorldScenario: null,
-      interactiveElement: "Explain this concept in your own words to reinforce understanding",
-      examRelevance: "Critical for advanced problem-solving in exams",
-      commonTraps: [
-        "Overcomplicating the core concept",
-        "Missing subtle implementation details",
-        "Incomplete understanding of edge cases"
-      ],
-      memoryHook: "Depth → Understanding → Mastery → Excellence"
-    };
-  }
-
-  generateQuestionAnswerSlide(topic, question) {
-    return {
-      title: `Q&A: ${question.substring(0, 60)}${question.length > 60 ? '...' : ''}`,
-      narrative: `Answering your question: "${question}"\n\nHere's a detailed explanation with step-by-step reasoning, examples, and verification methods.`,
-      keyInsights: [
-        "Direct answer to your specific question",
-        "Step-by-step reasoning process",
-        "Related concepts and connections",
-        "Practice and verification methods"
-      ],
-      analogies: [{
-        domain: "Problem Solving",
-        comparison: "Like following a detailed recipe with exact measurements",
-        lesson: "Precise steps lead to correct outcomes"
-      }],
-      realWorldScenario: null,
-      interactiveElement: "Now try applying this explanation to a similar problem",
-      examRelevance: "Directly relevant to similar exam questions",
-      commonTraps: [
-        "Jumping to conclusions without analysis",
-        "Missing hidden assumptions in the question",
-        "Incomplete solution verification"
-      ],
-      memoryHook: "Question → Analysis → Understanding → Application"
-    };
-  }
-
-  generateQuizResultsSlide(topic, context) {
-    return {
-      title: `Performance Analysis: ${topic.title}`,
-      narrative: `Based on your quiz results, here's an analysis of your performance on ${topic.title}. Let's identify strengths, areas for improvement, and next steps.`,
-      keyInsights: [
-        "Overall performance assessment",
-        "Specific concept strengths",
-        "Areas needing more practice",
-        "Personalized study recommendations"
-      ],
-      analogies: [{
-        domain: "Sports Training",
-        comparison: "Like analyzing game footage to improve performance",
-        lesson: "Targeted practice based on analysis yields best results"
-      }],
-      realWorldScenario: {
-        situation: "Similar performance patterns in actual exam preparation",
-        application: "Apply these insights to optimize study approach",
-        outcome: "Improved efficiency and better results"
-      },
-      interactiveElement: "Which improvement area will you focus on first?",
-      examRelevance: "Direct feedback loop for exam preparation optimization",
-      commonTraps: [
-        "Ignoring identified weak areas",
-        "Not learning from mistakes",
-        "Poor time management in practice"
-      ],
-      memoryHook: "Analyze → Plan → Practice → Improve → Succeed"
-    };
-  }
-
-  createConceptNarrative(topic) {
-    if (topic.description && topic.description.length > 50) {
-      return `${topic.description.substring(0, 300)}... This concept is essential for ${this.studentGoal.toUpperCase()} preparation and has wide applications in technical problem-solving.`;
-    }
-
-    return `Welcome to learning about ${topic.title}. This is a crucial concept for ${this.studentGoal.toUpperCase()} preparation, covering fundamental principles, practical applications, and important considerations for mastery.`;
-  }
-
-  generateEducationalAnalogies(topic) {
-    // Use topic-specific analogies if available
-    if (topic.analogySeeds && topic.analogySeeds.length > 0) {
-      return topic.analogySeeds.slice(0, 2);
-    }
-
-    // Generate based on topic content
-    const title = topic.title.toLowerCase();
-
-    if (title.includes('synchronization') || title.includes('process')) {
-      return [
-        {
-          domain: "Traffic System",
-          comparison: "Like traffic lights coordinating multiple intersections",
-          lesson: "Proper coordination prevents collisions and ensures efficiency"
-        },
-        {
-          domain: "Orchestra",
-          comparison: "Like musicians following a conductor's cues",
-          lesson: "Synchronization creates harmony from individual actions"
-        }
-      ];
-    } else if (title.includes('memory') || title.includes('storage')) {
-      return [
-        {
-          domain: "Library",
-          comparison: "Like organizing books for efficient retrieval",
-          lesson: "Proper organization maximizes access efficiency"
-        },
-        {
-          domain: "Warehouse",
-          comparison: "Like storing inventory with optimal space usage",
-          lesson: "Efficient storage management saves space and time"
-        }
-      ];
-    }
-
-    // Default educational analogies
-    return [
-      {
-        domain: "Building Construction",
-        comparison: "Like building a strong foundation before adding floors",
-        lesson: "Solid fundamentals support advanced learning"
-      },
-      {
-        domain: "Sports Training",
-        comparison: "Like practicing basic techniques before complex maneuvers",
-        lesson: "Mastery of basics enables advanced performance"
-      }
-    ];
-  }
-
-  generateAdvancedAnalogies(topic) {
-    const basicAnalogies = this.generateEducationalAnalogies(topic);
-
-    // Add an advanced analogy
-    basicAnalogies.push({
-      domain: "Engineering Systems",
-      comparison: "Like optimizing a complex system where every component interaction matters",
-      lesson: "Advanced understanding requires system-level thinking and attention to detail"
-    });
-
-    return basicAnalogies;
-  }
-
-  generateInteractiveElement(topic) {
-    const questions = [
-      `How would you explain ${topic.title} to someone new to this subject?`,
-      `What's one practical application of ${topic.title} you find interesting?`,
-      `How does ${topic.title} relate to other concepts you've learned?`
-    ];
-
-    return questions[Math.floor(Math.random() * questions.length)];
-  }
-
-  createMemoryHook(topic) {
-    const hooks = [
-      `${topic.title}: Understand → Apply → Master`,
-      `Remember: ${topic.title} = Foundation + Application`,
-      `${topic.title}: Concept → Implementation → Optimization`
-    ];
-
-    return hooks[Math.floor(Math.random() * hooks.length)];
-  }
-
-  createEmergencySlide(topicIndex, actionType, context) {
-    const topic = this.enhancedTopics[topicIndex] || { title: 'Learning Content' };
-
-    return {
-      id: `emergency_${Date.now()}`,
-      title: topic.title,
-      type: actionType,
-      content: {
-        title: topic.title,
-        narrative: 'The learning system is preparing your personalized content. This adaptive educational system tailors explanations to your specific needs and goals.',
-        keyInsights: [
-          'Personalized learning experience',
-          'Adaptive content delivery',
-          'Educational intelligence integration',
-          'Goal-oriented preparation'
-        ],
-        analogies: [{
-          domain: "Personal Tutor",
-          comparison: "Like having an expert tutor who adapts to your learning style",
-          lesson: "Customized approach yields optimal learning outcomes"
-        }],
-        realWorldScenario: {
-          situation: "Efficient and effective learning",
-          application: "Learning at optimal pace and depth",
-          outcome: "Achieving educational objectives effectively"
-        },
-        interactiveElement: 'What would you like to learn or understand better?',
-        examRelevance: 'Tailored to your specific preparation needs',
-        commonTraps: ['Skipping fundamentals', 'Inconsistent practice', 'Ignoring feedback'],
-        memoryHook: 'Adapt → Learn → Practice → Succeed'
-      },
-      images: [],
-      metadata: {
-        generatedAt: new Date().toISOString(),
-        isEmergency: true,
-        source: 'emergency_fallback',
-        studentGoal: this.studentGoal,
-        actionType: actionType,
-        context: context
-      }
-    };
-  }
-
   // =========================================================
   // QUIZ GENERATION
   // =========================================================
@@ -1118,149 +729,20 @@ export default class IntelligenceEngine {
 
     } catch (error) {
       console.error('Quiz generation failed:', error);
-      return {
-        success: false,
-        error: error.message,
-        quiz: normalizeQuiz(this.generateFallbackQuiz(topic))
-      };
+      return { success: false, error: error.message, quiz: null };
     }
   }
 
   generateLocalQuiz(topic, difficulty) {
-    const questions = [];
-    const questionTypes = ['conceptual', 'application', 'analysis'];
-
-    for (let i = 0; i < 5; i++) {
-      const qType = questionTypes[i % questionTypes.length];
-      questions.push(this.createLocalQuestion(topic, qType, difficulty, i));
-    }
-
-    return {
-      id: `local_quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      title: `${this.studentGoal.toUpperCase()} Quiz: ${topic.title}`,
-      topic: topic.title,
-      studentGoal: this.studentGoal,
-      difficulty: difficulty,
-      questions: questions,
-      totalQuestions: questions.length,
-      estimatedTime: questions.reduce((sum, q) => sum + (q.timeEstimate || 60), 0),
-      metadata: {
-        generatedAt: new Date().toISOString(),
-        source: 'local_intelligence',
-        topicId: topic.id,
-        sessionId: this.sessionId
-      }
-    };
-  }
-
-  createLocalQuestion(topic, type, difficulty, index) {
-    const questionId = `q${index + 1}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-
-    const baseQuestion = {
-      id: questionId,
-      difficulty: difficulty,
-      type: type,
-      conceptsTested: [topic.title],
-      timeEstimate: this.getTimeEstimate(type, difficulty),
-      topic: topic
-    };
-
-    const topicContent = topic.description || topic.title;
-    const keyInsights = topic.keyInsights || [];
-    const applications = topic.realWorldApplications || [];
-
-    if (type === 'conceptual') {
-      return {
-        ...baseQuestion,
-        text: `Which statement best describes the key concept of ${topic.title}?`,
-        question: `Which statement best describes the key concept of ${topic.title}?`,
-        options: [
-          { id: "A", text: keyInsights[0] || `Understanding the fundamental principles of ${topic.title}`, isCorrect: true },
-          { id: "B", text: `Advanced applications beyond basic understanding`, isCorrect: false },
-          { id: "C", text: `Historical development only`, isCorrect: false },
-          { id: "D", text: `Unrelated theoretical concepts`, isCorrect: false }
-        ],
-        correctAnswer: "A",
-        explanation: `The key concept of ${topic.title} involves ${keyInsights[0] || 'understanding its fundamental principles'}, which is essential for ${this.studentGoal.toUpperCase()} preparation.`,
-        misconceptionAnalysis: "Many students confuse basic concepts with advanced applications. Fundamentals are always required.",
-        examRelevance: `Tested directly in ${this.studentGoal.toUpperCase()} through definition and basic application questions.`
-      };
-    } else if (type === 'application') {
-      return {
-        ...baseQuestion,
-        text: `How would you apply ${topic.title} to solve a typical problem?`,
-        question: `How would you apply ${topic.title} to solve a typical problem?`,
-        options: [
-          { id: "A", text: "Use memorized patterns without understanding", isCorrect: false },
-          { id: "B", text: "Apply systematic reasoning with proper steps", isCorrect: true },
-          { id: "C", text: "Guess based on similar problems", isCorrect: false },
-          { id: "D", text: "Skip and try later", isCorrect: false }
-        ],
-        correctAnswer: "B",
-        explanation: `Applying ${topic.title} requires: 1) Understanding the problem, 2) Identifying relevant principles, 3) Applying methodically, 4) Verifying results.`,
-        misconceptionAnalysis: "Students often try to memorize patterns instead of understanding application logic.",
-        examRelevance: `Application questions constitute significant portion of ${this.studentGoal.toUpperCase()} exams.`
-      };
-    } else { // analysis
-      return {
-        ...baseQuestion,
-        text: `Which demonstrates deep understanding of ${topic.title}?`,
-        question: `Which demonstrates deep understanding of ${topic.title}?`,
-        options: [
-          { id: "A", text: "Surface-level recognition", isCorrect: false },
-          { id: "B", text: "Ability to analyze complex scenarios and draw insights", isCorrect: true },
-          { id: "C", text: "Memorizing analysis templates", isCorrect: false },
-          { id: "D", text: "Avoiding analysis questions", isCorrect: false }
-        ],
-        correctAnswer: "B",
-        explanation: `Deep understanding of ${topic.title} is shown by analyzing complex scenarios, identifying patterns, drawing insights, and applying concepts creatively.`,
-        misconceptionAnalysis: "Many confuse analysis with simple recognition. True analysis requires deeper thinking.",
-        examRelevance: `Analysis questions differentiate average from top performers in ${this.studentGoal.toUpperCase()}.`,
-        textField: "Please provide a detailed explanation of your answer."
-      };
-    }
-  }
-
-  getTimeEstimate(type, difficulty) {
-    const baseTimes = { easy: 45, medium: 75, hard: 120 };
-    const typeMultipliers = { conceptual: 1.0, application: 1.2, analysis: 1.5 };
-
-    const base = baseTimes[difficulty] || 60;
-    const multiplier = typeMultipliers[type] || 1.0;
-
-    return Math.round(base * multiplier);
-  }
-
-  generateFallbackQuiz(topic) {
-    const topicTitle = typeof topic === 'string' ? topic : topic.title;
-
-    return {
-      id: `fallback_quiz_${Date.now()}`,
-      title: `Quiz: ${topicTitle}`,
-      topic: topicTitle,
-      questions: [
-        {
-          id: 'fbq1',
-          text: `What is important to know about ${topicTitle}?`,
-          question: `What is important to know about ${topicTitle}?`,
-          options: [
-            { id: "A", text: "Both conceptual understanding and practical application", isCorrect: true },
-            { id: "B", text: "Only theoretical knowledge", isCorrect: false },
-            { id: "C", text: "Only memorization", isCorrect: false },
-            { id: "D", text: "Only historical context", isCorrect: false }
-          ],
-          correctAnswer: "A",
-          explanation: `${topicTitle} requires both solid conceptual understanding AND practical application skills for mastery.`,
-          difficulty: "medium",
-          type: "conceptual",
-          textField: "Please provide a detailed explanation of your answer."
-        }
-      ],
-      metadata: {
-        isFallback: true,
-        generatedAt: new Date().toISOString()
-      }
-    };
+    const quiz = offline.buildLocalQuiz({
+      topic,
+      topics: this.enhancedTopics,
+      difficulty,
+      goal: this.studentGoal,
+      sessionId: this.sessionId
+    });
+    if (!quiz) throw new Error('This topic has no text to build a quiz from.');
+    return quiz;
   }
 
   // =========================================================
