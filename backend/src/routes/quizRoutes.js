@@ -40,10 +40,22 @@ const quizQuestions = {
   ]
 };
 
+const defaultQuestions = [
+  {
+    id: 1,
+    question: "Sample question",
+    options: ["Option A", "Option B", "Option C", "Option D"],
+    correctAnswer: 0,
+    difficulty: "easy"
+  }
+];
+
+const questionsFor = (topic) => quizQuestions[topic] || defaultQuestions;
+
 // GET: Get quiz questions for a topic
 router.get('/questions/:topic', (req, res) => {
   const { topic } = req.params;
-  const questions = quizQuestions[topic] || [];
+  const questions = questionsFor(topic);
   
   // Adapt difficulty based on cognitive load (simplified)
   const { loadLevel = 'medium' } = req.query;
@@ -66,9 +78,13 @@ router.get('/questions/:topic', (req, res) => {
 // POST: Submit quiz results
 router.post('/submit', async (req, res) => {
   try {
-    const { userId, sessionId, topic, answers, loadBefore, completionTime } = req.body;
-    
-    const questions = quizQuestions[topic] || [];
+    const { userId, sessionId, topic, answers, loadBefore = 50, completionTime } = req.body;
+
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({ success: false, error: 'answers must be a non-empty array' });
+    }
+
+    const questions = questionsFor(topic);
     let correct = 0;
     
     answers.forEach(answer => {
@@ -85,7 +101,7 @@ router.post('/submit', async (req, res) => {
       topic,
       questionCount: answers.length,
       correctAnswers: correct,
-      score: (correct / answers.length) * 100,
+      score: Math.round((correct / answers.length) * 100),
       loadBefore,
       completionTime,
       completedAt: new Date().toISOString()
@@ -101,7 +117,7 @@ router.post('/submit', async (req, res) => {
       message: `Quiz completed! Score: ${result.score}%`
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to submit quiz' });
+    res.status(500).json({ success: false, error: 'Failed to submit quiz' });
   }
 });
 

@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const OPENROUTER_API_KEY = "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";
+// Server-side only; set in frontend/.env.local (never hard-code keys).
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 // Path to mock_lecture_plan.json
 const LECTURE_PLAN_PATH = path.join(process.cwd(), 'frontend', 'src', 'app', 'lib', 'mock_lecture_plan.json');

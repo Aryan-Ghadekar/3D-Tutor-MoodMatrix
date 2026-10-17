@@ -9,7 +9,7 @@ const QuizResult = require('./QuizResult');
 // Sync all models
 const syncDatabase = async () => {
   try {
-    await sequelize.sync({ alter: true }); 
+    await sequelize.sync();
     console.log('✅ Database tables synced successfully');
   } catch (error) {
     console.error('❌ Error syncing database:', error);

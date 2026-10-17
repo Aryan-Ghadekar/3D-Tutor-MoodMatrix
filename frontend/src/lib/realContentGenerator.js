@@ -1,5 +1,6 @@
 // Real Content Generator - No mocks, no fallbacks
-const OPENROUTER_API_KEY = "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";
+// Server-side only; set in frontend/.env.local (never hard-code keys).
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 export class RealContentGenerator {
   constructor() {

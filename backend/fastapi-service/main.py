@@ -1,4 +1,3 @@
-import sys
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -6,21 +5,24 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
+from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
+import re
 import uuid
 import tempfile
+import threading
 import pdfplumber
-import whisper
 import os
 import requests
 import json
-from sentence_transformers import SentenceTransformer, util
 from datetime import date, datetime
 from dotenv import load_dotenv
 from pathlib import Path
 from pptx import Presentation
-from youtube_transcript_api import YouTubeTranscriptApi
-import yt_dlp
 import random
+
+# Heavy ML dependencies (whisper, sentence-transformers, yt-dlp) are imported lazily
+# so the API starts fast and the non-ML endpoints keep working if they are missing.
 
 # =========================================================
 # ENV
@@ -28,14 +30,17 @@ import random
 # Load from .env file in the same directory as main.py
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
+PORT = int(os.getenv("PORT", "8001"))
+
 # =========================================================
 # APP INIT
 # =========================================================
 app = FastAPI(title="Study Plan Generator API")
 
+_default_origins = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"],
+    allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", _default_origins).split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -67,26 +72,60 @@ class SaveResultsRequest(BaseModel):
     weak_topics: List[str]
     recommendations: List[str]
 
+class TopicQuizRequest(BaseModel):
+    topic: dict
+    difficulty: str = "medium"
+    studentGoal: str = "gate"
+    numberOfQuestions: int = 5
+    sessionId: Optional[str] = None
+    misconceptions: List[dict] = []
+    previousPerformance: dict = {}
+    cognitiveLoad: str = "medium"
+
 # =========================================================
-# ML MODELS
+# ML MODELS (lazy)
 # =========================================================
-whisper_model = whisper.load_model("base")
-semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
+_model_lock = threading.Lock()
+_whisper_model = None
+_semantic_model = None
+
+def get_whisper_model():
+    global _whisper_model
+    with _model_lock:
+        if _whisper_model is None:
+            try:
+                import whisper
+            except ImportError:
+                raise HTTPException(status_code=501, detail="openai-whisper is not installed; audio/YouTube transcription is unavailable.")
+            _whisper_model = whisper.load_model(os.getenv("WHISPER_MODEL", "base"))
+    return _whisper_model
+
+def get_semantic_model():
+    """Returns the sentence-transformers model, or None if it cannot be loaded."""
+    global _semantic_model
+    with _model_lock:
+        if _semantic_model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                _semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
+            except Exception as e:
+                print(f"Semantic model unavailable, using keyword-only scoring: {e}")
+                _semantic_model = False
+    return _semantic_model or None
 
 # =========================================================
 # OPENROUTER CONFIG
 # =========================================================
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-OPENROUTER_MODEL = "openai/gpt-3.5-turbo"
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-3.5-turbo")
 
-# Validate API key on startup
 if not OPENROUTER_API_KEY:
-    print("⚠️  WARNING: OPENROUTER_API_KEY not found in environment!")
-    print("   Please ensure .env file exists in:", os.path.join(os.path.dirname(__file__), '.env'))
-    print("   And contains: OPENROUTER_API_KEY=your_key_here")
+    print("WARNING: OPENROUTER_API_KEY not found in environment!")
+    print("   Create", os.path.join(os.path.dirname(__file__), '.env'), "containing: OPENROUTER_API_KEY=your_key_here")
+    print("   Without it, AI-generated content falls back to simple text extraction.")
 else:
-    print(f"✅ OpenRouter API Key loaded: {OPENROUTER_API_KEY[:20]}...{OPENROUTER_API_KEY[-4:]}")
+    print("OpenRouter API key loaded.")
 
 # =========================================================
 # CONSTANTS
@@ -100,17 +139,23 @@ KEYWORDS = {
 # =========================================================
 # EXTRACTION HELPERS
 # =========================================================
+def _save_upload(upload: UploadFile, default_suffix: str) -> str:
+    suffix = Path(upload.filename or "").suffix or default_suffix
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(upload.file.read())
+        return tmp.name
+
 def extract_pdf_text(pdf_file: UploadFile) -> str:
     text = ""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        tmp.write(pdf_file.file.read())
-        tmp_path = tmp.name
-
+    tmp_path = _save_upload(pdf_file, ".pdf")
     try:
         with pdfplumber.open(tmp_path) as pdf:
             for page in pdf.pages:
-                if page.extract_text():
-                    text += page.extract_text() + "\n"
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Could not read the PDF file: {e}")
     finally:
         os.unlink(tmp_path)
 
@@ -118,89 +163,88 @@ def extract_pdf_text(pdf_file: UploadFile) -> str:
 
 def extract_ppt_text(ppt_file: UploadFile) -> str:
     text = ""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pptx") as tmp:
-        tmp.write(ppt_file.file.read())
-        tmp_path = tmp.name
-
+    tmp_path = _save_upload(ppt_file, ".pptx")
     try:
         prs = Presentation(tmp_path)
         for slide in prs.slides:
             for shape in slide.shapes:
-                if hasattr(shape, "text"):
+                if hasattr(shape, "text") and shape.text:
                     text += shape.text + "\n"
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Could not read the PowerPoint file (only .pptx is supported): {e}")
     finally:
         os.unlink(tmp_path)
 
     return text.strip()
 
 def transcribe_audio(audio_file: UploadFile) -> str:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-        tmp.write(audio_file.file.read())
-        tmp_path = tmp.name
-
+    tmp_path = _save_upload(audio_file, ".wav")
     try:
-        return whisper_model.transcribe(tmp_path)["text"]
+        return get_whisper_model().transcribe(tmp_path)["text"].strip()
     finally:
         os.unlink(tmp_path)
 
+def extract_video_id(url: str) -> Optional[str]:
+    match = re.search(r"(?:v=|youtu\.be/|/embed/|/shorts/|/live/)([A-Za-z0-9_-]{11})", url)
+    return match.group(1) if match else None
+
 def process_yt_link(yt_link: str) -> str:
-    video_id = yt_link.split("v=")[-1].split("&")[0]
+    """Return the transcript text of a YouTube video, or raise HTTPException."""
+    video_id = extract_video_id(yt_link)
+    if not video_id:
+        raise HTTPException(status_code=422, detail="Could not find a video id in the YouTube link.")
+
+    # 1) Captions (fast). Works with both the 1.x and the older youtube-transcript-api.
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        return " ".join([item['text'] for item in transcript])
-    except:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            audio_path = tmp.name
-        
+        from youtube_transcript_api import YouTubeTranscriptApi
+        if hasattr(YouTubeTranscriptApi, "get_transcript"):
+            items = YouTubeTranscriptApi.get_transcript(video_id)
+            text = " ".join(item["text"] for item in items)
+        else:
+            fetched = YouTubeTranscriptApi().fetch(video_id)
+            text = " ".join(getattr(item, "text", None) or item["text"] for item in fetched)
+        if text.strip():
+            return text.strip()
+    except Exception as e:
+        print(f"No captions for {video_id} ({type(e).__name__}); falling back to audio transcription")
+
+    # 2) Download the audio and transcribe it with whisper (needs yt-dlp + ffmpeg).
+    try:
+        import yt_dlp
+    except ImportError:
+        raise HTTPException(status_code=501, detail="This video has no captions and yt-dlp is not installed.")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': audio_path.replace('.wav', ''),
+            'outtmpl': os.path.join(tmp_dir, 'audio.%(ext)s'),
             'quiet': True,
             'no_warnings': True,
         }
-        
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([yt_link])
-            
-            import glob
-            downloaded_files = glob.glob(audio_path.replace('.wav', '') + '*')
-            if downloaded_files:
-                actual_path = downloaded_files[0]
-                transcript = whisper_model.transcribe(actual_path)["text"]
-                os.unlink(actual_path)
-            else:
-                raise Exception("Download failed")
-                
+                ydl.download([f"https://www.youtube.com/watch?v={video_id}"])
+            files = list(Path(tmp_dir).glob("audio.*"))
+            if not files:
+                raise RuntimeError("download produced no audio file")
+            return get_whisper_model().transcribe(str(files[0]))["text"].strip()
+        except HTTPException:
+            raise
         except Exception as e:
-            print(f"YouTube processing error: {e}")
-            return "YouTube transcription failed"
-        
-        return transcript
+            raise HTTPException(status_code=422, detail=f"Could not transcribe the YouTube video: {e}")
 
 # =========================================================
 # TEXT PROCESSING HELPERS
 # =========================================================
 def chunk_text(text: str, max_tokens: int = 150):
-    """Improved chunking with better token limits"""
+    """Split text into chunks of roughly max_tokens words."""
     words = text.split()
-    chunks, current = [], []
+    return [" ".join(words[i:i + max_tokens]) for i in range(0, len(words), max_tokens)]
 
-    for w in words:
-        current.append(w)
-        if len(current) >= max_tokens:
-            chunks.append(" ".join(current))
-            current = []
-
-    if current:
-        chunks.append(" ".join(current))
-
-    return chunks
-
-def calculate_topic_count(text_length: int) -> int:
+def calculate_topic_count(text: str) -> int:
     """Dynamic topic count based on content length"""
-    word_count = len(text_length.split())
-    
+    word_count = len(text.split())
+
     if word_count < 500:
         return 3
     elif word_count < 1500:
@@ -214,22 +258,36 @@ def calculate_topic_count(text_length: int) -> int:
     else:
         return 20
 
-def extract_features(chunks, transcript):
-    embeddings = semantic_model.encode(chunks)
-    doc_embedding = embeddings.mean(axis=0)
-    features = []
+def _words(text: str) -> set:
+    return set(re.findall(r"[a-z0-9]{4,}", text.lower()))
 
+def extract_features(chunks, transcript):
+    model = get_semantic_model()
+    embeddings = model.encode(chunks) if model is not None else None
+    doc_embedding = embeddings.mean(axis=0) if embeddings is not None else None
+
+    # Words that appear in "important" sentences of the spoken transcript
+    spoken_key_words = set()
+    if transcript:
+        for sentence in re.split(r"[.!?]", transcript):
+            if any(k in sentence.lower() for k in KEYWORDS):
+                spoken_key_words |= _words(sentence)
+
+    features = []
     for i, chunk in enumerate(chunks):
-        semantic = float(util.cos_sim(embeddings[i], doc_embedding)[0][0])
+        if embeddings is not None:
+            from sentence_transformers import util
+            semantic = float(util.cos_sim(embeddings[i], doc_embedding)[0][0])
+        else:
+            semantic = 0.5
         keyword = min(sum(v for k, v in KEYWORDS.items() if k in chunk.lower()), 1.0)
         duration = min(len(chunk.split()) / 150, 1.0)
 
         audio = 0.0
-        if transcript:
-            for s in transcript.split("."):
-                if any(k in s.lower() for k in KEYWORDS) and chunk[:100] in s:
-                    audio = 1.0
-                    break
+        if spoken_key_words:
+            chunk_words = _words(chunk)
+            if chunk_words:
+                audio = min(len(chunk_words & spoken_key_words) / max(len(chunk_words) * 0.3, 1), 1.0)
 
         features.append({
             "semantic": semantic,
@@ -269,44 +327,68 @@ def validate_api_key():
         )
     return True
 
-def make_openrouter_request(payload, timeout=15):
+def make_openrouter_request(payload, timeout=30):
     """Make OpenRouter API request with proper error handling"""
     validate_api_key()
-    
+
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost:3000",
         "X-Title": "Study Session AI"
     }
-    
+
     try:
         response = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=timeout)
-        
+
         if response.status_code == 401:
-            raise Exception(
-                f"OpenRouter API returned 401 Unauthorized. "
-                f"Please verify your API key is correct and active. "
-                f"Current key: {OPENROUTER_API_KEY[:20]}..."
-            )
-        
+            raise Exception("OpenRouter API returned 401 Unauthorized. Please verify your API key is correct and active.")
+
         response.raise_for_status()
         return response.json()
-        
+
     except requests.exceptions.Timeout:
         raise Exception(f"OpenRouter API request timed out after {timeout}s. Try again.")
     except requests.exceptions.ConnectionError as e:
         raise Exception(f"Cannot connect to OpenRouter API: {str(e)}")
 
+def llm_message(payload, timeout=30) -> str:
+    """Send a chat payload and return the reply text."""
+    result = make_openrouter_request(payload, timeout=timeout)
+    choices = result.get("choices") or []
+    if not choices or not choices[0].get("message"):
+        raise Exception("Invalid API response format")
+    return choices[0]["message"]["content"].strip()
+
+def parse_llm_json(content: str):
+    """Parse JSON from an LLM reply, tolerating code fences and surrounding prose."""
+    content = content.strip().replace("```json", "").replace("```", "").strip()
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+    for open_ch, close_ch in (("{", "}"), ("[", "]")):
+        start, end = content.find(open_ch), content.rfind(close_ch)
+        if start != -1 and end > start:
+            try:
+                return json.loads(content[start:end + 1])
+            except json.JSONDecodeError:
+                continue
+    raise ValueError("LLM reply did not contain valid JSON")
+
 # =========================================================
 # LLM GENERATION HELPERS
 # =========================================================
+def first_sentences(text: str, n: int = 2, limit: int = 300) -> str:
+    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+    return " ".join(sentences[:n])[:limit]
+
 def generate_topic_title(text):
     """Generate concise, meaningful topic titles"""
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": [
-            {"role": "system", "content": "You are an expert educator. Generate a clear, concise topic title (max 10 words) that captures the main concept. Focus on key technical terms and concepts."},
+            {"role": "system", "content": "You are an expert educator. Generate a clear, concise topic title (max 10 words) that captures the main concept. Focus on key technical terms and concepts. Reply with the title only."},
             {"role": "user", "content": f"Generate a topic title for this content:\n\n{text[:1000]}"}
         ],
         "temperature": 0.3,
@@ -314,14 +396,12 @@ def generate_topic_title(text):
     }
 
     try:
-        result = make_openrouter_request(payload)
-        title = result["choices"][0]["message"]["content"].strip()
-        title = title.replace('"', '').replace("'", '').strip()
-        return title[:100]
+        title = llm_message(payload).replace('"', '').strip().rstrip('.')
+        if title:
+            return title[:100]
     except Exception as e:
         print(f"Title generation failed: {e}")
-        words = text.split()[:8]
-        return " ".join(words) + "..."
+    return " ".join(text.split()[:8])
 
 def generate_summary(text):
     """Generate concise summary instead of full chunk"""
@@ -336,14 +416,15 @@ def generate_summary(text):
     }
 
     try:
-        result = make_openrouter_request(payload)
-        return result["choices"][0]["message"]["content"].strip()
+        summary = llm_message(payload)
+        if summary:
+            return summary
     except Exception as e:
         print(f"Summary generation failed: {e}")
-        return text[:300] + "..."
+    return first_sentences(text, 3, 400)
 
-def generate_structured_content(prompt, text, expected_format="list"):
-    """Generate structured content with better parsing"""
+def generate_structured_content(prompt, text):
+    """Ask the LLM for a short JSON list of strings. Returns [] on any failure."""
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": [
@@ -355,104 +436,84 @@ def generate_structured_content(prompt, text, expected_format="list"):
     }
 
     try:
-        result = make_openrouter_request(payload)
-        content = result["choices"][0]["message"]["content"].strip()
-        
+        content = llm_message(payload)
         try:
-            content = content.replace("```json", "").replace("```", "").strip()
-            parsed = json.loads(content)
+            parsed = parse_llm_json(content)
             if isinstance(parsed, list):
-                return parsed[:4]
+                return [str(p) for p in parsed if str(p).strip()][:4]
             return [str(parsed)]
-        except:
-            if "\n" in content:
-                items = [line.strip("- •").strip() for line in content.split("\n") if line.strip()]
-            else:
-                items = [item.strip() for item in content.split(",")]
+        except ValueError:
+            items = [line.strip("-• ").strip() for line in content.split("\n") if line.strip()]
             return [item for item in items if item][:4]
     except Exception as e:
         print(f"Structured content generation failed: {e}")
-        return ["Content generation failed - check API key and connection"]
+        return []
 
 # =========================================================
 # ANALYSIS FUNCTIONS
 # =========================================================
-def analyze_text(pdf_text, ppt_text, transcript):
-    combined_text = pdf_text + " " + ppt_text
-    chunks = chunk_text(combined_text)
+def analyze_text(source_text, transcript):
+    chunks = chunk_text(source_text)
+    if not chunks:
+        raise HTTPException(status_code=422, detail="No readable text was found in the provided files or video.")
+
     features = extract_features(chunks, transcript)
     scores = compute_importance(features)
 
-    analyzed = []
-    for i, c in enumerate(chunks):
-        analyzed.append({
-            "text": c,
-            "score": scores[i],
-            "importance": label_importance(scores[i])
-        })
+    analyzed = [
+        {"index": i, "text": c, "score": scores[i], "importance": label_importance(scores[i])}
+        for i, c in enumerate(chunks)
+    ]
 
-    analyzed.sort(key=lambda x: x["score"], reverse=True)
-    topic_count = calculate_topic_count(combined_text)
-    
+    # Keep the highest-scoring chunks, but present them in lecture order
+    topic_count = calculate_topic_count(source_text)
+    top = sorted(analyzed, key=lambda x: x["score"], reverse=True)[:topic_count]
+    top.sort(key=lambda x: x["index"])
+
     return {
-        "chunks": analyzed[:topic_count],
+        "chunks": top,
         "has_audio": transcript is not None,
         "total_chunks": len(analyzed),
-        "word_count": len(combined_text.split())
+        "word_count": len(source_text.split())
     }
+
+def build_topic(i, c):
+    text = c["text"]
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        f_title = pool.submit(generate_topic_title, text)
+        f_summary = pool.submit(generate_summary, text)
+        f_prereq = pool.submit(generate_structured_content, "List 2-3 key prerequisites or background knowledge needed to understand this topic", text)
+        f_misc = pool.submit(generate_structured_content, "List 2-3 common misconceptions or mistakes students make about this topic", text)
+        f_insights = pool.submit(generate_structured_content, "List 2-3 key insights, takeaways, or important points from this topic", text)
+
+        return {
+            "id": f"topic-{i+1}",
+            "title": f_title.result(),
+            "description": f_summary.result(),
+            "full_content": text[:500],
+            "importance": c["importance"],
+            "weightage": round(c["score"] * 100, 2),
+            "prerequisites": f_prereq.result(),
+            "commonMisconceptions": f_misc.result(),
+            "keyInsights": f_insights.result()
+        }
 
 def build_lecture_plan(data):
     """Build comprehensive lecture plan with dynamic topics"""
-    topics = []
-    chunk_count = min(len(data["chunks"]), 20)
-    
-    print(f"Generating {chunk_count} topics from {data.get('word_count', 0)} words...")
-    
-    for i, c in enumerate(data["chunks"][:chunk_count]):
-        print(f"Processing topic {i+1}/{chunk_count}...")
-        
-        title = generate_topic_title(c["text"])
-        summary = generate_summary(c["text"])
-        
-        prerequisites = generate_structured_content(
-            "List 2-3 key prerequisites or background knowledge needed to understand this topic",
-            c["text"]
-        )
-        
-        misconceptions = generate_structured_content(
-            "List 2-3 common misconceptions or mistakes students make about this topic",
-            c["text"]
-        )
-        
-        insights = generate_structured_content(
-            "List 2-3 key insights, takeaways, or important points from this topic",
-            c["text"]
-        )
+    chunks = data["chunks"][:20]
+    print(f"Generating {len(chunks)} topics from {data.get('word_count', 0)} words...")
 
-        topics.append({
-            "id": f"topic-{i+1}",
-            "title": title,
-            "description": summary,
-            "full_content": c["text"][:500],
-            "importance": c["importance"],
-            "weightage": round(c["score"] * 100, 2),
-            "prerequisites": prerequisites,
-            "commonMisconceptions": misconceptions,
-            "keyInsights": insights
-        })
+    topics = [build_topic(i, c) for i, c in enumerate(chunks)]
 
-    all_text = " ".join([c["text"] for c in data["chunks"][:5]])
-    
-    overall_topic = generate_topic_title(all_text)
-    duration = generate_structured_content(
-        "Estimate lecture duration based on content complexity. Return as single string like '45-60 minutes'",
-        all_text
-    )[0] if data["chunks"] else "30-45 minutes"
-    
-    instructor = generate_structured_content(
-        "Suggest appropriate instructor role/expertise for this content. Return single string like 'Computer Architecture Professor'",
-        all_text
-    )[0] if data["chunks"] else "Subject Matter Expert"
+    all_text = " ".join(c["text"] for c in chunks[:5])
+
+    overall_topic = generate_topic_title(all_text) if all_text else "Lecture"
+    duration = (generate_structured_content(
+        "Estimate lecture duration based on content complexity. Return a JSON array with a single string like \"45-60 minutes\"",
+        all_text) or ["30-45 minutes"])[0]
+    instructor = (generate_structured_content(
+        "Suggest appropriate instructor role/expertise for this content. Return a JSON array with a single string like \"Computer Architecture Professor\"",
+        all_text) or ["Subject Matter Expert"])[0]
 
     return {
         "sessionId": str(uuid.uuid4()),
@@ -465,209 +526,278 @@ def build_lecture_plan(data):
         "metadata": {
             "analysisDepth": "signal-weighted-enhanced",
             "confidenceScore": round(
-                sum(c["score"] for c in data["chunks"][:chunk_count]) / max(chunk_count, 1), 2
+                sum(c["score"] for c in chunks) / max(len(chunks), 1), 2
             ),
             "fallbackUsed": not data["has_audio"],
             "totalTopicsGenerated": len(topics),
             "wordCount": data.get("word_count", 0),
-            "processingVersion": "2.0"
+            "processingVersion": "2.1"
         }
     }
 
 # =========================================================
-# IMPROVED MCQ GENERATION
+# MCQ GENERATION
 # =========================================================
-def generate_mcq_with_llm(topic_title, content, insights):
-    """Generate high-quality MCQ using LLM"""
-    payload = {
-        "model": OPENROUTER_MODEL,
-        "messages": [
-            {
-                "role": "system", 
-                "content": """You are an expert educator creating multiple choice questions. 
-Generate a question with 4 options (A, B, C, D) where:
-- Question tests understanding of the concept
+OPTION_IDS = ["A", "B", "C", "D"]
+
+def normalize_mcq(mcq):
+    """Validate an LLM MCQ and shuffle its options so the answer position is random.
+
+    Returns a dict with question/options/explanation, or None if the MCQ is unusable.
+    """
+    if not isinstance(mcq, dict) or not str(mcq.get("question", "")).strip():
+        return None
+    raw = mcq.get("options")
+    if not isinstance(raw, list) or len(raw) != 4:
+        return None
+
+    options = []
+    for opt in raw:
+        if not isinstance(opt, dict) or not str(opt.get("text", "")).strip():
+            return None
+        options.append({"text": str(opt["text"]).strip(), "isCorrect": bool(opt.get("isCorrect"))})
+
+    if sum(o["isCorrect"] for o in options) != 1:
+        return None
+
+    random.shuffle(options)
+    for i, opt in enumerate(options):
+        opt["id"] = OPTION_IDS[i]
+    options = [{"id": o["id"], "text": o["text"], "isCorrect": o["isCorrect"]} for o in options]
+
+    return {
+        "question": str(mcq["question"]).strip(),
+        "options": options,
+        "explanation": str(mcq.get("explanation", "")).strip(),
+    }
+
+MCQ_SYSTEM_PROMPT = """You are an expert educator creating multiple choice questions.
+Generate questions with 4 options where:
+- The question tests understanding of the concept, not trivia
 - Options are plausible and similar in length
-- Only ONE option is clearly correct
+- Only ONE option is correct
 - Wrong options are believable but incorrect
-- Avoid obvious patterns
 
 Return ONLY valid JSON in this exact format:
 {
   "question": "Question text here?",
   "options": [
-    {"id": "A", "text": "First option", "isCorrect": true},
-    {"id": "B", "text": "Second option", "isCorrect": false},
-    {"id": "C", "text": "Third option", "isCorrect": false},
-    {"id": "D", "text": "Fourth option", "isCorrect": false}
+    {"text": "First option", "isCorrect": true},
+    {"text": "Second option", "isCorrect": false},
+    {"text": "Third option", "isCorrect": false},
+    {"text": "Fourth option", "isCorrect": false}
   ],
   "explanation": "Why the correct answer is correct"
 }"""
-            },
-            {
-                "role": "user", 
-                "content": f"""Topic: {topic_title}
+
+def generate_mcq_with_llm(topic_title, content, insights):
+    """Generate a single MCQ with the LLM. Returns a normalized MCQ or None."""
+    payload = {
+        "model": OPENROUTER_MODEL,
+        "messages": [
+            {"role": "system", "content": MCQ_SYSTEM_PROMPT},
+            {"role": "user", "content": f"""Topic: {topic_title}
 
 Content: {content[:800]}
 
 Key Points: {', '.join(insights[:2]) if insights else 'See content above'}
 
-Generate a multiple choice question testing this concept."""
-            }
+Generate a multiple choice question testing this concept."""}
         ],
         "temperature": 0.7,
         "max_tokens": 400
     }
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
     try:
-        r = requests.post(OPENROUTER_URL, json=payload, headers=headers, timeout=20)
-        r.raise_for_status()
-        content = r.json()["choices"][0]["message"]["content"].strip()
-        
-        # Clean JSON
-        content = content.replace("```json", "").replace("```", "").strip()
-        mcq_data = json.loads(content)
-        
-        return mcq_data
+        return normalize_mcq(parse_llm_json(llm_message(payload, timeout=30)))
     except Exception as e:
         print(f"LLM MCQ generation failed: {e}")
         return None
 
-def create_diagnostic_question(qid, topic, content, misconceptions, insights):
-    """Create a high-quality diagnostic MCQ"""
+def _candidate_statements(topic):
+    """Short factual statements taken from a topic, used for template questions."""
+    statements = [s.strip() for s in topic.get("keyInsights", []) if isinstance(s, str) and len(s.strip()) > 10]
+    description = first_sentences(topic.get("description") or topic.get("full_content") or "", 1, 200)
+    if len(description) > 10:
+        statements.append(description)
+    return statements
+
+def create_diagnostic_question(qid, topic, content, insights, other_topics=()):
+    """Create a diagnostic MCQ: LLM-generated when possible, otherwise template-based."""
     title = topic.get('title', 'Topic')
-    
-    # Try LLM generation first
+
     llm_mcq = generate_mcq_with_llm(title, content, insights)
-    
-    if llm_mcq and llm_mcq.get('question') and llm_mcq.get('options'):
-        # Use LLM-generated question
-        options = llm_mcq['options']
-        correct_answer = next((opt['id'] for opt in options if opt.get('isCorrect')), 'A')
-        
+    if llm_mcq:
+        correct_answer = next(o["id"] for o in llm_mcq["options"] if o["isCorrect"])
         return {
             "id": f"q{qid}",
-            "question": llm_mcq['question'],
-            "options": options,
+            "question": llm_mcq["question"],
+            "options": llm_mcq["options"],
             "correctAnswer": correct_answer,
-            "explanation": llm_mcq.get('explanation', f"Based on the lecture content about {title}"),
+            "explanation": llm_mcq["explanation"] or f"Based on the lecture content about {title}",
             "difficulty": topic.get('importance', 'medium'),
             "conceptsTested": [title],
             "topicId": topic.get('id'),
-            "diagnosticFocus": "knowledge_verification"
+            "topicName": title,
+            "diagnosticFocus": "knowledge_verification",
+            "source": "ai"
         }
-    
-    # Fallback to template-based generation
-    sentences = content.split('.')[:3]
-    key_fact = sentences[0].strip() if sentences else title
-    
-    question_text = f"Which statement best describes {title}?"
-    
-    correct = insights[0] if insights else f"The concept involves {key_fact}"
-    
-    # Generate plausible wrong answers
-    wrong_answers = [
-        f"This approach is primarily used in different contexts",
-        f"The opposite principle applies in most cases",
-        f"There is insufficient evidence to support this theory"
+
+    # Template fallback: the right answer comes from this topic, distractors from other topics
+    own = _candidate_statements(topic)
+    correct = own[0] if own else f"{title} is covered in this lecture."
+    distractors = []
+    for other in other_topics:
+        if other.get("id") == topic.get("id"):
+            continue
+        for statement in _candidate_statements(other):
+            if statement != correct and statement not in distractors:
+                distractors.append(statement)
+                break
+        if len(distractors) == 3:
+            break
+    generic = [
+        f"{title} is not part of this lecture's material.",
+        f"The opposite of this statement is true for {title}.",
+        f"{title} only applies in situations the lecture did not cover.",
     ]
-    
-    options = [
-        {"id": "A", "text": correct, "isCorrect": True},
-        {"id": "B", "text": wrong_answers[0], "isCorrect": False},
-        {"id": "C", "text": wrong_answers[1], "isCorrect": False},
-        {"id": "D", "text": wrong_answers[2], "isCorrect": False}
-    ]
-    
+    for g in generic:
+        if len(distractors) == 3:
+            break
+        distractors.append(g)
+
+    options = [{"text": correct, "isCorrect": True}] + [{"text": d, "isCorrect": False} for d in distractors[:3]]
     random.shuffle(options)
-    
-    # Update IDs after shuffle
     for i, opt in enumerate(options):
-        opt['id'] = chr(65 + i)  # A, B, C, D
-    
-    correct_answer = next(opt['id'] for opt in options if opt['isCorrect'])
-    
+        opt["id"] = OPTION_IDS[i]
+    options = [{"id": o["id"], "text": o["text"], "isCorrect": o["isCorrect"]} for o in options]
+
     return {
         "id": f"q{qid}",
-        "question": question_text,
+        "question": f"Which statement is correct about {title}?",
         "options": options,
-        "correctAnswer": correct_answer,
-        "explanation": f"The correct answer relates to: {correct}",
+        "correctAnswer": next(o["id"] for o in options if o["isCorrect"]),
+        "explanation": f"According to the lecture: {correct}",
         "difficulty": topic.get('importance', 'medium'),
         "conceptsTested": [title],
         "topicId": topic.get('id'),
-        "diagnosticFocus": "knowledge_verification"
+        "topicName": title,
+        "diagnosticFocus": "knowledge_verification",
+        "source": "template"
+    }
+
+def generate_topic_quiz_with_llm(req: "TopicQuizRequest"):
+    """Generate a multi-question quiz for one topic. Returns a quiz dict or None."""
+    topic = req.topic
+    title = topic.get("title", "Topic")
+    count = max(1, min(req.numberOfQuestions, 10))
+    weak = [m.get("concept") or m.get("topic") for m in req.misconceptions[:3] if isinstance(m, dict)]
+
+    system = f"""You are an expert {req.studentGoal.upper()} exam tutor writing a multiple choice quiz.
+Write exactly {count} questions at {req.difficulty} difficulty about the topic. The student's current cognitive load is {req.cognitiveLoad}; keep wording clear.
+Vary the type of question: conceptual, application and analysis.
+{('Target these known weak areas where relevant: ' + ', '.join(w for w in weak if w)) if any(weak) else ''}
+
+Return ONLY valid JSON:
+{{"questions": [{{"question": "...", "type": "conceptual", "options": [{{"text": "...", "isCorrect": true}}, {{"text": "...", "isCorrect": false}}, {{"text": "...", "isCorrect": false}}, {{"text": "...", "isCorrect": false}}], "explanation": "...", "misconception": "the wrong belief a wrong answer reveals"}}]}}
+Each question has exactly 4 options and exactly one correct option."""
+    user = f"""Topic: {title}
+Description: {topic.get('description', '')[:600]}
+Key insights: {'; '.join(topic.get('keyInsights', [])[:4])}
+Common misconceptions: {'; '.join(topic.get('commonMisconceptions', [])[:3])}"""
+
+    payload = {
+        "model": OPENROUTER_MODEL,
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        "temperature": 0.6,
+        "max_tokens": 2200
+    }
+
+    try:
+        parsed = parse_llm_json(llm_message(payload, timeout=45))
+        raw_questions = parsed.get("questions") if isinstance(parsed, dict) else parsed
+    except Exception as e:
+        print(f"LLM quiz generation failed: {e}")
+        return None
+
+    questions = []
+    for raw in raw_questions or []:
+        mcq = normalize_mcq(raw)
+        if not mcq:
+            continue
+        n = len(questions) + 1
+        qtype = raw.get("type") if raw.get("type") in ("conceptual", "application", "analysis") else "conceptual"
+        questions.append({
+            "id": f"q{n}_{uuid.uuid4().hex[:6]}",
+            "text": mcq["question"],
+            "question": mcq["question"],
+            "type": qtype,
+            "difficulty": req.difficulty,
+            "options": mcq["options"],
+            "correctAnswer": next(o["id"] for o in mcq["options"] if o["isCorrect"]),
+            "explanation": mcq["explanation"],
+            "misconception": str(raw.get("misconception", "")).strip(),
+            "conceptsTested": [title],
+            "timeEstimate": 75,
+            "topic": {"id": topic.get("id"), "title": title},
+        })
+
+    if not questions:
+        return None
+
+    return {
+        "id": f"ai_quiz_{uuid.uuid4().hex[:10]}",
+        "title": f"{req.studentGoal.upper()} Quiz: {title}",
+        "topic": title,
+        "studentGoal": req.studentGoal,
+        "difficulty": req.difficulty,
+        "questions": questions,
+        "totalQuestions": len(questions),
+        "estimatedTime": sum(q["timeEstimate"] for q in questions),
+        "metadata": {
+            "generatedAt": datetime.now().isoformat(),
+            "source": "ai",
+            "topicId": topic.get("id"),
+            "sessionId": req.sessionId,
+        }
     }
 
 # =========================================================
-# SAVE FUNCTION
+# STORAGE (JSON files under ./data, git-ignored)
 # =========================================================
-def save_lecture_plan_to_mock(lecture_plan):
-    # Get the project root directory (3 levels up from this file: backend/fastapi-service/main.py -> backend/fastapi-service -> backend -> root)
-    project_root = Path(__file__).resolve().parents[2]
-    mock_file_path = project_root / "frontend" / "src" / "app" / "lib" / "mock_lecture_plan.json"
-    mock_file_path.parent.mkdir(parents=True, exist_ok=True)
+DATA_DIR = Path(os.getenv("DATA_DIR", Path(__file__).resolve().parent / "data"))
+LECTURE_PLANS_FILE = DATA_DIR / "lecture_plans.json"
+QUIZ_RESULTS_FILE = DATA_DIR / "quiz_results.json"
+_file_lock = threading.Lock()
 
-    data = []
-    if mock_file_path.exists():
-        try:
-            with open(mock_file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if not isinstance(data, list):
-                    data = [data]
-        except:
-            data = []
+def _read_json_list(path: Path) -> list:
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8") or "[]")
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Could not read {path.name} ({e}); starting fresh")
+        return []
+    return data if isinstance(data, list) else [data]
 
+def _prepend_json_list(path: Path, item: dict, keep: int) -> None:
+    """Prepend an item to a JSON list file, atomically."""
+    with _file_lock:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        items = [item] + _read_json_list(path)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(items[:keep], indent=2, ensure_ascii=False), encoding="utf-8")
+        os.replace(tmp, path)
+
+def save_lecture_plan(lecture_plan):
     lecture_plan["generated_at"] = datetime.now().isoformat()
-    data.insert(0, lecture_plan)
-    data = data[:10]
-
-    with open(mock_file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-
-    print(f"Saved lecture plan with {lecture_plan['metadata']['totalTopicsGenerated']} topics to: {mock_file_path.resolve()}")
-    return str(mock_file_path.resolve())
+    _prepend_json_list(LECTURE_PLANS_FILE, lecture_plan, keep=10)
+    print(f"Saved lecture plan with {lecture_plan['metadata']['totalTopicsGenerated']} topics")
 
 def save_quiz_results(results_data):
-    """Save quiz results to file"""
-    try:
-        # Get the project root directory
-        project_root = Path(__file__).resolve().parents[2]
-        results_dir = project_root / "frontend" / "src" / "app" / "lib" / "quiz_results"
-        results_dir.mkdir(parents=True, exist_ok=True)
-        
-        results_file = results_dir / "quiz_results.json"
-        
-        all_results = []
-        if results_file.exists():
-            try:
-                with open(results_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    if content.strip():  # Check if file is not empty
-                        all_results = json.loads(content)
-                        if not isinstance(all_results, list):
-                            all_results = [all_results]
-            except json.JSONDecodeError as e:
-                print(f"JSON decode error, starting fresh: {e}")
-                all_results = []
-        
-        results_data["saved_at"] = datetime.now().isoformat()
-        all_results.insert(0, results_data)
-        all_results = all_results[:50]  # Keep last 50 results
-        
-        with open(results_file, "w", encoding="utf-8") as f:
-            json.dump(all_results, f, indent=2, ensure_ascii=False)
-        
-        print(f"Saved quiz results to: {results_file.resolve()}")
-        return str(results_file.resolve())
-    except Exception as e:
-        print(f"Error in save_quiz_results: {e}")
-        raise
+    results_data["saved_at"] = datetime.now().isoformat()
+    _prepend_json_list(QUIZ_RESULTS_FILE, results_data, keep=50)
+    print("Saved quiz results")
 
 # =========================================================
 # AI-POWERED SLIDE GENERATION WITH OPENROUTER
@@ -688,12 +818,12 @@ def generate_slide_with_ai(
     3. Lecture Plan Content
     """
     
-    import json  # Ensure json is available in this scope
-    
     knowledge_level = knowledge_state.get('knowledgeLevel', 'intermediate')
     avg_score = knowledge_state.get('averageScore', 0)
     weak_topics = knowledge_state.get('weakTopics', [])
-    misconceptions = knowledge_state.get('misconceptions', [])
+    misconceptions = [m for m in knowledge_state.get('misconceptions', []) if isinstance(m, dict)]
+    weak_topics = [str(t) for t in weak_topics]
+    action_type = action_type or 'concept_explanation'
     
     # Build comprehensive AI prompt
     system_prompt = f"""You are an expert educational content creator specializing in {student_goal.upper()} exam preparation.
@@ -828,7 +958,7 @@ STUDENT PERFORMANCE:
 - Misconceptions found: {len(misconceptions)}
 
 Recent Mistakes:
-{chr(10).join([f"- {m.get('concept', 'Unknown')}: {m.get('type', 'Error')}" for m in misconceptions[:3]])}
+{chr(10).join([f"- {m.get('concept') or m.get('topic', 'Unknown')}: {m.get('type', 'Error')}" for m in misconceptions[:3]])}
 
 Create a slide that:
 1. Analyzes their performance objectively
@@ -845,7 +975,6 @@ Be honest but supportive. Focus on growth opportunities."""
         context_data = {}
         if context:
             try:
-                import json
                 context_data = json.loads(context) if isinstance(context, str) else context
             except:
                 context_data = {}
@@ -881,80 +1010,118 @@ Create a slide that:
 
 Be supportive but clear. Focus on learning from the mistake."""
 
+    elif action_type == 'completion':
+        user_prompt = f"""The student has finished the whole lecture. Create a COURSE COMPLETION SUMMARY slide.
+
+LECTURE TOPICS COVERED: {context or topic.get('title', 'the lecture')}
+
+STUDENT CONTEXT:
+- Knowledge level: {knowledge_level} ({avg_score}% average score)
+- Weak areas: {', '.join(weak_topics[:3]) if weak_topics else 'None identified'}
+- Preparing for: {student_goal.upper()}
+
+Create a slide that congratulates the student, recaps the most important ideas across the topics, lists what to revise next, and gives an exam-focused study plan for {student_goal.upper()}."""
+
     else:
         user_prompt = f"""Create an educational slide about: {topic.get('title', 'Topic')}
 
 For {student_goal.upper()} exam preparation at {knowledge_level} level."""
 
-    # Call OpenRouter API
-    try:
-        payload = {
-            "model": OPENROUTER_MODEL,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            "temperature": 0.7,
-            "max_tokens": 2000
-        }
+    payload = {
+        "model": OPENROUTER_MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 2000
+    }
 
-        print(f"Calling AI for {action_type}...")
-        
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json=payload,
-            timeout=30
-        )
-        
-        response.raise_for_status()
-        result = response.json()
-        
-        if not result.get("choices") or not result["choices"][0].get("message"):
-            raise Exception("Invalid API response format")
-            
-        content = result["choices"][0]["message"]["content"].strip()
-        
-        # Clean and parse JSON
-        content = content.replace("```json", "").replace("```", "").strip()
-        slide_content = json.loads(content)
-        
-        print(f"AI generated: {slide_content.get('title', 'Untitled')}")
-        
-        return slide_content
-        
+    print(f"Calling AI for {action_type}...")
+    try:
+        slide_content = parse_llm_json(llm_message(payload, timeout=45))
+        if not isinstance(slide_content, dict):
+            raise ValueError("expected a JSON object")
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 404:
-            print(f"⚠️ Model {OPENROUTER_MODEL} not found, using fallback content")
-        elif e.response.status_code == 402:
-            print(f"⚠️ API payment required, using fallback content")
-        else:
-            print(f"🚨 HTTP error: {e}")
-        raise HTTPException(status_code=500, detail=f"AI model unavailable: {str(e)}")
-    except json.JSONDecodeError as e:
-        print(f"JSON parsing error: {e}")
-        print(f"Raw content: {content[:200]}")
-        raise HTTPException(status_code=500, detail=f"AI response parsing failed: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"AI model unavailable: {e}")
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        raise HTTPException(status_code=500, detail=f"Slide generation error: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Slide generation error: {e}")
+
+    print(f"AI generated: {slide_content.get('title', 'Untitled')}")
+    return slide_content
 
 
 # =========================================================
 # API ENDPOINTS
 # =========================================================
+# Note: endpoints that do blocking work (LLM calls, file/ML processing) are plain `def`
+# so FastAPI runs them in its thread pool instead of blocking the event loop.
+
+COMMONS_API = "https://commons.wikimedia.org/w/api.php"
+COMMONS_HEADERS = {"User-Agent": "MoodMatrixTutor/1.0 (educational project; contact: project maintainers)"}
+IMAGE_MIMES = {"image/jpeg", "image/png", "image/gif", "image/svg+xml"}
+
+@lru_cache(maxsize=256)
+def search_commons_image(query: str, stems: tuple = ()):
+    """Find one relevant image on Wikimedia Commons. Returns a dict or None.
+
+    `stems` are word prefixes of the topic; a result is only accepted if its file name contains one.
+    """
+    params = {
+        "action": "query", "format": "json", "generator": "search",
+        "gsrsearch": f"{query} filetype:bitmap|drawing", "gsrnamespace": 6, "gsrlimit": 6,
+        "prop": "imageinfo", "iiprop": "url|mime|size", "iiurlwidth": 800,
+    }
+    try:
+        r = requests.get(COMMONS_API, params=params, headers=COMMONS_HEADERS, timeout=8)
+        r.raise_for_status()
+        pages = sorted((r.json().get("query", {}).get("pages", {})).values(), key=lambda p: p.get("index", 0))
+    except Exception as e:
+        print(f"Wikimedia search failed for '{query}': {e}")
+        return None
+
+    for page in pages:
+        info = (page.get("imageinfo") or [{}])[0]
+        file_name = page.get("title", "").lower().replace("_", " ")
+        relevant = not stems or any(stem in file_name for stem in stems)
+        if relevant and info.get("mime") in IMAGE_MIMES and info.get("width", 0) >= 300 and info.get("thumburl"):
+            return {"url": info["thumburl"], "title": page.get("title", ""), "page": info.get("descriptionurl", "")}
+    return None
+
+def get_wikimedia_images(topic: dict, action_type: str) -> list:
+    """Return up to one relevant Wikimedia Commons image for the topic (empty list if none found)."""
+    title = topic.get('title', '').strip().rstrip('.')
+    if not title:
+        return []
+
+    significant = [w for w in re.findall(r"[A-Za-z][A-Za-z-]{3,}", title)]
+    generic = {"introduction", "overview", "basics", "fundamentals", "concepts", "concept", "using", "with", "and", "the", "from", "into"}
+    stems = tuple(w.lower()[:5] for w in significant if w.lower() not in generic)
+    short = " ".join(significant[:3])
+    queries = [f"{short or title} diagram", title] + ([short] if len(significant) > 3 else [])
+
+    for query in queries:
+        found = search_commons_image(query, stems)
+        if found:
+            return [{
+                "id": f"img_{uuid.uuid4().hex[:10]}",
+                "url": found["url"],
+                "caption": f"{title} (Wikimedia Commons)",
+                "alt": f"Illustration related to {title}",
+                "source": "wikimedia",
+                "sourcePage": found["page"],
+                "isPlaceholder": False
+            }]
+    return []
 
 @app.post("/generate-dynamic-slide")
-async def generate_dynamic_slide(
+def generate_dynamic_slide(
     session_id: str = Body(...),
     lecture_plan: dict = Body(...),
     student_goal: str = Body('gate'),
     knowledge_state: dict = Body({}),
     current_topic_index: int = Body(0),
-    action_type: str = Body('concept_explanation'),
+    action_type: Optional[str] = Body('concept_explanation'),
     user_question: Optional[str] = Body(None),
     context: Optional[str] = Body('')
 ):
@@ -964,156 +1131,63 @@ async def generate_dynamic_slide(
     2. Knowledge State from Quiz Results
     3. Lecture Plan Content
     """
-    try:
-        print(f"\n{'='*60}")
-        print(f"AI-POWERED SLIDE GENERATION")
-        print(f"{'='*60}")
-        print(f"Action: {action_type}")
-        print(f"Goal: {student_goal.upper()}")
-        print(f"Topic Index: {current_topic_index}")
-        print(f"Knowledge Level: {knowledge_state.get('knowledgeLevel', 'intermediate')}")
-        if user_question:
-            print(f"Question: {user_question[:50]}...")
-        print(f"{'='*60}\n")
+    action_type = action_type or 'concept_explanation'
+    context = context or ''
+    topics = lecture_plan.get('impTopics', [])
 
-        # Extract current topic
-        topics = lecture_plan.get('impTopics', [])
-        
-        if not topics:
-            raise HTTPException(status_code=400, detail="Lecture plan has no topics")
+    if not topics:
+        raise HTTPException(status_code=400, detail="Lecture plan has no topics")
+    if current_topic_index < 0 or current_topic_index >= len(topics):
+        raise HTTPException(status_code=400, detail=f"Invalid topic index: {current_topic_index}")
 
-        if current_topic_index < 0 or current_topic_index >= len(topics):
-            # Instead of defaulting silently, raise error or use first topic intentionally
-            raise HTTPException(status_code=400, detail=f"Invalid topic index: {current_topic_index}")
+    current_topic = topics[current_topic_index]
+    print(f"Slide request: action={action_type} goal={student_goal} topic={current_topic.get('title')}")
 
-        current_topic = topics[current_topic_index]
+    if action_type == 'completion':
+        context = context or ", ".join(t.get('title', '') for t in topics)
 
-        print("DEBUG: Generating slide for topic:", current_topic.get('title'))
+    slide_content = generate_slide_with_ai(
+        topic=current_topic,
+        action_type=action_type,
+        student_goal=student_goal,
+        knowledge_state=knowledge_state or {},
+        user_question=user_question,
+        context=context
+    )
 
-        
-        # Generate slide content with AI
-        slide_content = generate_slide_with_ai(
-            topic=current_topic,
-            action_type=action_type,
-            student_goal=student_goal,
-            knowledge_state=knowledge_state,
-            user_question=user_question,
-            context=context
-        )
-        
-        # Get relevant images from Wikimedia
-        images = await get_wikimedia_images(current_topic, action_type)
-        
-        # Create complete slide object
-        slide = {
-            "id": f"slide_{int(datetime.now().timestamp()*1000)}",
-            "title": slide_content.get('title', current_topic.get('title', 'Learning Slide')),
-            "type": action_type,
-            "content": slide_content,
-            "images": images,
-            "metadata": {
-                "generatedAt": datetime.now().isoformat(),
-                "sessionId": session_id,
-                "topicIndex": current_topic_index,
-                "topicTitle": current_topic.get('title', ''),
-                "studentGoal": student_goal,
-                "knowledgeLevel": knowledge_state.get('knowledgeLevel', 'intermediate'),
-                "actionType": action_type,
-                "hasImages": len(images) > 0,
-                "generatedBy": "AI",
-                "aiModel": OPENROUTER_MODEL
-            }
+    images = get_wikimedia_images(current_topic, action_type)
+
+    slide = {
+        "id": f"slide_{int(datetime.now().timestamp()*1000)}",
+        "title": slide_content.get('title', current_topic.get('title', 'Learning Slide')),
+        "type": action_type,
+        "content": slide_content,
+        "images": images,
+        "metadata": {
+            "generatedAt": datetime.now().isoformat(),
+            "sessionId": session_id,
+            "topicIndex": current_topic_index,
+            "topicTitle": current_topic.get('title', ''),
+            "studentGoal": student_goal,
+            "knowledgeLevel": (knowledge_state or {}).get('knowledgeLevel', 'intermediate'),
+            "actionType": action_type,
+            "hasImages": len(images) > 0,
+            "generatedBy": "AI",
+            "aiModel": OPENROUTER_MODEL
         }
-        
-        print(f"   Complete slide generated:")
-        print(f"   Title: {slide['title']}")
-        print(f"   Images: {len(images)}")
-        print(f"   Type: {action_type}")
-        print(f"   AI Model: {OPENROUTER_MODEL}\n")
-        
-        return {
-            "success": True,
-            "slide": slide,
-            "message": f"AI-generated slide for {action_type}"
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error in slide generation: {e}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+    }
 
-
-async def get_wikimedia_images(topic: dict, action_type: str) -> list:
-    """Get relevant images from image server (Wikimedia)"""
-    try:
-        title = topic.get('title', 'concept')
-        
-        # Build intelligent search query
-        search_terms = [title]
-        
-        # Add context based on action type
-        if action_type == 'concept_explanation':
-            search_terms.append('diagram')
-        elif action_type == 'explain-more':
-            search_terms.append('detailed illustration')
-        elif action_type == 'ask-question':
-            search_terms.append('explanation')
-        
-        search_query = ' '.join(search_terms)
-        
-        print(f"Searching images: {search_query}")
-        
-        # Call image server
-        response = requests.get(
-            "http://localhost:8002/search_image",
-            params={"query": search_query},
-            timeout=8
-        )
-        
-        if response.ok:
-            data = response.json()
-            image_url = data.get('image_url', '')
-            
-            # Check if real image (not placeholder)
-            if image_url and 'placeholder' not in image_url.lower():
-                print(f"Found Wikimedia image")
-                return [{
-                    "id": f"img_{int(datetime.now().timestamp()*1000)}",
-                    "url": image_url,
-                    "caption": f"Visual representation: {title}",
-                    "alt": f"Educational diagram for {title}",
-                    "source": "wikimedia",
-                    "isPlaceholder": False
-                }]
-        
-        print(f"No Wikimedia image found, using placeholder")
-        
-    except Exception as e:
-        print(f"Image fetch error: {e}")
-    
-    # Fallback placeholder
-    from urllib.parse import quote
-    return [{
-        "id": f"placeholder_{int(datetime.now().timestamp()*1000)}",
-        "url": f"https://via.placeholder.com/800x500/3b82f6/ffffff?text={quote(topic.get('title', 'Concept')[:30])}",
-        "caption": f"Concept: {topic.get('title', 'Topic')}",
-        "alt": "Educational concept",
-        "source": "placeholder",
-        "isPlaceholder": True
-    }]
+    return {"success": True, "slide": slide, "message": f"AI-generated slide for {action_type}"}
 
 @app.post("/analyze-lecture")
-async def analyze_lecture(
+def analyze_lecture(
     pdf: Optional[UploadFile] = File(None),
     ppt: Optional[UploadFile] = File(None),
     audio: Optional[UploadFile] = File(None),
     yt_link: Optional[str] = None
 ):
-    if not pdf and not ppt and not yt_link:
-        raise HTTPException(status_code=400, detail="At least one of pdf, ppt, or yt_link must be provided.")
+    if not pdf and not ppt and not audio and not yt_link:
+        raise HTTPException(status_code=400, detail="Provide at least one of: pdf, ppt, audio or yt_link.")
 
     print("Extracting content...")
     pdf_text = extract_pdf_text(pdf) if pdf else ""
@@ -1127,138 +1201,113 @@ async def analyze_lecture(
         print("Processing YouTube link...")
         transcript = process_yt_link(yt_link)
 
+    # Slides/documents are the primary source; a transcript alone is enough when there are none.
+    source_text = f"{pdf_text}\n{ppt_text}".strip() or (transcript or "")
+    if not source_text:
+        raise HTTPException(status_code=422, detail="No readable text could be extracted from the input.")
+
     print("Analyzing content...")
-    analysis = analyze_text(pdf_text, ppt_text, transcript)
-    
-    print("Generating lecture plan with AI...")
+    analysis = analyze_text(source_text, transcript)
+
+    print("Generating lecture plan...")
     plan = build_lecture_plan(analysis)
 
-    print("Saving to file...")
-    path = save_lecture_plan_to_mock(plan)
-    plan["file_saved"] = True
-    plan["saved_path"] = path
-
+    save_lecture_plan(plan)
     return plan
 
 @app.post("/generate-diagnostic-mcq")
-async def generate_diagnostic_mcq(request: MCQRequest):
+def generate_diagnostic_mcq(request: MCQRequest):
     """Generate diagnostic MCQs from lecture plan"""
-    try:
-        lecture_plan = request.lecture_plan
-        topics = lecture_plan.get('impTopics', [])
-        num_questions = request.num_questions
-        
-        if not topics:
-            raise HTTPException(status_code=400, detail="No topics found in lecture plan")
-        
-        print(f"Generating {num_questions} MCQs from {len(topics)} topics...")
-        
-        questions = []
-        questions_per_topic = max(1, num_questions // len(topics))
-        
-        # Generate multiple questions per topic if needed
-        for topic_idx, topic in enumerate(topics):
-            # Calculate how many questions to generate from this topic
-            if len(questions) >= num_questions:
-                break
-            
-            # Generate 1-2 questions per topic depending on need
-            num_from_this_topic = min(
-                questions_per_topic + (1 if len(questions) < num_questions - len(topics) + topic_idx else 0),
-                num_questions - len(questions)
-            )
-            
-            for q_num in range(num_from_this_topic):
-                if len(questions) >= num_questions:
-                    break
-                
-                q_id = len(questions) + 1
-                print(f"Generating question {q_id}/{num_questions} from topic: {topic.get('title', 'Unknown')[:50]}...")
-                
-                title = topic.get('title', f'Topic {topic_idx+1}')
-                description = topic.get('description', '')
-                full_content = topic.get('full_content', description)
-                misconceptions = topic.get('commonMisconceptions', [])
-                insights = topic.get('keyInsights', [])
-                
-                q = create_diagnostic_question(q_id, topic, full_content, misconceptions, insights)
-                questions.append(q)
-        
-        print(f"Generated {len(questions)} questions successfully")
-        
-        return {
-            "success": True,
-            "questions": questions,
-            "metadata": {
-                "generatedAt": datetime.now().isoformat(),
-                "totalQuestions": len(questions),
-                "topicsUsed": len(topics)
-            }
+    topics = request.lecture_plan.get('impTopics', [])
+    if not topics:
+        raise HTTPException(status_code=400, detail="No topics found in lecture plan")
+
+    num_questions = max(1, min(request.num_questions, 30))
+    print(f"Generating {num_questions} MCQs from {len(topics)} topics...")
+
+    # Spread the questions across topics as evenly as possible
+    plan = [topics[i % len(topics)] for i in range(num_questions)]
+    plan.sort(key=lambda t: topics.index(t))
+
+    def make(args):
+        qid, topic = args
+        content = topic.get('full_content') or topic.get('description', '')
+        return create_diagnostic_question(qid, topic, content, topic.get('keyInsights', []), topics)
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        questions = list(pool.map(make, enumerate(plan, start=1)))
+
+    return {
+        "success": True,
+        "questions": questions,
+        "metadata": {
+            "generatedAt": datetime.now().isoformat(),
+            "totalQuestions": len(questions),
+            "topicsUsed": len(topics)
         }
-    except Exception as e:
-        print(f"Error generating MCQs: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    }
+
+@app.post("/generate-topic-quiz")
+def generate_topic_quiz(request: TopicQuizRequest):
+    """Generate an adaptive quiz for one topic. 503 means the AI is unavailable (client falls back)."""
+    quiz = generate_topic_quiz_with_llm(request)
+    if not quiz:
+        raise HTTPException(status_code=503, detail="AI quiz generation is unavailable")
+    return {"success": True, "quiz": quiz}
 
 @app.post("/analyze-quiz-results")
-async def analyze_quiz_results(request: AnswerAnalysisRequest):
+def analyze_quiz_results(request: AnswerAnalysisRequest):
     """Analyze quiz results and identify misconceptions"""
-    try:
-        questions = request.questions
-        answers = request.answers
-        
-        correct = sum(1 for i, ans in enumerate(answers) 
-                     if ans.get('selectedAnswer') == questions[i].get('correctAnswer'))
-        score = (correct / len(questions)) * 100 if questions else 0
-        
-        misconceptions = []
-        weak_topics = []
-        
-        for i, (question, answer) in enumerate(zip(questions, answers)):
-            if answer.get('selectedAnswer') != question.get('correctAnswer'):
-                topic = question.get('conceptsTested', ['Unknown'])[0]
-                weak_topics.append(topic)
-                
-                misconceptions.append({
-                    "topic": topic,
-                    "question": question.get('question'),
-                    "yourAnswer": answer.get('selectedAnswer'),
-                    "correctAnswer": question.get('correctAnswer'),
-                    "explanation": question.get('explanation', ''),
-                    "type": "knowledge_gap"
-                })
-        
-        recommendations = []
-        if score < 60:
-            recommendations.append("Review fundamental concepts from the lecture")
-        if weak_topics:
-            recommendations.append(f"Focus on: {', '.join(set(weak_topics[:3]))}")
-        if score >= 80:
-            recommendations.append("Strong understanding! Move to advanced topics")
-        
-        return {
-            "success": True,
-            "score": round(score, 1),
-            "correct": correct,
-            "total": len(questions),
-            "misconceptions": misconceptions,
-            "weakTopics": list(set(weak_topics)),
-            "recommendations": recommendations,
-            "knowledgeState": {
-                "overallMastery": score,
-                "conceptualUnderstanding": score,
-                "needsReview": score < 70
-            }
+    questions = request.questions
+    answers_by_id = {str(a.get('questionId')): a for a in request.answers}
+
+    correct = 0
+    misconceptions, weak_topics = [], []
+    for question in questions:
+        answer = answers_by_id.get(str(question.get('id')))
+        if answer and answer.get('selectedAnswer') == question.get('correctAnswer'):
+            correct += 1
+            continue
+        topic = (question.get('conceptsTested') or ['Unknown'])[0]
+        weak_topics.append(topic)
+        misconceptions.append({
+            "topic": topic,
+            "question": question.get('question'),
+            "yourAnswer": answer.get('selectedAnswer') if answer else None,
+            "correctAnswer": question.get('correctAnswer'),
+            "explanation": question.get('explanation', ''),
+            "type": "knowledge_gap"
+        })
+
+    score = (correct / len(questions)) * 100 if questions else 0
+    recommendations = []
+    if score < 60:
+        recommendations.append("Review fundamental concepts from the lecture")
+    if weak_topics:
+        recommendations.append(f"Focus on: {', '.join(list(dict.fromkeys(weak_topics))[:3])}")
+    if score >= 80:
+        recommendations.append("Strong understanding! Move to advanced topics")
+
+    return {
+        "success": True,
+        "score": round(score, 1),
+        "correct": correct,
+        "total": len(questions),
+        "misconceptions": misconceptions,
+        "weakTopics": list(dict.fromkeys(weak_topics)),
+        "recommendations": recommendations,
+        "knowledgeState": {
+            "overallMastery": score,
+            "conceptualUnderstanding": score,
+            "needsReview": score < 70
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    }
 
 @app.post("/save-quiz-results")
-async def save_quiz_results_endpoint(request: SaveResultsRequest):
-    """Save quiz results to file"""
+def save_quiz_results_endpoint(request: SaveResultsRequest):
+    """Save quiz results to disk"""
     try:
-        print(f"Received quiz results: session={request.session_id}, score={request.score}")
-        
-        results_data = {
+        save_quiz_results({
             "session_id": request.session_id,
             "lecture_id": request.lecture_id,
             "score": request.score,
@@ -1270,102 +1319,60 @@ async def save_quiz_results_endpoint(request: SaveResultsRequest):
             "weak_topics": request.weak_topics,
             "recommendations": request.recommendations,
             "timestamp": datetime.now().isoformat()
-        }
-        
-        saved_path = save_quiz_results(results_data)
-        
-        print(f"Successfully saved quiz results to: {saved_path}")
-        
-        return {
-            "success": True,
-            "message": "Quiz results saved successfully",
-            "saved_path": saved_path,
-            "session_id": request.session_id
-        }
-    except Exception as e:
-        error_msg = str(e)
-        print(f"Error saving quiz results: {error_msg}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Failed to save results: {error_msg}")
+        })
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save results: {e}")
+
+    return {"success": True, "message": "Quiz results saved successfully", "session_id": request.session_id}
 
 # =========================================================
-# HEALTH CHECK
+# HEALTH CHECK / LOOKUP
 # =========================================================
 @app.get("/")
-async def root():
+def root():
     return {
-        "message": "Study Plan Generator API with MCQ Features",
-        "version": "2.0",
+        "message": "Study Plan Generator API",
+        "version": "2.1",
+        "ai_configured": bool(OPENROUTER_API_KEY),
         "endpoints": [
             "/analyze-lecture",
             "/generate-diagnostic-mcq",
+            "/generate-dynamic-slide",
+            "/generate-topic-quiz",
             "/analyze-quiz-results",
-            "/save-quiz-results"
+            "/save-quiz-results",
+            "/get-lecture-plan"
         ]
     }
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 @app.get("/get-lecture-plan")
-async def get_lecture_plan(
+def get_lecture_plan(
     sessionId: Optional[str] = None,
+    lectureId: Optional[str] = None,
     latest: Optional[bool] = False
 ):
-    """Get lecture plan - always returns latest if sessionId not found"""
-    try:
-        # Get the project root directory
-        project_root = Path(__file__).resolve().parents[2]
-        mock_file_path = project_root / "frontend" / "src" / "app" / "lib" / "mock_lecture_plan.json"
-        
-        if not mock_file_path.exists():
-            raise HTTPException(status_code=404, detail="No lecture plans found")
-        
-        with open(mock_file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            
-            # Ensure data is a list
-            if not isinstance(data, list):
-                data = [data]
-            
-            if not data:
-                raise HTTPException(status_code=404, detail="No lecture plans available")
-            
-            # If sessionId provided, try to find it, but fallback to latest
-            if sessionId:
-                for plan in data:
-                    if plan.get('sessionId') == sessionId:
-                        print(f"Found lecture plan with sessionId: {sessionId}")
-                        return plan
-                
-                # SessionId not found - return latest instead of 404
-                print(f"SessionId {sessionId} not found, returning latest plan")
-                return data[0]
-            
-            # Otherwise return latest (first in list)
-            print(f"Returning latest lecture plan")
-            return data[0]
-            
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error getting lecture plan: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    """Return the lecture plan for a session/lecture id, or the most recent plan when `latest` is set."""
+    plans = _read_json_list(LECTURE_PLANS_FILE)
+    if not plans:
+        raise HTTPException(status_code=404, detail="No lecture plans found")
+
+    for plan in plans:
+        if (sessionId and plan.get('sessionId') == sessionId) or (lectureId and plan.get('lectureId') == lectureId):
+            return plan
+
+    if latest or not (sessionId or lectureId):
+        return plans[0]
+
+    raise HTTPException(status_code=404, detail="Lecture plan not found for that id")
 
 # =========================================================
 # SERVER STARTUP
 # =========================================================
 if __name__ == "__main__":
     import uvicorn
-    print("="*60)
-    print("Starting Study Plan Generator API")
-    print("="*60)
-    print("Endpoints:")
-    print("  - POST /analyze-lecture")
-    print("  - POST /generate-diagnostic-mcq")
-    print("  - POST /analyze-quiz-results")
-    print("  - POST /save-quiz-results")
-    print("="*60)
-    print("Server running at: http://localhost:8001")
-    print("API docs: http://localhost:8001/docs")
-    print("="*60)
-    
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    print(f"Study Plan Generator API: http://localhost:{PORT}  (docs: http://localhost:{PORT}/docs)")
+    uvicorn.run(app, host="127.0.0.1", port=PORT)

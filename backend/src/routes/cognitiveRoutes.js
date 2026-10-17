@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { CognitiveLoad, HelpOffer } = require('../models');
+const { CognitiveLoad } = require('../models');
 
 // POST: Record cognitive load data
 router.post('/record', async (req, res) => {
   try {
     const { userId, sessionId, loadValue, emotionData, postureData, activityData } = req.body;
-    
+    if (typeof loadValue !== 'number' || loadValue < 0 || loadValue > 100) {
+      return res.status(400).json({ success: false, error: 'loadValue must be a number between 0 and 100' });
+    }
+
     const loadRecord = await CognitiveLoad.create({
       userId,
       sessionId,
