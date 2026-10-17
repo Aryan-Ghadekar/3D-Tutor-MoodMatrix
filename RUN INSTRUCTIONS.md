@@ -88,3 +88,6 @@ cd frontend && npm test              # cognitive-load model, speech scripts, not
 | `OPENROUTER_MODEL`, `WHISPER_MODEL`, `PORT`, `CORS_ORIGINS`, `DATA_DIR` | same | optional overrides |
 | `BACKEND_URL` / `NEXT_PUBLIC_BACKEND_URL` | `frontend/.env.local` | FastAPI URL (default `http://localhost:8001`) |
 | `SESSION_SECRET` | `frontend/.env.local` | signs login cookies |
+
+### More documentation
+Backend architecture, API reference, per-feature internals and troubleshooting: [`backend/docs`](backend/docs/README.md).

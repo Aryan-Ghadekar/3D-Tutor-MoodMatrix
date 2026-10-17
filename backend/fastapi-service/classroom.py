@@ -125,6 +125,7 @@ def _purge():
 
 @router.post("")
 def create_class(req: CreateRequest):
+    """Start a live class from a lecture plan. Returns the join code and the teacher token (keep the token secret: it authorises dashboard and control calls)."""
     if not req.lecture_plan.get("impTopics"):
         raise HTTPException(status_code=400, detail="The lecture plan has no topics.")
     with _lock:
@@ -158,6 +159,7 @@ def create_class(req: CreateRequest):
 
 @router.post("/{code}/join")
 def join_class(code: str, req: JoinRequest):
+    """Join a class by code. Returns a student id and the lecture plan the class is studying. Fails with 410 once the class has ended."""
     with _lock:
         cls = _get(code)
         if cls["ended"]:
@@ -172,6 +174,7 @@ def join_class(code: str, req: JoinRequest):
 
 @router.post("/{code}/heartbeat")
 def heartbeat(code: str, req: HeartbeatRequest):
+    """Report a student's cognitive-load score (0-100) and level. Returns the class state (current topic, pause status) and the teacher's last few minutes of speech. Students call this every few seconds."""
     with _lock:
         cls = _get(code)
         student = cls["students"].get(req.studentId)
@@ -192,6 +195,7 @@ def heartbeat(code: str, req: HeartbeatRequest):
 
 @router.get("/{code}/state")
 def class_state(code: str):
+    """Public class state and recent lecture transcript, without reporting any load."""
     with _lock:
         cls = _get(code)
         return {"state": _public_state(cls), "recentTranscript": _recent_transcript(cls)}
@@ -199,6 +203,7 @@ def class_state(code: str):
 
 @router.get("/{code}/dashboard")
 def dashboard(code: str, x_teacher_token: Optional[str] = Header(None)):
+    """Teacher view: class-wide aggregate load, history, event log, pause-quiz results and recent transcript. Requires the X-Teacher-Token header. Never exposes individual students."""
     with _lock:
         cls = _get(code)
         _require_teacher(cls, x_teacher_token)
@@ -221,6 +226,7 @@ def dashboard(code: str, x_teacher_token: Optional[str] = Header(None)):
 
 @router.post("/{code}/control")
 def control(code: str, req: ControlRequest, x_teacher_token: Optional[str] = Header(None)):
+    """Teacher controls: set_topic, pause (mode quiz or avatar) and resume. Requires the X-Teacher-Token header."""
     with _lock:
         cls = _get(code)
         _require_teacher(cls, x_teacher_token)
@@ -252,6 +258,7 @@ def control(code: str, req: ControlRequest, x_teacher_token: Optional[str] = Hea
 
 @router.post("/{code}/transcript")
 def add_transcript(code: str, req: TranscriptRequest, x_teacher_token: Optional[str] = Header(None)):
+    """Append recognised lecture speech to the class transcript (only the last few minutes are kept). Requires the X-Teacher-Token header."""
     with _lock:
         cls = _get(code)
         _require_teacher(cls, x_teacher_token)
@@ -264,6 +271,7 @@ def add_transcript(code: str, req: TranscriptRequest, x_teacher_token: Optional[
 
 @router.post("/{code}/result")
 def report_result(code: str, req: ResultRequest):
+    """A student reports their score (0-100) for a pause quiz. Re-reporting for the same pause overwrites the earlier score."""
     with _lock:
         cls = _get(code)
         if req.studentId not in cls["students"]:
@@ -275,6 +283,7 @@ def report_result(code: str, req: ResultRequest):
 
 @router.post("/{code}/end")
 def end_class(code: str, x_teacher_token: Optional[str] = Header(None)):
+    """End the class: students can no longer join and are told it ended. Requires the X-Teacher-Token header."""
     with _lock:
         cls = _get(code)
         _require_teacher(cls, x_teacher_token)

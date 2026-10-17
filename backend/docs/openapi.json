@@ -1,0 +1,1434 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Study Plan Generator API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/classroom": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Create Class",
+        "description": "Start a live class from a lecture plan. Returns the join code and the teacher token (keep the token secret: it authorises dashboard and control calls).",
+        "operationId": "create_class_classroom_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/join": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Join Class",
+        "description": "Join a class by code. Returns a student id and the lecture plan the class is studying. Fails with 410 once the class has ended.",
+        "operationId": "join_class_classroom__code__join_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/heartbeat": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Heartbeat",
+        "description": "Report a student's cognitive-load score (0-100) and level. Returns the class state (current topic, pause status) and the teacher's last few minutes of speech. Students call this every few seconds.",
+        "operationId": "heartbeat_classroom__code__heartbeat_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HeartbeatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/state": {
+      "get": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Class State",
+        "description": "Public class state and recent lecture transcript, without reporting any load.",
+        "operationId": "class_state_classroom__code__state_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/dashboard": {
+      "get": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Dashboard",
+        "description": "Teacher view: class-wide aggregate load, history, event log, pause-quiz results and recent transcript. Requires the X-Teacher-Token header. Never exposes individual students.",
+        "operationId": "dashboard_classroom__code__dashboard_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "x-teacher-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Teacher-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/control": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Control",
+        "description": "Teacher controls: set_topic, pause (mode quiz or avatar) and resume. Requires the X-Teacher-Token header.",
+        "operationId": "control_classroom__code__control_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "x-teacher-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Teacher-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/transcript": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Add Transcript",
+        "description": "Append recognised lecture speech to the class transcript (only the last few minutes are kept). Requires the X-Teacher-Token header.",
+        "operationId": "add_transcript_classroom__code__transcript_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "x-teacher-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Teacher-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranscriptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/result": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "Report Result",
+        "description": "A student reports their score (0-100) for a pause quiz. Re-reporting for the same pause overwrites the earlier score.",
+        "operationId": "report_result_classroom__code__result_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classroom/{code}/end": {
+      "post": {
+        "tags": [
+          "classroom"
+        ],
+        "summary": "End Class",
+        "description": "End the class: students can no longer join and are told it ended. Requires the X-Teacher-Token header.",
+        "operationId": "end_class_classroom__code__end_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "x-teacher-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Teacher-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-dynamic-slide": {
+      "post": {
+        "summary": "Generate Dynamic Slide",
+        "description": "Generate dynamic slide with AI using three input streams:\n1. Student Goal & Exam Preference\n2. Knowledge State from Quiz Results\n3. Lecture Plan Content",
+        "operationId": "generate_dynamic_slide_generate_dynamic_slide_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_generate_dynamic_slide_generate_dynamic_slide_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analyze-lecture": {
+      "post": {
+        "summary": "Analyze Lecture",
+        "description": "Turn uploaded material into a lecture plan. Accepts a PDF, a PPTX, an audio file and/or a YouTube link (query parameter yt_link); a transcript on its own is enough. Saves the plan, indexes every chunk for retrieval and returns the plan.",
+        "operationId": "analyze_lecture_analyze_lecture_post",
+        "parameters": [
+          {
+            "name": "yt_link",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Yt Link"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_lecture_analyze_lecture_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-diagnostic-mcq": {
+      "post": {
+        "summary": "Generate Diagnostic Mcq",
+        "description": "Generate diagnostic MCQs from lecture plan",
+        "operationId": "generate_diagnostic_mcq_generate_diagnostic_mcq_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MCQRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-topic-quiz": {
+      "post": {
+        "summary": "Generate Topic Quiz",
+        "description": "Generate an adaptive quiz for one topic. 503 means the AI is unavailable (client falls back).",
+        "operationId": "generate_topic_quiz_generate_topic_quiz_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicQuizRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rag/query": {
+      "post": {
+        "summary": "Rag Query",
+        "description": "Retrieve the most relevant lecture passages for a question.",
+        "operationId": "rag_query_rag_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RagQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analyze-quiz-results": {
+      "post": {
+        "summary": "Analyze Quiz Results",
+        "description": "Analyze quiz results and identify misconceptions",
+        "operationId": "analyze_quiz_results_analyze_quiz_results_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/save-quiz-results": {
+      "post": {
+        "summary": "Save Quiz Results Endpoint",
+        "description": "Save quiz results to disk",
+        "operationId": "save_quiz_results_endpoint_save_quiz_results_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveResultsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Service banner: version, whether an AI key is configured, and the list of endpoints.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "description": "Liveness probe.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-lecture-plan": {
+      "get": {
+        "summary": "Get Lecture Plan",
+        "description": "Return the lecture plan for a session/lecture id, or the most recent plan when `latest` is set.",
+        "operationId": "get_lecture_plan_get_lecture_plan_get",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sessionid"
+            }
+          },
+          {
+            "name": "lectureId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lectureid"
+            }
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": false,
+              "title": "Latest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerAnalysisRequest": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "questions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "answers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Answers"
+          },
+          "student_goal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student Goal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "questions",
+          "answers"
+        ],
+        "title": "AnswerAnalysisRequest"
+      },
+      "Body_analyze_lecture_analyze_lecture_post": {
+        "properties": {
+          "pdf": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pdf"
+          },
+          "ppt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ppt"
+          },
+          "audio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio"
+          }
+        },
+        "type": "object",
+        "title": "Body_analyze_lecture_analyze_lecture_post"
+      },
+      "Body_generate_dynamic_slide_generate_dynamic_slide_post": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "lecture_plan": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lecture Plan"
+          },
+          "student_goal": {
+            "type": "string",
+            "title": "Student Goal",
+            "default": "gate"
+          },
+          "knowledge_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Knowledge State",
+            "default": {}
+          },
+          "current_topic_index": {
+            "type": "integer",
+            "title": "Current Topic Index",
+            "default": 0
+          },
+          "action_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Type",
+            "default": "concept_explanation"
+          },
+          "user_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Question"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "lecture_plan"
+        ],
+        "title": "Body_generate_dynamic_slide_generate_dynamic_slide_post"
+      },
+      "ControlRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "topicIndex": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topicindex"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "ControlRequest"
+      },
+      "CreateRequest": {
+        "properties": {
+          "lecture_plan": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lecture Plan"
+          },
+          "teacher_name": {
+            "type": "string",
+            "title": "Teacher Name",
+            "default": "Teacher"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lecture_plan"
+        ],
+        "title": "CreateRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HeartbeatRequest": {
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "title": "Studentid"
+          },
+          "load": {
+            "type": "number",
+            "title": "Load"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "default": "medium"
+          },
+          "signals": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Signals",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "studentId",
+          "load"
+        ],
+        "title": "HeartbeatRequest"
+      },
+      "JoinRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "title": "JoinRequest"
+      },
+      "MCQRequest": {
+        "properties": {
+          "lecture_plan": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lecture Plan"
+          },
+          "num_questions": {
+            "type": "integer",
+            "title": "Num Questions",
+            "default": 10
+          },
+          "question_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Question Types",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "lecture_plan"
+        ],
+        "title": "MCQRequest"
+      },
+      "RagQuery": {
+        "properties": {
+          "collection": {
+            "type": "string",
+            "title": "Collection"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "k": {
+            "type": "integer",
+            "title": "K",
+            "default": 4
+          }
+        },
+        "type": "object",
+        "required": [
+          "collection",
+          "query"
+        ],
+        "title": "RagQuery"
+      },
+      "ResultRequest": {
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "title": "Studentid"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "pauseId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pauseid"
+          },
+          "topicIndex": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topicindex"
+          }
+        },
+        "type": "object",
+        "required": [
+          "studentId",
+          "score"
+        ],
+        "title": "ResultRequest"
+      },
+      "SaveResultsRequest": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "lecture_id": {
+            "type": "string",
+            "title": "Lecture Id"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "correct": {
+            "type": "integer",
+            "title": "Correct"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "questions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "answers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Answers"
+          },
+          "misconceptions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Misconceptions"
+          },
+          "weak_topics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Weak Topics"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "lecture_id",
+          "score",
+          "correct",
+          "total",
+          "questions",
+          "answers",
+          "misconceptions",
+          "weak_topics",
+          "recommendations"
+        ],
+        "title": "SaveResultsRequest"
+      },
+      "TopicQuizRequest": {
+        "properties": {
+          "topic": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Topic"
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty",
+            "default": "medium"
+          },
+          "studentGoal": {
+            "type": "string",
+            "title": "Studentgoal",
+            "default": "gate"
+          },
+          "numberOfQuestions": {
+            "type": "integer",
+            "title": "Numberofquestions",
+            "default": 5
+          },
+          "sessionId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sessionid"
+          },
+          "misconceptions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Misconceptions",
+            "default": []
+          },
+          "previousPerformance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Previousperformance",
+            "default": {}
+          },
+          "cognitiveLoad": {
+            "type": "string",
+            "title": "Cognitiveload",
+            "default": "medium"
+          },
+          "recentContext": {
+            "type": "string",
+            "title": "Recentcontext",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic"
+        ],
+        "title": "TopicQuizRequest"
+      },
+      "TranscriptRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "TranscriptRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -788,15 +788,19 @@ def snippet(text: str, limit: int = 220) -> str:
     return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "..."
 
 
-def index_lecture(plan: dict, analysis: dict, transcript: Optional[str]):
-    """Index every chunk of the lecture (not just the ones that became topics) for retrieval."""
+def index_lecture(plan: dict, analysis: dict, transcript: Optional[str], transcript_is_source: bool = False):
+    """Index every chunk of the lecture (not just the ones that became topics) for retrieval.
+
+    The transcript is indexed separately as kind "transcript" unless it already *is* the lecture text
+    (transcript-only uploads), in which case indexing it again would only create duplicate hits.
+    """
     topic_by_chunk = {c["index"]: f"topic-{i + 1}" for i, c in enumerate(analysis["chunks"][:20])}
     docs = [
         {"id": f"chunk-{i}", "text": text, "kind": "lecture",
          "meta": {"chunkIndex": i, "topicId": topic_by_chunk.get(i)}}
         for i, text in enumerate(analysis["all_chunks"])
     ]
-    if transcript and transcript != "\n".join(analysis["all_chunks"]):
+    if transcript and not transcript_is_source:
         docs += [{"id": f"transcript-{i}", "text": text, "kind": "transcript", "meta": {"chunkIndex": i}}
                  for i, text in enumerate(chunk_text(transcript))]
     rag_store.add(plan["sessionId"], docs)
@@ -1274,6 +1278,7 @@ def analyze_lecture(
     audio: Optional[UploadFile] = File(None),
     yt_link: Optional[str] = None
 ):
+    """Turn uploaded material into a lecture plan. Accepts a PDF, a PPTX, an audio file and/or a YouTube link (query parameter yt_link); a transcript on its own is enough. Saves the plan, indexes every chunk for retrieval and returns the plan."""
     if not pdf and not ppt and not audio and not yt_link:
         raise HTTPException(status_code=400, detail="Provide at least one of: pdf, ppt, audio or yt_link.")
 
@@ -1302,7 +1307,7 @@ def analyze_lecture(
 
     save_lecture_plan(plan)
     try:
-        index_lecture(plan, analysis, transcript)
+        index_lecture(plan, analysis, transcript, transcript_is_source=not (pdf_text or ppt_text))
     except Exception as e:  # retrieval is an enhancement; never fail the upload because of it
         print(f"Could not index lecture for retrieval: {e}")
     return plan
@@ -1433,6 +1438,7 @@ def save_quiz_results_endpoint(request: SaveResultsRequest):
 # =========================================================
 @app.get("/")
 def root():
+    """Service banner: version, whether an AI key is configured, and the list of endpoints."""
     return {
         "message": "Study Plan Generator API",
         "version": "2.1",
@@ -1452,6 +1458,7 @@ def root():
 
 @app.get("/health")
 def health():
+    """Liveness probe."""
     return {"status": "healthy"}
 
 @app.get("/get-lecture-plan")

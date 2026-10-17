@@ -92,6 +92,35 @@ def test_upload_indexes_all_chunks_and_rag_endpoint_finds_them(monkeypatch):
     assert res["results"] and "breadth first" in res["results"][0]["text"]
 
 
+def _no_llm(monkeypatch):
+    monkeypatch.setattr(main, "get_semantic_model", lambda: None)
+    monkeypatch.setattr(main, "llm_message", lambda *a, **k: (_ for _ in ()).throw(Exception("no llm")))
+
+
+def test_transcript_only_lectures_are_not_indexed_twice(monkeypatch):
+    _no_llm(monkeypatch)
+    monkeypatch.setattr(main, "process_yt_link", lambda link: "Heaps keep the smallest key at the root. " * 80)
+    plan = client.post("/analyze-lecture", params={"yt_link": "https://youtu.be/dQw4w9WgXcQ"}).json()
+    assert main.rag_store.count(plan["sessionId"], "transcript") == 0
+    assert main.rag_store.count(plan["sessionId"], "lecture") > 0
+
+
+def test_transcript_is_indexed_separately_when_slides_are_the_source(monkeypatch):
+    import io
+    from pptx import Presentation
+
+    _no_llm(monkeypatch)
+    monkeypatch.setattr(main, "process_yt_link", lambda link: "The teacher also said that heaps are complete trees. " * 40)
+    prs = Presentation()
+    prs.slides.add_slide(prs.slide_layouts[5]).shapes.add_textbox(0, 0, 100, 100).text_frame.text = "Heaps are binary trees. " * 60
+    buf = io.BytesIO()
+    prs.save(buf)
+    files = {"ppt": ("a.pptx", buf.getvalue(), "application/octet-stream")}
+    plan = client.post("/analyze-lecture", params={"yt_link": "https://youtu.be/dQw4w9WgXcQ"}, files=files).json()
+    assert main.rag_store.count(plan["sessionId"], "transcript") > 0
+    assert main.rag_store.count(plan["sessionId"], "lecture") > 0
+
+
 SLIDE = {"title": "T", "narrative": "A narrative about chaining.", "keyInsights": ["chaining"], "analogies": [],
          "realWorldScenario": None, "interactiveElement": "?", "examRelevance": "x", "commonTraps": [], "memoryHook": "m"}
 

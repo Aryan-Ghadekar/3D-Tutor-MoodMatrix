@@ -10,6 +10,14 @@ The platform supports **two distinct logins**:
 
 ---
 
+## 🔹 Backend Documentation
+
+Every backend feature (lecture ingestion, scoring, slides, quizzes, retrieval, live classroom, storage, the
+Express API) is documented in [`backend/docs`](backend/docs/README.md): architecture, configuration, a full API
+reference with real examples, per-feature internals, data models, testing and troubleshooting guides.
+
+---
+
 ## 🔹 Implementation Status
 
 This README describes the full vision of the project. What is built and working today:
